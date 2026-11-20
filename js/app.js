@@ -164,6 +164,11 @@ document.addEventListener('DOMContentLoaded', () => {
             handleScratchCompleted(user, true);
         };
 
+        // زرار "عرض الاحتفال" يظهر فقط للفائزين
+        if (viewPreviousResultBtn) {
+            viewPreviousResultBtn.style.display = isWin ? 'inline-flex' : 'none';
+        }
+
         if (lockoutBackBtn) {
             lockoutBackBtn.onclick = () => { soundManager.playClick(); hideLockoutScreen(); };
         }
@@ -209,17 +214,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- الفحص المحلي كاحتياط ---
         const localRecord = getUserParticipation(user.id);
-        const existingRecord = cloudRecord || localRecord;
 
-        if (existingRecord) {
-            // إذا كان موجود في السحابة بس مش محلي، احفظه محلياً للاتساق
-            if (cloudRecord && !localRecord) {
+        // 🔑 مهم: لو السيرفر قال "مفيش سجل" (cloudRecord = null) ونجح الاتصال، امسح المحلي
+        // ده يحل مشكلة: لو الأدمن/ديفلوبر مسح التسجيل من السيرفر، المستخدم يقدر يلعب تاني
+        let existingRecord = null;
+        if (cloudRecord) {
+            existingRecord = cloudRecord;
+            // لو موجود في السيرفر بس مش محلي، احفظه محلياً للاتساق
+            if (!localRecord) {
                 try {
                     const history = getAllParticipations();
                     history[String(user.id).trim()] = cloudRecord;
                     localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
                 } catch (storageErr) {}
             }
+        } else {
+            // السيرفر مش عنده سجل — امسح المحلي لو كان موجود (يعني اتمسح من الأدمن)
+            if (localRecord) {
+                try {
+                    const history = getAllParticipations();
+                    delete history[String(user.id).trim()];
+                    localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+                } catch (storageErr) {}
+            }
+            // existingRecord = null → اسمح له بالدخول
+        }
+
+        if (existingRecord) {
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnHTML;

@@ -809,10 +809,10 @@
             try {
                 const cloudData = await fetchFromCloud();
                 if (cloudData && cloudData.status === 'success') {
-                    // دمج المشاركات القادمة من السيرفر السحابي مع المخزن المحلي
-                    const local = getAllParticipations();
-                    const merged = Object.assign({}, local, cloudData.participations || {});
-                    localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(merged));
+                    // ✅ استبدال كامل من السيرفر السحابي (مصدر الحقيقة الوحيد)
+                    // لا نعمل merge — السيرفر هو الحكم النهائي، والمحذوف منه يُحذف محلياً
+                    const cloudParts = cloudData.participations || {};
+                    localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(cloudParts));
 
                     // تحديث المخزن من السيرفر السحابي
                     if (cloudData.inventory) {
@@ -828,7 +828,7 @@
                     loadDashboardData();
                     renderDatabaseTable();
 
-                    const count = Object.keys(merged).length;
+                    const count = Object.keys(cloudParts).length;
                     const nowStr = new Date().toLocaleTimeString('ar-EG');
                     updateCloudStatusUI('connected', `🟢 متصل بالسحابة لايف (${count} مشاركة)`);
                     const timeEl = document.getElementById('lastSyncTimeText');
