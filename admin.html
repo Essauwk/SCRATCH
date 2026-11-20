@@ -887,7 +887,7 @@
                 <p style="color:#cbd5e1; font-size:0.9rem; margin:0 0 14px 0;">
                     يمكنك كتابة أي رقم تريده للمتبقي من الجوائز (سواء زيادة الفائزين أو تقليلهم)، والسيستم سيطبق السحب العشوائي فوراً بناءً على الأرقام التي تضعها هنا:
                 </p>
-                <form id="updateInventoryForm" onsubmit="return false;">
+                <form id="updateInventoryForm" onsubmit="executeSaveInventory(event); return false;">
                     <div class="inv-inputs-row">
                         <div class="inv-input-group">
                             <label for="inputRemaining100">💵 رصيد جوائز 100 جنيه المتبقي:</label>
@@ -897,7 +897,7 @@
                             <label for="inputRemaining200">💴 رصيد جوائز 200 جنيه المتبقي:</label>
                             <input type="number" id="inputRemaining200" class="inv-num-input" min="0" step="1">
                         </div>
-                        <button type="submit" class="dash-btn dash-btn-primary" id="saveInventoryBtn" style="padding:12px 20px; font-size:1rem;">
+                        <button type="button" class="dash-btn dash-btn-primary" id="saveInventoryBtn" onclick="executeSaveInventory(event)" style="padding:12px 20px; font-size:1rem;">
                             <span>حفظ وتحديث المخزن 💾</span>
                         </button>
                     </div>
@@ -1417,27 +1417,28 @@
 
         async function executeSaveInventory(e) {
             if (e) e.preventDefault();
-            const val100 = parseInt(document.getElementById('inputRemaining100').value, 10);
-            const val200 = parseInt(document.getElementById('inputRemaining200').value, 10);
+            const btn = document.getElementById('saveInventoryBtn');
+            const alertEl = document.getElementById('invSaveAlert');
+            const inp100 = document.getElementById('inputRemaining100');
+            const inp200 = document.getElementById('inputRemaining200');
+
+            const val100 = parseInt(inp100 ? inp100.value : '0', 10);
+            const val200 = parseInt(inp200 ? inp200.value : '0', 10);
 
             if (isNaN(val100) || val100 < 0 || isNaN(val200) || val200 < 0) {
                 alert('يرجى إدخال أرقام صحيحة أكبر من أو تساوي الصفر!');
                 return;
             }
 
-            const origBtnText = saveInvBtn ? saveInvBtn.innerHTML : '';
-            if (saveInvBtn) {
-                saveInvBtn.disabled = true;
-                saveInvBtn.innerHTML = '<span>⏳ جاري التحديث سحابياً...</span>';
+            const origBtnText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳ جاري التحديث سحابياً...</span>';
             }
 
             // 1. الحفظ المحلي المباشر
             localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, String(val100));
             localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, String(val200));
-
-            // إزالة قفل التعديل عن الحقول
-            if (input100El) delete input100El.dataset.editing;
-            if (input200El) delete input200El.dataset.editing;
 
             // 2. الحفظ السحابي الفوري في سيرفر Upstash
             try {
@@ -1450,7 +1451,18 @@
                 console.warn('Inventory cloud save error:', err);
             }
 
-            // 3. إشعار فوري لكافة التابات المفتوحة
+            // 3. تحديث واجهة المخزن والأرقام والكروت فوراً
+            const stat100El = document.getElementById('stat100Val');
+            const stat200El = document.getElementById('stat200Val');
+            const stat100BarEl = document.getElementById('stat100Bar');
+            const stat200BarEl = document.getElementById('stat200Bar');
+
+            if (stat100El) stat100El.textContent = val100;
+            if (stat200El) stat200El.textContent = val200;
+            if (stat100BarEl) stat100BarEl.style.width = Math.max(0, Math.min(100, (val100 / 500) * 100)) + '%';
+            if (stat200BarEl) stat200BarEl.style.width = Math.max(0, Math.min(100, (val200 / 300) * 100)) + '%';
+
+            // 4. إشعار فوري لكافة التابات المفتوحة
             try {
                 if (window.BroadcastChannel) {
                     const bc = new BroadcastChannel('alalamia_live');
@@ -1459,20 +1471,24 @@
                 }
             } catch (bcErr) {}
 
+            // إزالة قفل التعديل عن الحقول بعد اكتمال الحفظ بنجاح
+            if (inp100) delete inp100.dataset.editing;
+            if (inp200) delete inp200.dataset.editing;
+
             loadDashboardData();
 
-            if (saveInvBtn) {
-                saveInvBtn.disabled = false;
-                saveInvBtn.innerHTML = origBtnText;
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origBtnText;
             }
 
-            const alertEl = document.getElementById('invSaveAlert');
             if (alertEl) {
                 alertEl.textContent = `✅ تم تحديث المخزن سحابياً بنجاح! (100: ${val100} كارت | 200: ${val200} كارت)`;
                 alertEl.style.display = 'block';
                 setTimeout(() => { alertEl.style.display = 'none'; }, 4000);
             }
         }
+        window.executeSaveInventory = executeSaveInventory;
 
         if (invForm) invForm.addEventListener('submit', executeSaveInventory);
         if (saveInvBtn) saveInvBtn.addEventListener('click', executeSaveInventory);

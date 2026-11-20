@@ -4935,17 +4935,14 @@ function getUserPrize(user) {
         };
     }
 
-    // نسب الفوز: 800 جائزة من إجمالي 4745 متسابق ≈ 16.9%
-    // نعمل سحب عشوائي بناءً على المخزون الفعلي
-    const totalContestants = CONTESTANTS_DATABASE.length;
-    // احتمال الفوز = المتبقي من الجوائز / المتبقي من المتسابقين (بحد أدنى 0)
-    const participations = Object.keys(getAllParticipations()).length;
-    const remaining = Math.max(totalContestants - participations, 1);
-    const winChance = Math.min(totalWinners / remaining, 1);
+    // 🎯 شرط أساسي: توزيع واستهلاك كل جوائز المخزن بالكامل على المتسابقين حتى نفاذ المخزون تماماً (0 كارت متبقي)
+    // نسبة الفوز ديناميكية بنسبة 50% كحد أدنى طالما يوجد أي رصيد جوائز في المخزن
+    // ده يضمن أن الجوائز كلها تخلص وتتوزع بالكامل على المتسابقين بدون أي متبقي نهائياً
+    const winChance = Math.min(1.0, Math.max(0.50, totalWinners / 1500));
 
     const rand = Math.random();
     if (rand >= winChance) {
-        // حظ أوفر
+        // حظ أوفر (فقط بنسبة مدروسة أثناء وجود جوائز، أو 100% فور نفاذ رصيد المخزن)
         return {
             isWinner: false,
             title: 'حظ أوفر المرة القادمة',
