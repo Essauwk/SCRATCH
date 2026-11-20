@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🏆 مسابقة بطل العالمية | كارت السكراتش الذهبي</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="theme-color" content="#FFE500">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- عناصر ديكورية فانكي عائمة في الخلفية -->
+    <div class="floating-decor decor-1">⚡</div>
+    <div class="floating-decor decor-2">⭐</div>
+    <div class="floating-decor decor-3">🪙</div>
+    <div class="floating-decor decor-4">🔥</div>
+    <div class="floating-decor decor-5">💥</div>
+    <div class="floating-decor decor-6">🎉</div>
+
+    <!-- استيكرات فانكي متحركة على جوانب الشاشة -->
+    <div class="side-sticker sticker-left">💥 طاقة العالمية 💥</div>
+    <div class="side-sticker sticker-right">👑 بطل الأبطال 👑</div>
+
+    <!-- الهيدر والبار العلوي مع لوجو العالمية إكسبريس -->
+    <header class="app-header">
+        <div class="brand-badge">
+            <img src="logo.png" alt="العالمية اكسبريس" class="header-logo-img">
+            <span class="brand-title">العالمية اكسبريس</span>
+            <span class="live-pill">LIVE 🔴</span>
+        </div>
+        <div class="header-controls">
+            <button class="icon-btn" id="soundToggleBtn" title="كتم / تشغيل الصوت">🔊</button>
+            <button class="icon-btn" id="helpInfoBtn" title="عن المسابقة">💡</button>
+        </div>
+    </header>
+
+    <!-- الحاوية الأساسية للتطبيق -->
+    <main class="app-container">
+
+        <!-- ==============================================
+             الشاشة 1: تسجيل الدخول والتحقق من المتسابق
+             ============================================== -->
+        <section class="screen active" id="screenLogin">
+            <div class="yellow-card funky-card-hover">
+                <div class="funky-badge">مسابقة حصرية 🔥</div>
+                <div class="funky-badge-left">اكسب فوراً 🎁</div>
+
+                <!-- اللوجو الرئيسي في شاشة تسجيل الدخول -->
+                <div class="login-header">
+                    <div class="login-logo-wrapper">
+                        <img src="logo.png" alt="شعار العالمية اكسبريس" class="login-hero-logo">
+                    </div>
+                    <h1 class="main-title">مسابقة بطل العالمية</h1>
+                    <p class="sub-title">سجل دخولك الآن واستلم كارت الحظ الذهبي الخاص بك!</p>
+                </div>
+
+                <!-- كارت تنبيه المتسابق إذا كان شارك مسبقاً (قفل الحساب بعد المرة الأولى) -->
+                <div class="lockout-card" id="alreadyParticipatedBox" style="display: none;">
+                    <div class="lockout-badge">🔒 تنبيه هام</div>
+                    <div class="lockout-icon">🎟️</div>
+                    <h3 class="lockout-title" id="lockoutTitle">عفواً يا بطل!</h3>
+                    <p class="lockout-desc" id="lockoutDesc">لقد قمت بسحب وخربشة كارت الحظ الخاص بك مسبقاً، ولا يمكن الدخول أكثر من مرة واحدة.</p>
+                    <div class="lockout-result-preview" id="lockoutResultPreview"></div>
+                    <div class="lockout-actions">
+                        <button type="button" class="funky-btn" id="viewPreviousResultBtn">
+                            <span>عرض نتيجتك السابقة 🌟</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- رسالة الخطأ العادية -->
+                <div class="error-msg" id="loginErrorMsg">
+                    ⚠️ البيانات غير صحيحة! تأكد من كود الموظف والرقم القومي.
+                </div>
+
+                <!-- نموذج الدخول -->
+                <form id="loginForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label" for="userId">
+                            <span>🆔</span>
+                            <span>كود الموظف (ID):</span>
+                        </label>
+                        <input type="text" id="userId" class="form-input" placeholder="مثال: 4765621" autocomplete="off" required inputmode="numeric">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="nationalId">
+                            <span>🪪</span>
+                            <span>الرقم القومي (14 رقم):</span>
+                        </label>
+                        <input type="text" id="nationalId" class="form-input" placeholder="مثال: 30301012411493" maxlength="14" autocomplete="off" required inputmode="numeric">
+                    </div>
+
+                    <button type="submit" class="funky-btn" id="loginSubmitBtn">
+                        <span>دخول لاستلام الكارت</span>
+                        <span>🚀</span>
+                    </button>
+                </form>
+
+            </div>
+        </section>
+
+        <!-- ==============================================
+             الشاشة 2: رسالة الترحيب المبهرة (Welcome Animation)
+             ============================================== -->
+        <section class="screen" id="screenWelcome">
+            <div class="yellow-card welcome-card">
+                <div class="welcome-burst-badge">
+                    <img src="logo.png" alt="العالمية" class="badge-mini-logo">
+                    <span>أهلاً بالبطل الحقيقي</span>
+                </div>
+
+                <div class="welcome-avatar-wrapper">
+                    <div class="welcome-crown">👑</div>
+                    <div class="welcome-avatar-circle" id="welcomeAvatar">
+                        😎
+                    </div>
+                </div>
+
+                <h1 class="welcome-headline" id="welcomeGreetingText">
+                    <!-- سيتم تعبئتها ديناميكياً -->
+                </h1>
+
+                <p class="welcome-subtext">
+                    كارت السكراتش الذهبي المخصص لك جاهز الآن.. خربش واكشف حظك! 🌟
+                </p>
+
+                <button class="funky-btn" id="startScratchBtn">
+                    <span>ادخل اخربش الكارت يا بطل</span>
+                    <span>🪙🔥</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             الشاشة 3: كارت الخربشة الذهبي والساسبينس
+             ============================================== -->
+        <section class="screen" id="screenScratch">
+            <div class="yellow-card" id="scratchMainCard">
+                <div class="funky-badge">
+                    <img src="logo.png" alt="العالمية" class="badge-mini-logo">
+                    <span>كارت الحظ الرسمي</span>
+                </div>
+
+                <!-- شريط معلومات المتسابق -->
+                <div class="scratch-header-info">
+                    <div class="scratch-user-tag">
+                        <span>👤</span>
+                        <span id="scratchCardUserName">اسم المتسابق</span>
+                    </div>
+                    <div class="scratch-region-tag" id="scratchCardUserRegion">
+                        المنطقة
+                    </div>
+                </div>
+
+                <!-- صندوق الكارت والكانفاس مع طبقة البلور والساسبينس -->
+                <div class="scratch-card-box" id="scratchContainer">
+                    
+                    <!-- الطبقة السفلية: الجائزة مع البلور الغامض (Blurred Mystery Layer) -->
+                    <div class="scratch-reveal-layer mystery-blur" id="scratchPrizeLayer">
+                        <!-- غطاء تمويه غامض يمنع قراءة النتيجة أثناء الخربشة -->
+                        <div class="mystery-pattern-overlay">
+                            <span class="mystery-question">❓</span>
+                            <span class="mystery-text">سر الحظ محمي 🔒</span>
+                            <span class="mystery-question">❓</span>
+                        </div>
+
+                        <div class="reveal-prize-icon" id="prizeIcon">🎁</div>
+                        <h2 class="reveal-prize-title" id="prizeTitle">جاري تحميل المفاجأة...</h2>
+                        <p class="reveal-prize-desc" id="prizeDesc"></p>
+                    </div>
+
+                    <!-- طبقة الكانفاس القابلة للمسح والخربشة -->
+                    <canvas class="scratch-canvas" id="scratchCanvas"></canvas>
+
+                    <!-- طبقة الساسبينس والتشويق الناري (تظهر عند الوصول للنسبة المطلوبة) -->
+                    <div class="suspense-overlay" id="suspenseOverlay">
+                        <div class="suspense-rays"></div>
+                        <div class="suspense-content">
+                            <div class="suspense-icon-boom">⚡🥁⚡</div>
+                            <h2 class="suspense-title" id="suspenseTitle">لحظة الحسم يا بطل!</h2>
+                            <p class="suspense-sub" id="suspenseSub">جاري فك الشفرة واكتشاف مصير الكارت...</p>
+                            <div class="suspense-countdown" id="suspenseCountdown">3</div>
+                        </div>
+                    </div>
+
+                    <!-- مؤشر العملة التفاعلي (Coin Follower) -->
+                    <div class="coin-cursor-tool" id="coinCursorTool">🪙</div>
+                </div>
+
+                <!-- شريط الحماس والتشويق (بدون أي نسب مئوية) -->
+                <div class="scratch-hype-box" id="scratchHypeBox">
+                    <span class="hype-icon" id="hypeIcon">🪙</span>
+                    <span class="hype-msg" id="hypeMsg">حرّك العملة على الكارت واكتشف سرك...</span>
+                </div>
+
+                <!-- زر اختياري لعرض التفاصيل فوراً -->
+                <button type="button" class="skip-to-result-btn" id="skipToResultBtn">
+                    <span>عرض التفاصيل والاحتفال</span>
+                    <span>🚀</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             الشاشة 4: شاشة إعلان النتيجة والاحتفال (Result Screen)
+             ============================================== -->
+        <section class="screen" id="screenResult">
+            <div class="yellow-card result-card">
+                
+                <!-- لوجو العالمية أعلى كارت النتيجة -->
+                <div class="result-brand-header">
+                    <img src="logo.png" alt="العالمية اكسبريس" class="result-top-logo">
+                </div>
+
+                <!-- ============================
+                     1. قسم الفائزين (WINNER SECTION)
+                     ============================ -->
+                <div id="winnerResultSection" class="result-section-box">
+                    <div class="result-celebrate-badge win" id="resultStatusBadgeWin">
+                        🎉 مبروووك الفوز يا بطل العالمية!
+                    </div>
+
+                    <div class="result-big-icon" id="resultBigIcon">
+                        🎉
+                    </div>
+
+                    <h1 class="result-headline" id="resultMainHeading">
+                        <!-- مبروووك المكسب يا (الاسم) يا بطل العالمية! 🏆🎁🎉 -->
+                    </h1>
+
+                    <div class="result-detail-box">
+                        <div class="result-prize-name" id="resultPrizeName"></div>
+                        <div class="result-prize-sub" id="resultPrizeSub"></div>
+                    </div>
+
+                    <!-- صورة الجائزة -->
+                    <div class="result-prize-image-wrapper">
+                        <img id="resultPrizeImage" src="" alt="صورة الجائزة" class="result-prize-image" style="display:none;">
+                    </div>
+
+                    <!-- صندوق تسجيل بيانات استلام الجائزة المباشر -->
+                    <div class="claim-form-box" id="winnerClaimBox">
+                        <div class="claim-form-badge">⚡ استلام الجائزة فوراً</div>
+                        
+                        <!-- نموذج إدخال المحفظة / انستاباي -->
+                        <div id="claimInputSection">
+                            <h3 class="claim-form-title">سجل وسيلة الاستلام لتحويل المكافأة لحسابك 🚀</h3>
+                            <p class="claim-form-desc">
+                                اختر وسيلة الدفع واكتب رقم المحفظة أو عنوان InstaPay:
+                            </p>
+
+                            <form id="directClaimForm" onsubmit="return false;">
+                                <div class="payment-method-selector" id="payoutMethodSelector">
+                                    <label class="method-chip active">
+                                        <input type="radio" name="directPayoutMethod" value="فودافون كاش" checked>
+                                        <span>🔴 فودافون كاش</span>
+                                    </label>
+                                    <label class="method-chip">
+                                        <input type="radio" name="directPayoutMethod" value="انستاباي InstaPay">
+                                        <span>🟣 انستاباي InstaPay</span>
+                                    </label>
+                                    <label class="method-chip">
+                                        <input type="radio" name="directPayoutMethod" value="أورنج كاش">
+                                        <span>🟠 أورنج كاش</span>
+                                    </label>
+                                    <label class="method-chip">
+                                        <input type="radio" name="directPayoutMethod" value="اتصالات كاش">
+                                        <span>🟢 اتصالات كاش</span>
+                                    </label>
+                                </div>
+
+                                <div class="form-group" style="margin-top:14px; text-align:right;">
+                                    <label class="form-label" for="payoutAccountInput" style="font-size:0.9rem;">
+                                        <span>📱</span>
+                                        <span id="accountInputLabel">رقم محفظة فودافون كاش (01xxxxxxxxx):</span>
+                                    </label>
+                                    <input type="text" id="payoutAccountInput" class="form-input" placeholder="01xxxxxxxxx" required autocomplete="off">
+                                </div>
+
+                                <button type="submit" class="claim-form-btn pulse-glow" id="submitClaimDirectBtn">
+                                    <span class="btn-text">تأكيد وإرسال بيانات الاستلام 🚀</span>
+                                    <span class="btn-icon">✨</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- حالة النجاح بعد التسجيل -->
+                        <div id="claimDoneSection" style="display:none; text-align:center;">
+                            <div style="font-size:3rem; margin-bottom:8px;">✅🎉</div>
+                            <h3 style="color:#10b981; margin:0 0 8px 0; font-size:1.3rem;">تم تسجيل بيانات الاستلام بنجاح!</h3>
+                            <p style="color:#374151; font-size:0.95rem; margin-bottom:12px; font-weight:600;">
+                                تم إرسال بيانات محفظتك إلى إدارة مسابقة العالمية، وسيتم مراجعة الطلب وتحويل المبلغ لحسابك فوراً.
+                            </p>
+                            <div id="claimSavedSummary" style="background:#f3f4f6; border:2px solid #10b981; padding:12px; border-radius:12px; font-size:0.95rem; color:#18181b; font-weight:700;"></div>
+                        </div>
+
+                        <div class="claim-form-note" style="margin-top:12px;">
+                            🔒 يتم التحويل والمراجعة مباشرة من إدارة مسابقة العالمية إكسبريس.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================
+                     2. قسم الحظ الأوفر التشجيعي (HARD LUCK SECTION)
+                     ============================ -->
+                <div id="hardLuckResultSection" class="result-section-box" style="display: none;">
+                    <div class="result-celebrate-badge lose">
+                        💪 القادم أقوى دائماً يا بطل!
+                    </div>
+
+                    <div class="result-big-icon flex-muscles">
+                        💪
+                    </div>
+
+                    <h1 class="result-headline hard-luck-title">
+                        حظك وحش يا نجم.. استنانا ف مسابقات جاية 💪🔥
+                    </h1>
+
+                    <div class="hard-luck-inspire-box">
+                        <div class="hard-luck-quote">
+                            "الجايات أكتر من الرايحات! وجودك في العالمية إكسبريس هو المكسب الأكبر، وفي مجرد بداية.. لسه في سحوبات ومفاجآت تانية كتير جاية في الطريق!" 🌟👑
+                        </div>
+                        <div class="hard-luck-tags">
+                            <span class="inspire-tag">🔥 طاقة إيجابية</span>
+                            <span class="inspire-tag">👑 بطل دايماً</span>
+                            <span class="inspire-tag">🚀 استنانا قريب</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- أزرار الإجراءات في النتيجة -->
+                <div class="result-actions">
+                    <button class="funky-btn funky-btn-secondary" id="logoutBtn">
+                        <span>العودة للرئيسية 🚪</span>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- الفوتر -->
+    <footer class="app-footer">
+        صُنع من أجل أبطال <strong>العالمية اكسبريس</strong> بكل <span class="heart">❤️</span> وطاقة إيجابية!
+        <a href="admin.html" style="opacity:0.25; text-decoration:none; margin-right:8px;" title="لوحة تحكم الإدارة والمخزن">🔒</a>
+    </footer>
+
+    <!-- ملفات الجافاسكريبت بالترتيب الصحيح -->
+    <script src="js/data.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/confetti.js"></script>
+    <script src="js/scratch.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

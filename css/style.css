@@ -1,0 +1,2144 @@
+/* ========================================================
+   🎨 استايل مسابقة بطل العالمية - الثيم الأبيض مع الكروت الصفرا الفانكي
+   ======================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Changa:wght@600;800;900&family=Readex+Pro:wght@500;700&display=swap');
+
+:root {
+    --bg-main: #FAFAFA;
+    --bg-dots: #E4E4E7;
+    --card-yellow: #FFE500;
+    --card-yellow-glow: #FFD000;
+    --card-yellow-deep: #F59E0B;
+    --card-yellow-light: #FFF9C4;
+    --dark-border: #18181B;
+    --dark-text: #09090B;
+    --shadow-solid: 8px 8px 0px #18181B;
+    --shadow-hover: 12px 12px 0px #18181B;
+    --shadow-pressed: 3px 3px 0px #18181B;
+    --accent-red: #EF4444;
+    --accent-green: #10B981;
+    --accent-blue: #3B82F6;
+    --font-heading: 'Changa', 'Cairo', sans-serif;
+    --font-body: 'Cairo', 'Readex Pro', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-main);
+    background-image: 
+        radial-gradient(var(--bg-dots) 1.5px, transparent 1.5px),
+        radial-gradient(var(--bg-dots) 1.5px, var(--bg-main) 1.5px);
+    background-size: 28px 28px;
+    background-position: 0 0, 14px 14px;
+    color: var(--dark-text);
+    font-family: var(--font-body);
+    direction: rtl;
+    text-align: right;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* خلفية عناصر ديكورية عائمة فائقة الحيوية */
+.floating-decor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.9;
+    user-select: none;
+    animation: floatShape 5s ease-in-out infinite alternate;
+}
+
+.decor-1 { top: 6%; left: 4%; font-size: 3rem; transform: rotate(-15deg); }
+.decor-2 { top: 16%; right: 4%; font-size: 3.4rem; transform: rotate(18deg); animation-delay: 1.2s; }
+.decor-3 { bottom: 12%; left: 6%; font-size: 3.2rem; transform: rotate(12deg); animation-delay: 2.2s; }
+.decor-4 { bottom: 16%; right: 5%; font-size: 2.8rem; transform: rotate(-20deg); animation-delay: 3.2s; }
+.decor-5 { top: 48%; left: 2%; font-size: 2.5rem; transform: rotate(25deg); animation-delay: 0.7s; }
+.decor-6 { top: 52%; right: 2%; font-size: 2.7rem; transform: rotate(-12deg); animation-delay: 2.8s; }
+
+@keyframes floatShape {
+    0% { transform: translateY(0px) rotate(0deg) scale(1); }
+    50% { transform: translateY(-16px) rotate(8deg) scale(1.1); }
+    100% { transform: translateY(-24px) rotate(-8deg) scale(0.95); }
+}
+
+/* استيكرات جانبية فانكي */
+.side-sticker {
+    position: fixed;
+    background: #18181B;
+    color: #FFE500;
+    padding: 6px 18px;
+    font-size: 0.95rem;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    border-radius: 999px;
+    border: 3px solid #FFFFFF;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.6);
+    z-index: 2;
+    pointer-events: none;
+    animation: wiggleSticker 3s infinite ease-in-out;
+}
+
+.sticker-left {
+    bottom: 45px;
+    left: 20px;
+    transform: rotate(-12deg);
+}
+
+.sticker-right {
+    top: 95px;
+    right: 20px;
+    transform: rotate(10deg);
+}
+
+@keyframes wiggleSticker {
+    0%, 100% { transform: rotate(-12deg) scale(1); }
+    50% { transform: rotate(-6deg) scale(1.08); }
+}
+
+/* هيدر الصفحة */
+header.app-header {
+    width: 100%;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+.brand-badge {
+    background: #FFFFFF;
+    border: 3px solid var(--dark-border);
+    box-shadow: 4px 4px 0px var(--dark-border);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-heading);
+}
+
+.header-logo-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 8px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    transition: transform 0.25s ease;
+}
+
+.brand-badge:hover .header-logo-img {
+    transform: rotate(8deg) scale(1.1);
+}
+
+.brand-badge span.sparkle {
+    display: inline-block;
+    animation: spinSlow 4s linear infinite;
+}
+
+.live-pill {
+    background: #EF4444;
+    color: #FFFFFF;
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    animation: pulseLive 1.2s infinite;
+}
+
+@keyframes pulseLive {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.95); }
+}
+
+@keyframes spinSlow {
+    100% { transform: rotate(360deg); }
+}
+
+.header-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.icon-btn {
+    background: #FFFFFF;
+    border: 3px solid var(--dark-border);
+    box-shadow: 3px 3px 0px var(--dark-border);
+    border-radius: 14px;
+    width: 46px;
+    height: 46px;
+    cursor: pointer;
+    font-size: 1.3rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0px var(--dark-border);
+    background: var(--card-yellow);
+}
+
+.icon-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px var(--dark-border);
+}
+
+/* الحاوية الأساسية للتطبيق */
+main.app-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    z-index: 5;
+}
+
+.screen {
+    width: 100%;
+    max-width: 580px;
+    display: none;
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.screen.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* ========================================================
+   🟡 تصميم الكروت الصفراء الفانكي (Vibrant Yellow Neo-Brutalist)
+   ======================================================== */
+.yellow-card {
+    background: linear-gradient(145deg, #FFF14D 0%, var(--card-yellow) 42%, #FFB703 100%);
+    border: 4px solid var(--dark-border);
+    box-shadow: var(--shadow-solid);
+    border-radius: 30px;
+    padding: 34px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.funky-card-hover:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+}
+
+.yellow-card::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 130px;
+    height: 130px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* شارات الكارت */
+.funky-badge {
+    position: absolute;
+    top: -12px;
+    right: 28px;
+    background: #18181B;
+    color: #FFE500;
+    padding: 6px 18px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    border-radius: 999px;
+    border: 2px solid #FFFFFF;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+    transform: rotate(3deg);
+    z-index: 5;
+}
+
+.funky-badge-left {
+    position: absolute;
+    top: -12px;
+    left: 28px;
+    background: var(--accent-red);
+    color: #FFFFFF;
+    padding: 6px 18px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    border-radius: 999px;
+    border: 2px solid #18181B;
+    box-shadow: 2px 2px 0px #18181B;
+    transform: rotate(-4deg);
+    z-index: 5;
+}
+
+/* شاشة تسجيل الدخول */
+.login-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-logo-wrapper {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px 28px;
+    background: #FFFFFF;
+    border: 3.5px solid #18181B;
+    border-radius: 28px;
+    box-shadow: 6px 6px 0px #18181B;
+    margin-bottom: 14px;
+    animation: bounceHero 2.5s infinite cubic-bezier(0.28, 0.84, 0.42, 1);
+    transition: transform 0.25s ease;
+}
+
+.login-logo-wrapper:hover {
+    transform: scale(1.06) rotate(2deg);
+}
+
+.login-hero-logo {
+    width: 135px;
+    height: auto;
+    max-height: 120px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.12));
+}
+
+.badge-mini-logo {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    vertical-align: middle;
+    margin-left: 6px;
+    display: inline-block;
+}
+
+/* كارت تنبيه المتسابق إذا شارك مسبقاً (قفل الحساب) */
+.lockout-card {
+    background: #FFFBEB;
+    border: 3px solid #F59E0B;
+    border-radius: 22px;
+    padding: 22px 18px;
+    box-shadow: 6px 6px 0px #18181B;
+    margin-bottom: 24px;
+    text-align: center;
+    position: relative;
+    animation: bounceInLockout 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes bounceInLockout {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.lockout-badge {
+    position: absolute;
+    top: -13px;
+    right: 22px;
+    background: #F59E0B;
+    color: #18181B;
+    font-weight: 900;
+    font-size: 0.85rem;
+    padding: 4px 14px;
+    border-radius: 999px;
+    border: 2px solid #18181B;
+    box-shadow: 2px 2px 0px #18181B;
+}
+
+.lockout-icon {
+    font-size: 2.8rem;
+    margin-bottom: 6px;
+}
+
+.lockout-title {
+    font-family: var(--font-heading);
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: #18181B;
+    margin-bottom: 6px;
+}
+
+.lockout-desc {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #4B5563;
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+.lockout-result-preview {
+    background: #FFFFFF;
+    border: 2px dashed #D97706;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 800;
+    font-size: 1.08rem;
+    color: #92400E;
+    margin-bottom: 16px;
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.06);
+}
+
+.lockout-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hero-icon-bounce {
+    font-size: 4.2rem;
+    display: inline-block;
+    animation: bounceHero 2s infinite cubic-bezier(0.28, 0.84, 0.42, 1);
+    filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.25));
+}
+
+@keyframes bounceHero {
+    0%, 100% { transform: translateY(0) scale(1); }
+    40% { transform: translateY(-20px) rotate(-8deg) scale(1.12); }
+    60% { transform: translateY(-8px) rotate(6deg) scale(1.05); }
+}
+
+.main-title {
+    font-family: var(--font-heading);
+    font-size: 2.3rem;
+    font-weight: 900;
+    color: var(--dark-border);
+    margin: 8px 0 4px;
+}
+
+.sub-title {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #3F3F46;
+}
+
+.form-group {
+    margin-bottom: 18px;
+    text-align: right;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #18181B;
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 15px 18px;
+    font-size: 1.2rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+    background: #FFFFFF;
+    border: 3px solid var(--dark-border);
+    border-radius: 18px;
+    box-shadow: 4px 4px 0px var(--dark-border);
+    outline: none;
+    transition: all 0.2s ease;
+    direction: ltr;
+    text-align: right;
+}
+
+.form-input:focus {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0px var(--dark-border);
+    background: #FFFDF0;
+}
+
+.form-input::placeholder {
+    color: #A1A1AA;
+    font-size: 0.95rem;
+}
+
+/* الأزرار الفانكي */
+.funky-btn {
+    width: 100%;
+    background: #18181B;
+    color: #FFE500;
+    border: 3px solid #18181B;
+    padding: 16px 24px;
+    font-size: 1.35rem;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    border-radius: 18px;
+    box-shadow: 5px 5px 0px #FFE500, 8px 8px 0px #18181B;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 10px;
+}
+
+.funky-btn:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0px #FFE500, 11px 11px 0px #18181B;
+    background: #000000;
+    color: #FFFFFF;
+}
+
+.funky-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0px #18181B;
+}
+
+.funky-btn-secondary {
+    background: #FFFFFF;
+    color: #18181B;
+    box-shadow: 4px 4px 0px #18181B;
+    border: 3px solid #18181B;
+    margin-top: 12px;
+    font-size: 1.15rem;
+}
+
+.funky-btn-secondary:hover {
+    background: var(--card-yellow-light);
+    box-shadow: 7px 7px 0px #18181B;
+}
+
+.error-msg {
+    display: none;
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 2px solid #EF4444;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-weight: 800;
+    font-size: 0.98rem;
+    text-align: center;
+}
+
+.error-msg.shakeError {
+    animation: shakeError 0.4s ease-in-out;
+}
+
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+/* أزرار التجربة السريعة */
+.quick-demo-box {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 2px dashed rgba(24, 24, 27, 0.25);
+}
+
+.quick-demo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.quick-demo-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #27272A;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reset-test-chip {
+    background: #EF4444;
+    color: #FFFFFF;
+    border: 2px solid #18181B;
+    box-shadow: 2px 2px 0px #18181B;
+    font-size: 0.8rem;
+    font-weight: 900;
+    padding: 4px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-body);
+}
+
+.reset-test-chip:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #18181B;
+    background: #DC2626;
+}
+
+.reset-test-chip:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px #18181B;
+}
+
+.quick-chips-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.demo-chip {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #18181B;
+    box-shadow: 2px 2px 0px #18181B;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.demo-chip:hover {
+    background: #FFFFFF;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px #18181B;
+}
+
+.demo-chip.winner {
+    border-color: #059669;
+    color: #065F46;
+}
+
+.demo-chip.loser {
+    border-color: #DC2626;
+    color: #991B1B;
+}
+
+/* ========================================================
+   🚀 شاشة الترحيب الملكية المبهرة
+   ======================================================== */
+.welcome-card {
+    text-align: center;
+    padding: 44px 30px;
+    background: linear-gradient(135deg, #FFF275 0%, #FFD000 45%, #FFA500 100%);
+    box-shadow: 10px 10px 0px #18181B;
+}
+
+.welcome-burst-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #18181B;
+    color: #FFE500;
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 1.15rem;
+    margin-bottom: 20px;
+    box-shadow: 4px 4px 0px #FFFFFF;
+    animation: pulseBadge 1.8s infinite alternate;
+}
+
+@keyframes pulseBadge {
+    0% { transform: scale(0.96); }
+    100% { transform: scale(1.05); }
+}
+
+.welcome-headline {
+    font-family: var(--font-heading);
+    font-size: 2.3rem;
+    font-weight: 900;
+    line-height: 1.35;
+    color: #18181B;
+    margin-bottom: 14px;
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.user-highlight-name {
+    display: inline-block;
+    background: #FFFFFF;
+    color: #18181B;
+    padding: 4px 18px;
+    border: 3px solid #18181B;
+    border-radius: 16px;
+    box-shadow: 4px 4px 0px #18181B;
+    margin: 4px 2px;
+}
+
+.user-highlight-region {
+    display: inline-block;
+    background: #3B82F6;
+    color: #FFFFFF;
+    padding: 3px 16px;
+    border: 3px solid #18181B;
+    border-radius: 14px;
+    box-shadow: 4px 4px 0px #18181B;
+    font-size: 1.45rem;
+    margin: 4px 2px;
+}
+
+.welcome-subtext {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #27272A;
+    margin-bottom: 28px;
+}
+
+.welcome-avatar-wrapper {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 20px;
+}
+
+.welcome-avatar-circle {
+    width: 100%;
+    height: 100%;
+    background: #FFFFFF;
+    border: 4px solid #18181B;
+    border-radius: 50%;
+    box-shadow: 5px 5px 0px #18181B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3.6rem;
+}
+
+.welcome-crown {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%) rotate(5deg);
+    font-size: 2.6rem;
+    animation: wiggleCrown 2s infinite ease-in-out;
+}
+
+@keyframes wiggleCrown {
+    0%, 100% { transform: translateX(-50%) rotate(5deg); }
+    50% { transform: translateX(-50%) rotate(-5deg); }
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* ========================================================
+   🎫 كارت الخربشة الذهبي والبلور الغامض والساسبينس
+   ======================================================== */
+.scratch-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFFFFF;
+    border: 3px solid #18181B;
+    box-shadow: 4px 4px 0px #18181B;
+    border-radius: 18px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+}
+
+.scratch-user-tag {
+    font-weight: 900;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.scratch-region-tag {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    padding: 4px 14px;
+    border: 2px solid #18181B;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 0.9rem;
+}
+
+/* صندوق الكارت الحاوي */
+.scratch-card-box {
+    position: relative;
+    width: 100%;
+    height: 310px;
+    border-radius: 24px;
+    border: 4px solid #18181B;
+    box-shadow: 8px 8px 0px #18181B;
+    overflow: hidden;
+    background: #FFFFFF;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: crosshair;
+}
+
+/* ========================================================
+   🔒 طبقة البلور الغامض أثناء الخربشة (Mystery Blur Layer)
+   ======================================================== */
+.scratch-reveal-layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 24px;
+    background: radial-gradient(circle, #FFFBEB 0%, #FEF3C7 100%);
+    z-index: 1;
+    transition: filter 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s ease;
+}
+
+/* البلور القوي الذي يمنع قراءة الهدية أثناء الخربشة */
+.scratch-reveal-layer.mystery-blur {
+    filter: blur(20px) brightness(0.9) contrast(1.1);
+    transform: scale(0.98);
+}
+
+.scratch-reveal-layer.revealed-clear {
+    filter: blur(0px) brightness(1) contrast(1) !important;
+    transform: scale(1) !important;
+    animation: revealPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.scratch-reveal-layer.revealed-clear .mystery-pattern-overlay {
+    display: none !important;
+}
+
+@keyframes revealPop {
+    0% { transform: scale(0.92); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+}
+
+.reveal-sec-badge {
+    background: #18181B;
+    color: #FFE500;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    display: inline-block;
+    border: 2px solid #FFFFFF;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+    animation: pulseBadge 1s infinite alternate;
+}
+
+.skip-to-result-btn {
+    display: none;
+    margin: 12px auto 0;
+    background: #18181B;
+    color: #FFE500;
+    border: 3px solid #18181B;
+    padding: 10px 22px;
+    font-size: 1.08rem;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    border-radius: 16px;
+    box-shadow: 4px 4px 0px #FFE500, 6px 6px 0px #18181B;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.skip-to-result-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #FFE500, 9px 9px 0px #18181B;
+    background: #000000;
+    color: #FFFFFF;
+}
+
+.skip-to-result-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px #18181B;
+}
+
+/* غطاء النقوش الغامضة والأقفال لمنع القراءة */
+.mystery-pattern-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    background: rgba(254, 243, 199, 0.25);
+    z-index: 3;
+    pointer-events: none;
+    animation: pulseMystery 1.8s infinite alternate;
+}
+
+.mystery-question {
+    font-size: 2.8rem;
+    animation: rotateQuestion 3s infinite ease-in-out;
+}
+
+.mystery-text {
+    background: #18181B;
+    color: #FFE500;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 0.95rem;
+    border: 2px solid #FFFFFF;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
+}
+
+@keyframes pulseMystery {
+    0% { opacity: 0.75; transform: scale(0.97); }
+    100% { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes rotateQuestion {
+    0% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+    100% { transform: rotate(-10deg); }
+}
+
+.reveal-prize-icon {
+    font-size: 4.8rem;
+    margin-bottom: 10px;
+    animation: pulseIcon 1.5s infinite alternate;
+}
+
+@keyframes pulseIcon {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15) rotate(4deg); }
+}
+
+.reveal-prize-title {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #18181B;
+    margin-bottom: 6px;
+}
+
+.reveal-prize-desc {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #4B5563;
+    max-width: 90%;
+}
+
+/* طبقة الكانفاس القابلة للمسح والخربشة */
+.scratch-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    touch-action: none;
+}
+
+/* مؤشر العملة التفاعلي */
+.coin-cursor-tool {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    pointer-events: none;
+    z-index: 25;
+    font-size: 2.2rem;
+    transform: translate(-50%, -50%) rotate(15deg);
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.35));
+    display: none;
+    transition: transform 0.05s ease;
+}
+
+/* ========================================================
+   ⚡ طبقة الساسبينس والتشويق الناري (Suspense Phase)
+   ======================================================== */
+.suspense-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255, 238, 56, 0.96) 0%, rgba(245, 158, 11, 0.98) 100%);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    border-radius: 20px;
+}
+
+.suspense-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.suspense-content {
+    text-align: center;
+    z-index: 2;
+    padding: 20px;
+}
+
+.suspense-icon-boom {
+    font-size: 3.2rem;
+    margin-bottom: 6px;
+    animation: flashLightning 0.4s infinite alternate;
+}
+
+@keyframes flashLightning {
+    0% { transform: scale(1) rotate(-5deg); filter: drop-shadow(0 0 10px #FFD000); }
+    100% { transform: scale(1.25) rotate(5deg); filter: drop-shadow(0 0 25px #EF4444); }
+}
+
+.suspense-title {
+    font-family: var(--font-heading);
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: #18181B;
+    margin-bottom: 6px;
+}
+
+.suspense-sub {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #3F3F46;
+    margin-bottom: 14px;
+}
+
+.suspense-countdown {
+    display: inline-block;
+    background: #18181B;
+    color: #FFE500;
+    width: 64px;
+    height: 64px;
+    line-height: 60px;
+    border-radius: 50%;
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    font-weight: 900;
+    border: 4px solid #FFFFFF;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+    animation: popCountdown 0.7s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popCountdown {
+    0% { transform: scale(0.9); }
+    100% { transform: scale(1.18); }
+}
+
+/* اهتزاز الكارت الكامل أثناء الساسبينس */
+#scratchMainCard.in-suspense {
+    animation: suspenseVibrate 0.08s infinite alternate ease-in-out;
+    box-shadow: 0 0 45px rgba(255, 229, 0, 0.85), 10px 10px 0px #18181B !important;
+}
+
+@keyframes suspenseVibrate {
+    0% { transform: translate(2px, 1px) rotate(0.4deg); }
+    50% { transform: translate(-2px, -2px) rotate(-0.4deg); }
+    100% { transform: translate(1px, -1px) rotate(0.3deg); }
+}
+
+/* شريط الحماس في الأسفل (بدون أي نسب مئوية) */
+.scratch-hype-box {
+    margin-top: 18px;
+    background: #FFFFFF;
+    border: 3px solid #18181B;
+    border-radius: 18px;
+    padding: 14px 20px;
+    box-shadow: 4px 4px 0px #18181B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    font-weight: 900;
+    font-size: 1.15rem;
+    color: #18181B;
+}
+
+.scratch-hype-box .hype-icon {
+    font-size: 1.6rem;
+    animation: bounceHero 1.5s infinite;
+}
+
+/* ========================================================
+   🏆 شاشة إعلان النتيجة والاحتفال
+   ======================================================== */
+.result-card {
+    text-align: center;
+    padding: 36px 24px;
+}
+
+.result-brand-header {
+    margin-bottom: 14px;
+}
+
+.result-top-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    background: #FFFFFF;
+    border: 3px solid #18181B;
+    border-radius: 20px;
+    padding: 8px;
+    box-shadow: 4px 4px 0px #18181B;
+    animation: floatShape 4s ease-in-out infinite alternate;
+}
+
+.result-celebrate-badge {
+    display: inline-block;
+    padding: 8px 24px;
+    border-radius: 999px;
+    border: 3px solid #18181B;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 16px;
+    box-shadow: 4px 4px 0px #18181B;
+}
+
+.result-celebrate-badge.win {
+    background: #10B981;
+    color: #FFFFFF;
+}
+
+.result-celebrate-badge.lose {
+    background: #F59E0B;
+    color: #18181B;
+}
+
+.result-big-icon {
+    font-size: 5.4rem;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.flex-muscles {
+    animation: flexBiceps 1s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes flexBiceps {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(-8deg); }
+    100% { transform: scale(1.25) rotate(8deg); }
+}
+
+.result-headline {
+    font-family: var(--font-heading);
+    font-size: 2.1rem;
+    font-weight: 900;
+    line-height: 1.35;
+    color: #18181B;
+    margin-bottom: 14px;
+}
+
+.result-detail-box {
+    background: #FFFFFF;
+    border: 3px solid #18181B;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 6px 6px 0px #18181B;
+    margin: 18px 0 22px;
+}
+
+.result-prize-name {
+    font-family: var(--font-heading);
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #18181B;
+    margin-bottom: 6px;
+}
+
+.result-prize-sub {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #4B5563;
+}
+
+/* صندوق استلام الجائزة عبر Google Form للفائزين فقط */
+.claim-form-box {
+    background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+    border: 3px solid #10B981;
+    border-radius: 22px;
+    padding: 22px 18px;
+    box-shadow: 6px 6px 0px #18181B;
+    margin: 22px 0 24px;
+    text-align: center;
+    position: relative;
+}
+
+.claim-form-badge {
+    display: inline-block;
+    background: #10B981;
+    color: #FFFFFF;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 0.92rem;
+    padding: 5px 16px;
+    border-radius: 999px;
+    border: 2px solid #18181B;
+    margin-bottom: 10px;
+}
+
+.claim-form-title {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #065F46;
+    margin-bottom: 8px;
+}
+
+.claim-form-desc {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #1F2937;
+    line-height: 1.55;
+    margin-bottom: 18px;
+}
+
+.claim-form-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: #FFFFFF !important;
+    text-decoration: none;
+    padding: 16px 20px;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 900;
+    border: 3px solid #18181B;
+    border-radius: 18px;
+    box-shadow: 5px 5px 0px #18181B;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.claim-form-btn:hover {
+    transform: translate(-3px, -3px) scale(1.02);
+    box-shadow: 8px 8px 0px #18181B;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.claim-form-btn:active {
+    transform: translate(2px, 2px) scale(0.98);
+    box-shadow: 2px 2px 0px #18181B;
+}
+
+.pulse-glow {
+    animation: greenPulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes greenPulseGlow {
+    0%, 100% {
+        box-shadow: 5px 5px 0px #18181B, 0 0 0 0 rgba(16, 185, 129, 0.65);
+    }
+    50% {
+        box-shadow: 5px 5px 0px #18181B, 0 0 24px 6px rgba(16, 185, 129, 0.45);
+    }
+}
+
+.claim-form-note {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #065F46;
+    margin-top: 12px;
+}
+
+/* ========================================================
+   🎁 نافذة تسجيل بيانات الجائزة التفاعلية (In-App Claim Modal)
+   ======================================================== */
+.claim-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    animation: fadeInModal 0.25s ease-out;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.claim-modal-card {
+    background: linear-gradient(145deg, #FFF14D 0%, #FFE500 45%, #FFB703 100%);
+    border: 4px solid #18181B;
+    border-radius: 28px;
+    box-shadow: 10px 10px 0px #18181B;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px 24px;
+    position: relative;
+    text-align: right;
+    animation: popModal 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popModal {
+    from { transform: scale(0.85) translateY(20px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.claim-modal-close {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 38px;
+    height: 38px;
+    background: #18181B;
+    color: #FFE500;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.15s ease;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
+}
+
+.claim-modal-close:hover {
+    transform: scale(1.1) rotate(9deg);
+    background: #EF4444;
+    color: #FFFFFF;
+}
+
+.claim-modal-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.claim-modal-logo {
+    width: 80px;
+    height: auto;
+    max-height: 75px;
+    object-fit: contain;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.15));
+}
+
+.claim-modal-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #18181B;
+    margin-bottom: 4px;
+}
+
+.claim-modal-sub {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #374151;
+}
+
+.modal-form-group {
+    margin-bottom: 14px;
+}
+
+.modal-label {
+    display: block;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #18181B;
+    margin-bottom: 6px;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 700;
+    background: #FFFFFF;
+    border: 3px solid #18181B;
+    border-radius: 14px;
+    box-shadow: 3px 3px 0px #18181B;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.modal-input:focus {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px #18181B;
+    background: #FFFDF0;
+}
+
+.modal-input-readonly {
+    background: #F3F4F6;
+    color: #4B5563;
+    cursor: not-allowed;
+    border-color: #6B7280;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+}
+
+.payment-method-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.method-chip {
+    flex: 1;
+    min-width: 130px;
+    background: #FFFFFF;
+    border: 2px solid #18181B;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 2px 2px 0px #18181B;
+    transition: all 0.15s ease;
+}
+
+.method-chip input[type="radio"] {
+    accent-color: #10B981;
+    cursor: pointer;
+}
+
+.method-chip.active,
+.method-chip:has(input:checked) {
+    background: #10B981;
+    color: #FFFFFF;
+    border-color: #18181B;
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0px #18181B;
+}
+
+/* شاشة النجاح في المودال */
+.claim-success-box {
+    text-align: center;
+    padding: 18px 10px;
+    animation: fadeInModal 0.3s ease-out;
+}
+
+.success-icon-bounce {
+    font-size: 4rem;
+    margin-bottom: 8px;
+    animation: bounceHero 2s infinite;
+}
+
+.success-title {
+    font-family: var(--font-heading);
+    font-size: 1.65rem;
+    font-weight: 900;
+    color: #065F46;
+    margin-bottom: 8px;
+}
+
+.success-desc {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #1F2937;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.success-info-pill {
+    background: #FFFFFF;
+    border: 2px dashed #059669;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 800;
+    font-size: 1.08rem;
+    color: #065F46;
+    margin-bottom: 18px;
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.06);
+}
+
+/* شاشة الحظ الأوفر التشجيعية */
+.hard-luck-title {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 900;
+    color: #18181B;
+    margin: 14px 0 16px;
+    line-height: 1.35;
+}
+
+.hard-luck-inspire-box {
+    background: #FFFFFF;
+    border: 3px solid #18181B;
+    border-radius: 22px;
+    padding: 24px 18px;
+    box-shadow: 6px 6px 0px #18181B;
+    margin: 18px 0 24px;
+    text-align: center;
+}
+
+.hard-luck-quote {
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1.7;
+    color: #1F2937;
+    margin-bottom: 18px;
+}
+
+.hard-luck-tags {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.inspire-tag {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 2px solid #18181B;
+    font-weight: 900;
+    font-size: 0.9rem;
+    padding: 6px 14px;
+    border-radius: 999px;
+    box-shadow: 2px 2px 0px #18181B;
+    transition: transform 0.2s ease;
+}
+
+.inspire-tag:hover {
+    transform: translateY(-2px) rotate(2deg);
+}
+
+/* تحسين شكل الإيموجي وتأثيراته الحركية */
+.floating-decor,
+.result-big-icon,
+.hype-icon,
+.suspense-icon-boom,
+.welcome-avatar-circle,
+.form-label span:first-child,
+.lockout-icon {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.22)) saturate(1.3) contrast(1.08);
+    display: inline-block;
+    transform-origin: center center;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.floating-decor:hover,
+.welcome-avatar-circle:hover,
+.hype-icon:hover {
+    transform: scale(1.22) rotate(6deg);
+}
+
+.result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+footer.app-footer {
+    padding: 16px;
+    text-align: center;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #71717A;
+    position: relative;
+    z-index: 10;
+}
+
+footer.app-footer span.heart {
+    color: #EF4444;
+    display: inline-block;
+}
+
+/* ========================================================
+   📱 التجاوب الفائق مع شاشات الموبايل (Mobile-First Polish)
+   ======================================================== */
+@media (max-width: 600px) {
+    /* إخفاء الاستيكرات الجانبية حتى لا تضايق المستخدم على الشاشات الصغيرة */
+    .side-sticker {
+        display: none !important;
+    }
+
+    /* تخفيف العناصر العائمة بالخلفية */
+    .floating-decor {
+        opacity: 0.35;
+        font-size: 1.8rem !important;
+    }
+
+    /* الهيدر العلوي على الموبايل */
+    header.app-header {
+        padding: 8px 12px;
+    }
+
+    .brand-badge {
+        font-size: 0.95rem;
+        padding: 5px 12px;
+        gap: 6px;
+    }
+
+    .icon-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1.15rem;
+        border-radius: 12px;
+    }
+
+    /* حاوية التطبيق الرئيسية */
+    main.app-container {
+        padding: 10px 12px;
+        align-items: flex-start;
+    }
+
+    .screen {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    /* الكروت الصفراء على الموبايل */
+    .yellow-card {
+        padding: 24px 16px 20px;
+        border-radius: 22px;
+        border-width: 3px;
+        box-shadow: 5px 5px 0px #18181B;
+    }
+
+    /* البادجات العلوية على الموبايل */
+    .funky-badge {
+        top: -10px;
+        right: 14px;
+        font-size: 0.78rem;
+        padding: 4px 12px;
+    }
+
+    .funky-badge-left {
+        top: -10px;
+        left: 14px;
+        font-size: 0.78rem;
+        padding: 4px 12px;
+    }
+
+    /* شاشة الدخول على الموبايل */
+    .hero-icon-bounce {
+        font-size: 3.2rem;
+    }
+
+    .main-title {
+        font-size: 1.65rem;
+        line-height: 1.25;
+        margin: 6px 0 4px;
+    }
+
+    .sub-title {
+        font-size: 0.92rem;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-label {
+        font-size: 0.96rem;
+        margin-bottom: 6px;
+    }
+
+    /* منع الزووم التلقائي المزعج في متصفحات الآيفون والأندرويد */
+    .form-input {
+        font-size: 16px !important;
+        padding: 13px 14px;
+        border-radius: 14px;
+        border-width: 2.5px;
+    }
+
+    .funky-btn {
+        font-size: 1.15rem;
+        padding: 14px 18px;
+        border-radius: 16px;
+        min-height: 52px;
+        box-shadow: 4px 4px 0px #FFE500, 6px 6px 0px #18181B;
+    }
+
+    /* شريط الحسابات الجاهزة: قابل للتمرير الأفقي بسلاسة باللمس */
+    .quick-demo-box {
+        margin-top: 18px;
+        padding-top: 14px;
+    }
+
+    .quick-demo-title {
+        font-size: 0.88rem;
+        margin-bottom: 8px;
+    }
+
+    .quick-chips-wrapper {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 8px;
+        padding: 4px 2px 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .demo-chip {
+        flex-shrink: 0;
+        white-space: nowrap;
+        font-size: 0.82rem;
+        padding: 6px 12px;
+    }
+
+    /* شاشة الترحيب على الموبايل */
+    .welcome-card {
+        padding: 28px 16px 24px;
+    }
+
+    .welcome-burst-badge {
+        font-size: 0.98rem;
+        padding: 7px 18px;
+        margin-bottom: 14px;
+    }
+
+    .welcome-avatar-wrapper {
+        width: 85px;
+        height: 85px;
+        margin: 0 auto 14px;
+    }
+
+    .welcome-avatar-circle {
+        font-size: 2.7rem;
+        border-width: 3px;
+    }
+
+    .welcome-crown {
+        font-size: 2rem;
+        top: -18px;
+    }
+
+    .welcome-headline {
+        font-size: 1.6rem;
+        line-height: 1.35;
+        margin-bottom: 10px;
+    }
+
+    .user-highlight-name {
+        font-size: 1.25rem;
+        padding: 3px 12px;
+    }
+
+    .user-highlight-region {
+        font-size: 1.1rem;
+        padding: 2px 10px;
+    }
+
+    .welcome-subtext {
+        font-size: 0.98rem;
+        margin-bottom: 20px;
+    }
+
+    /* كارت الخربشة على الموبايل */
+    .scratch-header-info {
+        padding: 8px 12px;
+        border-radius: 14px;
+        margin-bottom: 14px;
+    }
+
+    .scratch-user-tag {
+        font-size: 0.96rem;
+    }
+
+    .scratch-region-tag {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+    }
+
+    .scratch-card-box {
+        height: 250px;
+        border-radius: 18px;
+        border-width: 3.5px;
+        box-shadow: 6px 6px 0px #18181B;
+    }
+
+    /* إخفاء مؤشر العملة على شاشات التاتش لعدم حجب الرؤية عن صباع المستخدم */
+    .coin-cursor-tool {
+        display: none !important;
+    }
+
+    /* الجائزة المكشوفة داخل الكارت على الموبايل */
+    .reveal-prize-icon {
+        font-size: 3.6rem;
+        margin-bottom: 4px;
+    }
+
+    .reveal-prize-title {
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+    }
+
+    .reveal-prize-desc {
+        font-size: 0.92rem;
+        max-width: 95%;
+    }
+
+    /* الساسبينس على الموبايل */
+    .suspense-icon-boom {
+        font-size: 2.4rem;
+    }
+
+    .suspense-title {
+        font-size: 1.55rem;
+    }
+
+    .suspense-sub {
+        font-size: 0.92rem;
+        margin-bottom: 10px;
+    }
+
+    .suspense-countdown {
+        width: 52px;
+        height: 52px;
+        line-height: 48px;
+        font-size: 1.9rem;
+    }
+
+    /* شريط الحماس وزر التخطي على الموبايل */
+    .scratch-hype-box {
+        font-size: 0.96rem;
+        padding: 10px 14px;
+        border-radius: 14px;
+        margin-top: 14px;
+        gap: 8px;
+    }
+
+    .skip-to-result-btn {
+        width: 100%;
+        font-size: 1rem;
+        padding: 11px 16px;
+        margin-top: 10px;
+    }
+
+    /* شاشة النتيجة على الموبايل */
+    .result-card {
+        padding: 28px 16px 24px;
+    }
+
+    .result-celebrate-badge {
+        font-size: 1.1rem;
+        padding: 6px 18px;
+        margin-bottom: 14px;
+    }
+
+    .result-big-icon {
+        font-size: 4.2rem;
+        margin-bottom: 8px;
+    }
+
+    .result-headline {
+        font-size: 1.55rem;
+        line-height: 1.3;
+        margin-bottom: 10px;
+    }
+
+    .result-detail-box {
+        padding: 16px 14px;
+        margin: 14px 0 20px;
+        border-radius: 16px;
+    }
+
+    .result-prize-name {
+        font-size: 1.35rem;
+    }
+
+    .result-prize-sub {
+        font-size: 0.92rem;
+    }
+
+    footer.app-footer {
+        padding: 12px;
+        font-size: 0.88rem;
+    }
+}
+
+/* للشاشات شديدة الصغر (أقل من 375px مثل الآيفون SE القديم وبعض هواتف أندرويد الاقتصادية) */
+@media (max-width: 375px) {
+    .main-title {
+        font-size: 1.45rem;
+    }
+
+    .scratch-card-box {
+        height: 230px;
+    }
+
+    .reveal-prize-icon {
+        font-size: 3rem;
+    }
+
+    .reveal-prize-title {
+        font-size: 1.25rem;
+    }
+}
+
+
+/* ========================================================
+   🆕 مؤشر المخزن الحي للجوائز (Prize Inventory Widget)
+   ======================================================== */
+.prize-inventory-widget {
+    background: linear-gradient(135deg, #18181B 0%, #27272A 100%);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin: 14px 0 10px 0;
+    border: 2px solid rgba(255,229,0,0.3);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+.inv-widget-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #FFE500;
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.inv-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.inv-row:last-child { margin-bottom: 0; }
+.inv-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    min-width: 90px;
+    white-space: nowrap;
+}
+.inv-count {
+    font-size: 0.95rem;
+    font-weight: 900;
+    color: #FFE500;
+    min-width: 36px;
+    text-align: center;
+    background: rgba(255,229,0,0.12);
+    border-radius: 8px;
+    padding: 2px 6px;
+}
+.inv-bar-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 100px;
+    overflow: hidden;
+}
+.inv-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.6s ease;
+}
+.inv-bar-100 { background: linear-gradient(90deg, #22c55e, #4ade80); }
+.inv-bar-200 { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+
+/* ========================================================
+   🆕 صورة الجائزة في شاشة النتيجة
+   ======================================================== */
+.result-prize-image-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 14px 0;
+}
+.result-prize-image {
+    max-width: 200px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border: 3px solid #FFE500;
+    animation: prizeImgPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes prizeImgPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ========================================================
+   🆕 نافذة تعليمات استلام الجائزة (Form Instructions Overlay)
+   ======================================================== */
+.form-instr-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
+}
+.form-instr-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 28px 22px 22px;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    animation: slideUpModal 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes slideUpModal {
+    from { transform: translateY(60px) scale(0.9); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+.form-instr-close {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: #f4f4f5;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: #18181B;
+    transition: background 0.2s;
+}
+.form-instr-close:hover { background: #e4e4e7; }
+.form-instr-logo {
+    text-align: center;
+    margin-bottom: 10px;
+}
+.form-instr-title {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #18181B;
+    text-align: center;
+    margin-bottom: 18px;
+    line-height: 1.4;
+}
+.form-instr-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.instr-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #f9fafb;
+    border-radius: 14px;
+    padding: 12px 14px;
+    border: 1.5px solid #f0f0f0;
+}
+.instr-step-num {
+    min-width: 28px;
+    height: 28px;
+    background: #FFE500;
+    color: #18181B;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.instr-step-text {
+    font-size: 0.85rem;
+    color: #374151;
+    line-height: 1.5;
+}
+.instr-step-text strong { color: #18181B; }
+.form-instr-summary {
+    background: linear-gradient(135deg, #18181B 0%, #27272A 100%);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.summary-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    color: #d1d5db;
+}
+.summary-row strong {
+    color: #FFE500;
+    font-size: 0.95rem;
+}
+.form-instr-note {
+    background: #fef9c3;
+    border: 1.5px solid #fde047;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: #713f12;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+/* ========================================================
+   🆕 تحسين زر الاستلام في شاشة النتيجة
+   ======================================================== */
+.claim-form-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 20px rgba(5,150,105,0.4);
+    margin: 10px 0;
+    font-family: inherit;
+}
+.claim-form-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(5,150,105,0.5);
+}
+.claim-form-btn:disabled {
+    background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+    box-shadow: none;
+    cursor: default;
+}
+.pulse-glow {
+    animation: pulseGlow 2s infinite;
+}
+@keyframes pulseGlow {
+    0%,100% { box-shadow: 0 6px 20px rgba(5,150,105,0.4); }
+    50%      { box-shadow: 0 6px 36px rgba(5,150,105,0.75), 0 0 0 6px rgba(16,185,129,0.15); }
+}
+
+/* ========================================================
+   🆕 تحسين تصميم شاشة الدخول - إزالة الديمو 
+   ======================================================== */
+.reset-test-chip {
+    background: transparent;
+    border: 1px dashed #9ca3af;
+    color: #9ca3af;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+.reset-test-chip:hover {
+    border-color: #6b7280;
+    color: #6b7280;
+}

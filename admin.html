@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 لوحة تحكم الإدارة والمخزن | مسابقة بطل العالمية</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background: #0b1120;
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            direction: rtl;
+        }
+        .admin-wrap {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* Gate Overlay */
+        #adminGate {
+            position: fixed;
+            inset: 0;
+            background: #0b1120;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .gate-card {
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .gate-input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 2px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            margin: 15px 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .gate-input:focus { border-color: #FFE500; }
+        .gate-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: #FFE500;
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 1.05rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .gate-btn:hover { background: #facc15; }
+        .gate-error { color: #ef4444; font-size: 0.9rem; margin-top: 10px; display: none; }
+
+        /* Dashboard Header */
+        .dash-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 20px;
+        }
+        .dash-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .dash-logo {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 2px solid #FFE500;
+        }
+        .dash-title h1 {
+            margin: 0;
+            font-size: 1.45rem;
+            color: #FFE500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .dash-title p {
+            margin: 4px 0 0 0;
+            color: #94a3b8;
+            font-size: 0.88rem;
+        }
+        .dash-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .dash-btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .dash-btn-primary { background: #FFE500; color: #0f172a; }
+        .dash-btn-primary:hover { background: #facc15; }
+        .dash-btn-success { background: #10b981; color: #fff; }
+        .dash-btn-success:hover { background: #059669; }
+        .dash-btn-danger { background: #ef4444; color: #fff; }
+        .dash-btn-danger:hover { background: #dc2626; }
+        .dash-btn-outline { background: #334155; color: #fff; }
+        .dash-btn-outline:hover { background: #475569; }
+
+        /* Cloud Status Pill in Header */
+        .cloud-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+        .cloud-status-pill.connected {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+            color: #34d399;
+        }
+        .cloud-status-pill.syncing {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: #f59e0b;
+            color: #fbbf24;
+        }
+        .pulse-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+        .cloud-status-pill.connected .pulse-dot {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+        .cloud-status-pill.syncing .pulse-dot {
+            background: #f59e0b;
+            box-shadow: 0 0 10px #f59e0b;
+        }
+
+        /* Top Nav Tabs */
+        .dash-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 10px 18px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+        .tab-btn.active {
+            color: #FFE500;
+            background: #1e293b;
+            border-bottom: 3px solid #FFE500;
+        }
+
+        /* Cloud Sync Box */
+        .cloud-sync-box {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            border: 2px solid #6366f1;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15);
+        }
+        .cloud-sync-title {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #c7d2fe;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 18px;
+            position: relative;
+        }
+        .stat-card.featured {
+            border: 2px solid #FFE500;
+            background: linear-gradient(135deg, #1e293b 0%, #292524 100%);
+        }
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .stat-val.gold { color: #FFE500; }
+        .stat-val.green { color: #34d399; }
+        .stat-val.blue { color: #60a5fa; }
+        .stat-bar {
+            height: 6px;
+            background: #334155;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .stat-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+        .fill-100 { background: #34d399; }
+        .fill-200 { background: #60a5fa; }
+
+        /* Inventory Control Box */
+        .inv-control-box {
+            background: linear-gradient(135deg, #1e293b 0%, #172554 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .inv-control-title {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #93c5fd;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .inv-inputs-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .inv-input-group {
+            flex: 1;
+            min-width: 180px;
+        }
+        .inv-input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+        .inv-num-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 2px solid #475569;
+            background: #0f172a;
+            color: #FFE500;
+            font-size: 1.15rem;
+            font-weight: 900;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .inv-num-input:focus { border-color: #3b82f6; }
+
+        /* Section Cards */
+        .admin-section {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 1.15rem;
+            color: #FFE500;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Filter Controls */
+        .table-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            font-family: inherit;
+        }
+        .search-box:focus { border-color: #FFE500; }
+        .filter-select {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* Responsive Table */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            max-height: 600px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: right;
+            white-space: nowrap;
+        }
+        th {
+            background: #0f172a;
+            color: #cbd5e1;
+            padding: 12px 14px;
+            font-weight: 800;
+            border-bottom: 2px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #334155;
+            color: #f1f5f9;
+        }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        tr.row-paid td { background: rgba(16, 185, 129, 0.08); }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+        .badge-win { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid #34d399; }
+        .badge-lose { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid #64748b; }
+        .badge-test { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
+        .badge-paid { background: #059669; color: #fff; }
+        .badge-unpaid { background: #d97706; color: #fff; }
+
+        /* Custom Checkbox */
+        .check-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .paid-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #10b981;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==============================================
+         شاشة القفل لحماية لوحة الإدارة (PIN / Password Gate)
+         ============================================== -->
+    <div id="adminGate">
+        <div class="gate-card">
+            <img src="logo.png" alt="العالمية" style="width:75px; border-radius:50%; margin-bottom:12px; border:2px solid #FFE500;">
+            <h2 style="margin:0 0 8px 0; color:#FFE500;">🔒 لوحة تحكم الإدارة</h2>
+            <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:15px;">خاصة بمسؤولي مسابقة العالمية فقط</p>
+            <form id="adminGateForm" onsubmit="return false;">
+                <input type="password" id="gatePassInput" class="gate-input" placeholder="أدخل كلمة المرور" autocomplete="off" autofocus>
+                <button type="submit" class="gate-btn">تسجيل الدخول للإدارة 🚀</button>
+                <div class="gate-error" id="gateErrorMsg">⚠️ كلمة المرور غير صحيحة!</div>
+            </form>
+            <div style="margin-top:15px;">
+                <a href="index.html" style="color:#94a3b8; font-size:0.85rem; text-decoration:none;">← العودة للمسابقة الرئيسية</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         لوحة تحكم الإدارة الكاملة
+         ============================================== -->
+    <div class="admin-wrap" id="adminMainContent" style="display:none;">
+
+        <!-- الهيدر -->
+        <header class="dash-header">
+            <div class="dash-brand">
+                <img src="logo.png" alt="شعار العالمية" class="dash-logo">
+                <div class="dash-title">
+                    <h1>
+                        <span>🏆 لوحة إدارة مسابقة بطل العالمية</span>
+                        <div class="cloud-status-pill" id="headerCloudPill">
+                            <span class="pulse-dot"></span>
+                            <span id="headerCloudStatus">جاري فحص المزامنة...</span>
+                        </div>
+                    </h1>
+                    <p>متابعة المخزن لايف، تسليم الجوائز، وتصفير التيست</p>
+                </div>
+            </div>
+            <div class="dash-actions">
+                <button class="dash-btn dash-btn-success" id="exportCsvBtn">📥 تصدير شيت النتائج (Excel / CSV)</button>
+                <button class="dash-btn dash-btn-outline" id="refreshBtn">🔄 تحديث وسحب البيانات الحية</button>
+                <a href="index.html" class="dash-btn dash-btn-primary" target="_blank">🎮 تجربة كمتسابق</a>
+            </div>
+        </header>
+
+        <!-- تابات التنقل الرئيسية -->
+        <nav class="dash-tabs">
+            <button class="tab-btn active" data-tab="tab-overview">📊 الإحصائيات وإدارة المخزن</button>
+            <button class="tab-btn" data-tab="tab-live-sheet">📋 شيت المشاركات والجوائز لايف</button>
+            <button class="tab-btn" data-tab="tab-database">👥 قاعدة بيانات المتسابقين (4,745)</button>
+        </nav>
+
+        <!-- ==========================================
+             التاب 1: نظرة عامة وإدارة أرقام المخزن
+             ========================================== -->
+        <div id="tab-overview" class="tab-content">
+            
+            <!-- أداة الربط والمزامنة السحابية الحية (Google Apps Script API) -->
+            <div class="cloud-sync-box">
+                <div class="cloud-sync-title">
+                    <span>🌐 المزامنة السحابية الحية (Google Sheets Cloud Webhook)</span>
+                    <span id="cloudDetailBadge" style="font-size:0.85rem; color:#a5b4fc;"></span>
+                </div>
+                <p style="color:#cbd5e1; font-size:0.9rem; margin:0 0 12px 0; line-height:1.6;">
+                    يربط كل أجهزة المتسابقين (5,000 موظف على موبايلاتهم) بشيت جوجل لايف: يسجل كل خربشة، يحفظ بيانات الاستلام، ويحدث رصيد المخزن تلقائياً.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    <input type="url" id="cloudWebhookInput" placeholder="الصق هنا رابط Web App URL الناتج من Google Apps Script (https://script.google.com/macros/s/.../exec)" style="flex:1; min-width:280px; padding:11px 14px; border-radius:10px; border:2px solid #6366f1; background:#0f172a; color:#fff; font-size:0.95rem; outline:none;" dir="ltr">
+                    <button type="button" class="dash-btn dash-btn-primary" id="saveCloudWebhookBtn">💾 حفظ وتفعيل الربط</button>
+                    <button type="button" class="dash-btn dash-btn-outline" id="syncNowBtn">🔄 سحب ومزامنة لايف الآن</button>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:12px; font-size:0.85rem;">
+                    <label style="display:inline-flex; align-items:center; gap:8px; color:#cbd5e1; cursor:pointer;">
+                        <input type="checkbox" id="autoRefreshCheckbox" checked style="accent-color:#818cf8; width:16px; height:16px;">
+                        <span>تحديث تلقائي مستمر كل 15 ثانية في الخلفية (Live Polling) 📡</span>
+                    </label>
+                    <span id="lastSyncTimeText" style="color:#94a3b8;">آخر فحص: جاري الفحص...</span>
+                </div>
+                <div id="cloudAlertMsg" style="margin-top:10px; font-size:0.9rem; font-weight:700; display:none; padding:10px; border-radius:8px;"></div>
+            </div>
+
+            <!-- أداة تعديل رصيد المخزن المباشرة -->
+            <div class="inv-control-box">
+                <div class="inv-control-title">
+                    <span>📦 تعديل وتحديد أرقام الجوائز في المخزن (سهل التغيير في أي وقت)</span>
+                </div>
+                <p style="color:#cbd5e1; font-size:0.9rem; margin:0 0 14px 0;">
+                    يمكنك كتابة أي رقم تريده للمتبقي من الجوائز (سواء زيادة الفائزين أو تقليلهم)، والسيستم سيطبق السحب العشوائي فوراً بناءً على الأرقام التي تضعها هنا:
+                </p>
+                <form id="updateInventoryForm" onsubmit="return false;">
+                    <div class="inv-inputs-row">
+                        <div class="inv-input-group">
+                            <label for="inputRemaining100">💵 رصيد جوائز 100 جنيه المتبقي:</label>
+                            <input type="number" id="inputRemaining100" class="inv-num-input" min="0" step="1">
+                        </div>
+                        <div class="inv-input-group">
+                            <label for="inputRemaining200">💴 رصيد جوائز 200 جنيه المتبقي:</label>
+                            <input type="number" id="inputRemaining200" class="inv-num-input" min="0" step="1">
+                        </div>
+                        <button type="submit" class="dash-btn dash-btn-primary" id="saveInventoryBtn" style="padding:12px 20px; font-size:1rem;">
+                            <span>حفظ وتحديث المخزن 💾</span>
+                        </button>
+                    </div>
+                </form>
+                <div id="invSaveAlert" style="color:#34d399; font-weight:800; font-size:0.9rem; margin-top:10px; display:none;">
+                    ✅ تم تحديث رصيد المخزن بنجاح وتطبيقه على سحب المسابقة فوراً!
+                </div>
+            </div>
+
+            <!-- كروت الإحصائيات الحية -->
+            <div class="stats-grid">
+                <div class="stat-card featured">
+                    <div class="stat-header">
+                        <span>💵 مخزن جوائز 100 جنيه</span>
+                        <span>المتبقي</span>
+                    </div>
+                    <div class="stat-val green" id="stat100Val">500</div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill fill-100" id="stat100Bar" style="width: 100%;"></div>
+                    </div>
+                    <div style="font-size:0.8rem; color:#94a3b8; margin-top:8px;" id="stat100Sub">تم كسب 0 كارت</div>
+                </div>
+
+                <div class="stat-card featured">
+                    <div class="stat-header">
+                        <span>💴 مخزن جوائز 200 جنيه</span>
+                        <span>المتبقي</span>
+                    </div>
+                    <div class="stat-val blue" id="stat200Val">300</div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill fill-200" id="stat200Bar" style="width: 100%;"></div>
+                    </div>
+                    <div style="font-size:0.8rem; color:#94a3b8; margin-top:8px;" id="stat200Sub">تم كسب 0 كارت</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>🎉 إجمالي الفائزين بالمكسب</span>
+                        <span>فائز</span>
+                    </div>
+                    <div class="stat-val gold" id="statWinnersCount">0</div>
+                    <div style="font-size:0.8rem; color:#94a3b8;" id="statWinnersSub">0 جنيه و 200 جنيه</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>👥 إجمالي المشاركين الفعلي</span>
+                        <span>متسابق</span>
+                    </div>
+                    <div class="stat-val" id="statTotalParticipated">0</div>
+                    <div style="font-size:0.8rem; color:#94a3b8;" id="statContestantsTotalSub">من أصل 4,745 متسابق</div>
+                </div>
+            </div>
+
+            <!-- أزرار الإدارة والتحكم السريعة -->
+            <section class="admin-section">
+                <div class="section-title">
+                    <span>⚡ أدوات التحكم والتصفير السريعة</span>
+                </div>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <button class="dash-btn dash-btn-primary" id="quickResetTestBtn">
+                        🔄 تصفير مشاركات التيست (ID 1 - 10) للدخول بها مجدداً
+                    </button>
+                    <button class="dash-btn dash-btn-outline" id="defaultResetInventoryBtn">
+                        📦 استعادة رصيد المخزن للقيم الافتراضية (500 و 300)
+                    </button>
+                    <button class="dash-btn dash-btn-danger" id="resetAllDataBtn">
+                        ⚠️ تصفير كافة السجلات بالكامل (ابدأ من الصفر)
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==========================================
+             التاب 2: شيت المشاركات والجوائز لايف (مع عمود "استلم")
+             ========================================== -->
+        <div id="tab-live-sheet" class="tab-content" style="display:none;">
+            <section class="admin-section">
+                <div class="section-title">
+                    <span>📋 شيت الفائزين والمشاركات لايف (مع متابعة عمود "استلم")</span>
+                    <span style="font-size:0.85rem; color:#94a3b8;" id="recordCountLabel">0 مشاركة مسجلة</span>
+                </div>
+
+                <!-- الفلاتر المتقدمة والبحث -->
+                <div class="table-controls">
+                    <input type="text" id="searchInput" class="search-box" placeholder="🔍 بحث بالاسم، كود الموظف، أو رقم المحفظة...">
+                    
+                    <select id="filterSelect" class="filter-select">
+                        <option value="all">كل المشاركات (فائزين + حظ أوفر)</option>
+                        <option value="winners_all">🏆 الفائزين معاً (100 و 200 جنيه)</option>
+                        <option value="winners_100">💵 فائزين 100 جنيه فقط</option>
+                        <option value="winners_200">💴 فائزين 200 جنيه فقط</option>
+                        <option value="unpaid">⏳ فائزين لم يستلموا بعد (غير مُعلَّم استلم)</option>
+                        <option value="paid">✅ فائزين تم تسليمهم (مُعلَّم استلم)</option>
+                        <option value="hardluck">💪 الحظ الأوفر فقط</option>
+                        <option value="real">👥 المتسابقين الحقيقيين فقط</option>
+                        <option value="test">🧪 حسابات التجربة فقط (ID 1-10)</option>
+                    </select>
+
+                    <button class="dash-btn dash-btn-outline" id="clearTestFromTableBtn">
+                        🔄 تصفير التيست
+                    </button>
+                </div>
+
+                <!-- جدول المشاركات -->
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>استلم ✅</th>
+                                <th>كود الموظف (ID)</th>
+                                <th>اسم المتسابق</th>
+                                <th>الرقم القومي</th>
+                                <th>المنطقة / الفرع</th>
+                                <th>النتيجة</th>
+                                <th>الجائزة</th>
+                                <th>طريقة الاستلام المسجلة</th>
+                                <th>رقم المحفظة / انستاباي</th>
+                                <th>تاريخ ووقت الخربشة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="participationsTableBody">
+                            <tr>
+                                <td colspan="11" style="text-align:center; color:#94a3b8; padding:30px;">
+                                    لم يقم أي متسابق بالخربشة بعد. بمجرد أن يخربش أي شخص ستظهر نتيجته وبيانات استلامه فوراً هنا!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==========================================
+             التاب 3: قاعدة بيانات كل المتسابقين (4,745)
+             ========================================== -->
+        <div id="tab-database" class="tab-content" style="display:none;">
+            <section class="admin-section">
+                <div class="section-title">
+                    <span>👥 قاعدة بيانات المتسابقين المسجلين في الشيت (4,745 متسابق)</span>
+                    <span style="font-size:0.85rem; color:#94a3b8;" id="dbCountLabel">4,745 متسابق</span>
+                </div>
+
+                <div class="table-controls">
+                    <input type="text" id="dbSearchInput" class="search-box" placeholder="🔍 بحث في قاعدة البيانات بالاسم، كود الموظف، الرقم القومي، أو المنطقة...">
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>كود الموظف (ID)</th>
+                                <th>الاسم الكامل</th>
+                                <th>الرقم القومي</th>
+                                <th>المنطقة / الفرع</th>
+                                <th>حالة المشاركة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="databaseTableBody">
+                            <!-- سيتم تعبئتها ديناميكياً -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <!-- ملف البيانات المشترك -->
+    <script src="js/data.js"></script>
+    <script>
+        const ADMIN_PIN = 'alamia2026'; // كلمة مرور لوحة الإدارة
+        const GATE_SESSION_KEY = 'ALALAMIA_ADMIN_AUTH_V1';
+
+        const gateOverlay = document.getElementById('adminGate');
+        const adminMainContent = document.getElementById('adminMainContent');
+        const gatePassInput = document.getElementById('gatePassInput');
+        const gateErrorMsg = document.getElementById('gateErrorMsg');
+        const adminGateForm = document.getElementById('adminGateForm');
+
+        // فحص الجلسة السابقة
+        if (sessionStorage.getItem(GATE_SESSION_KEY) === 'true') {
+            unlockAdmin();
+        }
+
+        adminGateForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = gatePassInput.value.trim();
+            if (val === ADMIN_PIN || val === 'admin') {
+                sessionStorage.setItem(GATE_SESSION_KEY, 'true');
+                unlockAdmin();
+            } else {
+                gateErrorMsg.style.display = 'block';
+                gatePassInput.value = '';
+                gatePassInput.focus();
+            }
+        });
+
+        function unlockAdmin() {
+            gateOverlay.style.display = 'none';
+            adminMainContent.style.display = 'block';
+
+            // ملء رابط الويب هوك الحالي إن وجد
+            const savedUrl = getCloudWebhookUrl();
+            if (savedUrl) {
+                document.getElementById('cloudWebhookInput').value = savedUrl;
+            }
+
+            loadDashboardData();
+            setupTabs();
+            renderDatabaseTable();
+
+            // فحص ومزامنة فورية عند فتح اللوحة
+            refreshDataFromCloud(true);
+
+            // تفعيل التحديث التلقائي الدوري كل 15 ثانية
+            startAutoRefreshTimer();
+        }
+
+        // ==============================================
+        // نظام المزامنة الحية مع Google Sheets
+        // ==============================================
+        let autoRefreshInterval = null;
+
+        function startAutoRefreshTimer() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                const isAuto = document.getElementById('autoRefreshCheckbox').checked;
+                if (isAuto) {
+                    refreshDataFromCloud(true);
+                }
+            }, 15000);
+        }
+
+        function updateCloudStatusUI(status, label) {
+            const pill = document.getElementById('headerCloudPill');
+            const pillText = document.getElementById('headerCloudStatus');
+            const detailBadge = document.getElementById('cloudDetailBadge');
+
+            pill.className = 'cloud-status-pill';
+            if (status === 'connected') {
+                pill.classList.add('connected');
+                pillText.textContent = label || '🟢 متصل بالسحابة لايف';
+                if (detailBadge) detailBadge.textContent = '🟢 المزامنة نشطة وجاهزة لاستقبال المشاركات لايف';
+            } else if (status === 'syncing') {
+                pill.classList.add('syncing');
+                pillText.textContent = label || '🟡 جاري المزامنة...';
+            } else {
+                pillText.textContent = label || '⚪ غير متصل (موقع محلي)';
+                if (detailBadge) detailBadge.textContent = '⚪ لم يتم إدخال رابط Web App بعد';
+            }
+        }
+
+        function showCloudAlert(msg, type) {
+            const el = document.getElementById('cloudAlertMsg');
+            if (!el) return;
+            el.textContent = msg;
+            el.style.display = 'block';
+            if (type === 'success') {
+                el.style.background = 'rgba(16, 185, 129, 0.2)';
+                el.style.color = '#34d399';
+                el.style.border = '1px solid #10b981';
+            } else {
+                el.style.background = 'rgba(239, 68, 68, 0.2)';
+                el.style.color = '#f87171';
+                el.style.border = '1px solid #ef4444';
+            }
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        async function refreshDataFromCloud(silent = false) {
+            const url = getCloudWebhookUrl();
+            if (!url) {
+                updateCloudStatusUI('disconnected', '⚪ غير متصل (موقع محلي)');
+                return;
+            }
+
+            if (!silent) updateCloudStatusUI('syncing', '🟡 جاري المزامنة مع الشيت...');
+
+            try {
+                const cloudData = await fetchFromCloud();
+                if (cloudData && cloudData.status === 'success') {
+                    // دمج المشاركات القادمة من الشيت مع المخزن المحلي
+                    const local = getAllParticipations();
+                    const merged = Object.assign({}, local, cloudData.participations || {});
+                    localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(merged));
+
+                    // تحديث المخزن من الشيت
+                    if (cloudData.inventory) {
+                        if (cloudData.inventory.prize100 !== undefined) {
+                            localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, String(cloudData.inventory.prize100));
+                        }
+                        if (cloudData.inventory.prize200 !== undefined) {
+                            localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, String(cloudData.inventory.prize200));
+                        }
+                    }
+
+                    // تحديث الواجهات
+                    loadDashboardData();
+                    renderDatabaseTable();
+
+                    const count = Object.keys(merged).length;
+                    const nowStr = new Date().toLocaleTimeString('ar-EG');
+                    updateCloudStatusUI('connected', `🟢 متصل بالسحابة (${count} مشاركة)`);
+                    document.getElementById('lastSyncTimeText').textContent = `آخر مزامنة ناجحة: ${nowStr}`;
+
+                    if (!silent) {
+                        showCloudAlert(`✅ تم سحب ومزامنة البيانات لايف بنجاح! إجمالي المشاركات: ${count}`, 'success');
+                    }
+                } else {
+                    updateCloudStatusUI('disconnected', '⚠️ خطأ في الاستجابة');
+                    if (!silent) {
+                        showCloudAlert('⚠️ لم نتمكن من قراءة البيانات من الرابط السحابي. تأكد من نشر الويب آب بصلاحية Anyone.', 'error');
+                    }
+                }
+            } catch (err) {
+                updateCloudStatusUI('disconnected', '❌ تعذر الاتصال');
+                if (!silent) {
+                    showCloudAlert('❌ تعذر الاتصال: ' + err.message, 'error');
+                }
+            }
+        }
+
+        // زر حفظ رابط الويب هوك
+        document.getElementById('saveCloudWebhookBtn').addEventListener('click', () => {
+            const inputUrl = document.getElementById('cloudWebhookInput').value.trim();
+            if (!inputUrl) {
+                alert('يرجى لصق رابط الويب آب (Web App URL) أولاً');
+                return;
+            }
+            localStorage.setItem(CLOUD_CONFIG.storageKey, inputUrl);
+            showCloudAlert('💾 تم حفظ رابط المزامنة السحابية بنجاح! جاري الاتصال بالشيت...', 'success');
+            refreshDataFromCloud(false);
+        });
+
+        // زر المزامنة اليدوية الآن
+        document.getElementById('syncNowBtn').addEventListener('click', () => {
+            refreshDataFromCloud(false);
+        });
+
+        // ==============================================
+        // التحكم في تابات التنقل (Tabs)
+        // ==============================================
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const target = btn.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                    const targetEl = document.getElementById(target);
+                    if (targetEl) targetEl.style.display = 'block';
+
+                    if (target === 'tab-live-sheet') {
+                        renderTable(Object.values(getAllParticipations()));
+                    } else if (target === 'tab-database') {
+                        renderDatabaseTable();
+                    }
+                });
+            });
+        }
+
+        // ==============================================
+        // تحميل وتحديث بيانات لوحة التحكم والمخزن
+        // ==============================================
+        function loadDashboardData() {
+            const participations = getAllParticipations();
+            const list = Object.values(participations);
+
+            // المخزن الحالي
+            const snap = getInventorySnapshot();
+            const p100Current = snap.prize100;
+            const p200Current = snap.prize200;
+
+            // تعبئة حقول الإدخال لتعديل المخزن
+            document.getElementById('inputRemaining100').value = p100Current;
+            document.getElementById('inputRemaining200').value = p200Current;
+
+            // كروت الإحصائيات
+            const p100Winners = list.filter(p => p.prize?.isWinner && p.prize.title.includes('100')).length;
+            const p200Winners = list.filter(p => p.prize?.isWinner && p.prize.title.includes('200')).length;
+
+            document.getElementById('stat100Val').textContent = p100Current;
+            document.getElementById('stat100Sub').textContent = `تم كسب ${p100Winners} كارت حتى الآن`;
+            document.getElementById('stat100Bar').style.width = `${Math.max(0, Math.min(100, (p100Current / 500) * 100))}%`;
+
+            document.getElementById('stat200Val').textContent = p200Current;
+            document.getElementById('stat200Sub').textContent = `تم كسب ${p200Winners} كارت حتى الآن`;
+            document.getElementById('stat200Bar').style.width = `${Math.max(0, Math.min(100, (p200Current / 300) * 100))}%`;
+
+            const totalWinners = list.filter(p => p.prize && p.prize.isWinner).length;
+            document.getElementById('statWinnersCount').textContent = totalWinners;
+            document.getElementById('statWinnersSub').textContent = `${p100Winners} كسبوا 100 ج | ${p200Winners} كسبوا 200 ج`;
+
+            document.getElementById('statTotalParticipated').textContent = list.length;
+            document.getElementById('recordCountLabel').textContent = `${list.length} مشاركة مسجلة`;
+
+            renderTable(list);
+        }
+
+        // ==============================================
+        // حفظ تعديل رصيد المخزن المباشر (محلي + سحابي)
+        // ==============================================
+        document.getElementById('updateInventoryForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val100 = parseInt(document.getElementById('inputRemaining100').value, 10);
+            const val200 = parseInt(document.getElementById('inputRemaining200').value, 10);
+
+            if (isNaN(val100) || val100 < 0 || isNaN(val200) || val200 < 0) {
+                alert('يرجى إدخال أرقام صحيحة أكبر من أو تساوي الصفر!');
+                return;
+            }
+
+            localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, String(val100));
+            localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, String(val200));
+
+            // مزامنة سحابية مع شيت جوجل
+            syncToCloud({
+                action: 'updateInventory',
+                prize100: val100,
+                prize200: val200
+            });
+
+            loadDashboardData();
+
+            const alertEl = document.getElementById('invSaveAlert');
+            alertEl.style.display = 'block';
+            setTimeout(() => { alertEl.style.display = 'none'; }, 3500);
+        });
+
+        // ==============================================
+        // رسم جدول المشاركات لايف مع تشيك بوكس "استلم"
+        // ==============================================
+        function renderTable(list) {
+            const tbody = document.getElementById('participationsTableBody');
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+            const filter = document.getElementById('filterSelect').value;
+
+            let filtered = list.filter(item => {
+                const isWin = item.prize && item.prize.isWinner;
+                const is100 = isWin && item.prize.title.includes('100');
+                const is200 = isWin && item.prize.title.includes('200');
+                const isPaid = Boolean(item.isPaid);
+
+                if (filter === 'winners_all' && !isWin) return false;
+                if (filter === 'winners_100' && !is100) return false;
+                if (filter === 'winners_200' && !is200) return false;
+                if (filter === 'unpaid' && (!isWin || isPaid)) return false;
+                if (filter === 'paid' && (!isWin || !isPaid)) return false;
+                if (filter === 'hardluck' && isWin) return false;
+                if (filter === 'real' && item.isTest) return false;
+                if (filter === 'test' && !item.isTest) return false;
+
+                // البحث
+                if (search) {
+                    const matchId = String(item.userId || '').toLowerCase().includes(search);
+                    const matchName = String(item.userName || '').toLowerCase().includes(search);
+                    const matchNat = String(item.nationalId || '').toLowerCase().includes(search);
+                    const matchRegion = String(item.userRegion || '').toLowerCase().includes(search);
+                    const matchAccount = String(item.claimInfo?.account || '').toLowerCase().includes(search);
+                    if (!matchId && !matchName && !matchNat && !matchRegion && !matchAccount) return false;
+                }
+                return true;
+            });
+
+            // ترتيب زمني تنازلي
+            filtered.sort((a, b) => new Date(b.scratchedAt || 0) - new Date(a.scratchedAt || 0));
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد مشاركات تطابق الفلتر أو البحث الحالي.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((item, idx) => {
+                const isWin = item.prize && item.prize.isWinner;
+                const isPaid = Boolean(item.isPaid);
+
+                const statusBadge = isWin
+                    ? `<span class="badge badge-win">🎉 فائز بالمكسب</span>`
+                    : `<span class="badge badge-lose">💪 حظ أوفر</span>`;
+                const testBadge = item.isTest ? `<span class="badge badge-test">🧪 تجربة</span> ` : '';
+
+                // تشيك بوكس "استلم" للفائزين فقط!
+                let paidCell = `<span style="color:#64748b;">-</span>`;
+                if (isWin) {
+                    paidCell = `
+                        <label class="check-wrap" title="تعليم كـ تم التسليم">
+                            <input type="checkbox" class="paid-checkbox" data-id="${item.userId}" ${isPaid ? 'checked' : ''}>
+                            <span style="font-size:0.8rem; font-weight:800; color:${isPaid ? '#10b981' : '#f59e0b'};">
+                                ${isPaid ? 'تم التسليم ✅' : 'قيد الانتظار ⏳'}
+                            </span>
+                        </label>
+                    `;
+                }
+
+                const claimMethod = item.claimInfo ? `<span style="font-weight:700; color:#38bdf8;">${item.claimInfo.method}</span>` : `<span style="color:#64748b;">لم يسجل</span>`;
+                const claimAccount = item.claimInfo ? `<strong style="color:#FFE500; font-size:1rem;">${item.claimInfo.account}</strong>` : `<span style="color:#64748b;">-</span>`;
+
+                return `
+                    <tr class="${isPaid ? 'row-paid' : ''}">
+                        <td>${idx + 1}</td>
+                        <td>${paidCell}</td>
+                        <td><strong>${item.userId}</strong></td>
+                        <td>${testBadge}${item.userName}</td>
+                        <td><code>${item.nationalId || '-'}</code></td>
+                        <td>${item.userRegion || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td><strong>${item.prize ? item.prize.title : '-'}</strong></td>
+                        <td>${claimMethod}</td>
+                        <td>${claimAccount}</td>
+                        <td style="color:#94a3b8; font-size:0.85rem;">${item.formattedDate || item.scratchedAt || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // تفعيل حدث تغيير التشيك بوكس وحفظه فورياً ومزامنته سحابياً
+            tbody.querySelectorAll('.paid-checkbox').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const uid = e.target.getAttribute('data-id');
+                    const isChecked = e.target.checked;
+                    toggleUserPaidStatus(uid, isChecked);
+                });
+            });
+        }
+
+        // ==============================================
+        // حفظ حالة تشيك بوكس "استلم" (محلي + سحابي)
+        // ==============================================
+        function toggleUserPaidStatus(userId, isPaid) {
+            const history = getAllParticipations();
+            if (history[userId]) {
+                history[userId].isPaid = isPaid;
+                if (history[userId].claimInfo) {
+                    history[userId].claimInfo.isPaid = isPaid;
+                }
+                localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+
+                // مزامنة سحابية فورية مع شيت جوجل
+                syncToCloud({
+                    action: 'togglePaid',
+                    userId: userId,
+                    isPaid: isPaid
+                });
+
+                renderTable(Object.values(history));
+            }
+        }
+
+        // أزرار البحث والفلترة والتحديث
+        document.getElementById('searchInput').addEventListener('input', () => {
+            renderTable(Object.values(getAllParticipations()));
+        });
+        document.getElementById('filterSelect').addEventListener('change', () => {
+            renderTable(Object.values(getAllParticipations()));
+        });
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            refreshDataFromCloud(false);
+        });
+
+        // ==============================================
+        // تصفير مشاركات التيست (ID 1 - 10) محلياً وسحابياً!
+        // ==============================================
+        function resetTestAccounts() {
+            const history = getAllParticipations();
+            let clearedCount = 0;
+            ['1','2','3','4','5','6','7','8','9','10'].forEach(id => {
+                if (history[id]) {
+                    delete history[id];
+                    clearedCount++;
+                }
+            });
+            Object.keys(history).forEach(k => {
+                if (history[k].isTest) {
+                    delete history[k];
+                    clearedCount++;
+                }
+            });
+
+            localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+
+            // إرسال أمر تصفير التيست للشيت السحابي
+            syncToCloud({ action: 'resetTest' });
+
+            loadDashboardData();
+            alert(`🔄 تم تصفير مشاركات حسابات التيست بنجاح!\nيمكنك الآن الدخول بأي حساب من (1 إلى 10) لتجربته كأنه يدخل لأول مرة.`);
+        }
+
+        document.getElementById('quickResetTestBtn').addEventListener('click', resetTestAccounts);
+        document.getElementById('clearTestFromTableBtn').addEventListener('click', resetTestAccounts);
+
+        // ==============================================
+        // استعادة رصيد المخزن الافتراضي (500 و 300)
+        // ==============================================
+        document.getElementById('defaultResetInventoryBtn').addEventListener('click', () => {
+            if (!confirm('هل تريد إعادة تعيين المخزن إلى 500 كارت (100 جنيه) و 300 كارت (200 جنيه)؟')) return;
+            localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
+            localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
+
+            syncToCloud({
+                action: 'updateInventory',
+                prize100: 500,
+                prize200: 300
+            });
+
+            loadDashboardData();
+            alert('✅ تم إعادة ضبط رصيد المخزن إلى 500 و 300 بنجاح!');
+        });
+
+        // ==============================================
+        // تصفير شامل
+        // ==============================================
+        document.getElementById('resetAllDataBtn').addEventListener('click', () => {
+            const check = prompt('⚠️ تحذير: هذا سيحذف جميع مشاركات المتسابقين ويعيد تصفير كل شيء! اكتب "تأكيد" للمتابعة:');
+            if (check === 'تأكيد' || check === 'confirm') {
+                resetParticipationsStorage();
+                localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
+                localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
+                loadDashboardData();
+                alert('🔄 تم تصفير جميع السجلات والمخزن بالكامل.');
+            }
+        });
+
+        // ==============================================
+        // تصدير النتائج إلى ملف Excel / CSV بالعربي
+        // ==============================================
+        document.getElementById('exportCsvBtn').addEventListener('click', () => {
+            const list = Object.values(getAllParticipations());
+            if (list.length === 0) {
+                alert('لا توجد مشاركات مسجلة حالياً لتصديرها!');
+                return;
+            }
+
+            let csvContent = '\uFEFF'; // UTF-8 BOM
+            csvContent += 'كود الموظف,الاسم,الرقم القومي,المنطقة,النتيجة,الجائزة,طريقة الاستلام,رقم المحفظة / انستاباي,حالة الاستلام,التاريخ والوقت,نوع الحساب\n';
+
+            list.forEach(item => {
+                const isWin = item.prize && item.prize.isWinner ? 'فائز' : 'حظ أوفر';
+                const prize = (item.prize?.title || '').replace(/,/g, ' ');
+                const method = (item.claimInfo?.method || 'لم يسجل').replace(/,/g, ' ');
+                const account = (item.claimInfo?.account || '-').replace(/,/g, ' ');
+                const isPaidText = item.isPaid ? 'تم التسليم' : 'قيد الانتظار';
+                const type = item.isTest ? 'حساب تجريبي' : 'متسابق حقيقي';
+
+                csvContent += `"${item.userId}","${item.userName}","=""${item.nationalId}""","${item.userRegion}","${isWin}","${prize}","${method}","${account}","${isPaidText}","${item.formattedDate || item.scratchedAt}","${type}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `نتائج_مسابقة_العالمية_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // ==============================================
+        // رسم جدول قاعدة البيانات الكاملة (4,745 متسابق)
+        // ==============================================
+        function renderDatabaseTable() {
+            const tbody = document.getElementById('databaseTableBody');
+            const search = document.getElementById('dbSearchInput').value.trim().toLowerCase();
+            const participations = getAllParticipations();
+
+            let data = CONTESTANTS_DATABASE;
+            if (search) {
+                data = data.filter(u => {
+                    const matchId = String(u.id || '').toLowerCase().includes(search);
+                    const matchName = String(u.name || '').toLowerCase().includes(search);
+                    const matchNat = String(u.nationalId || '').toLowerCase().includes(search);
+                    const matchRegion = String(u.region || '').toLowerCase().includes(search);
+                    return matchId || matchName || matchNat || matchRegion;
+                });
+            }
+
+            // عرض جميع المتسابقين بالكامل
+            const displayData = data;
+
+            tbody.innerHTML = displayData.map((u, idx) => {
+                const hasPlayed = Boolean(participations[u.id]);
+                const playRecord = participations[u.id];
+                let statusBadge = `<span style="color:#64748b;">لم يشارك بعد</span>`;
+                if (hasPlayed) {
+                    statusBadge = playRecord?.prize?.isWinner
+                        ? `<span class="badge badge-win">🎉 كسب (${playRecord.prize.title})</span>`
+                        : `<span class="badge badge-lose">💪 خربش (حظ أوفر)</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td><strong>${u.id}</strong></td>
+                        <td>${u.name}</td>
+                        <td><code>${u.nationalId}</code></td>
+                        <td>${u.region}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('dbCountLabel').textContent = search 
+                ? `${data.length} متسابق مطابق للبحث`
+                : `معروض جميع المتسابقين بالكامل (${data.length} متسابق)`;
+        }
+
+        document.getElementById('dbSearchInput').addEventListener('input', renderDatabaseTable);
+    </script>
+</body>
+</html>

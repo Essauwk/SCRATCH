@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Header">
+   <Font ss:FontName="Cairo" ss:Size="12" ss:Bold="1" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#18181B" ss:Pattern="Solid"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#FFE500"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="DataText">
+   <Font ss:FontName="Cairo" ss:Size="11" ss:Color="#18181B"/>
+   <NumberFormat ss:Format="@"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="DataWinner">
+   <Font ss:FontName="Cairo" ss:Size="11" ss:Color="#065F46" ss:Bold="1"/>
+   <Interior ss:Color="#D1FAE5" ss:Pattern="Solid"/>
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="DataLoser">
+   <Font ss:FontName="Cairo" ss:Size="11" ss:Color="#92400E"/>
+   <Interior ss:Color="#FEF3C7" ss:Pattern="Solid"/>
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="متسابقين العالمية" ss:RightToLeft="1">
+  <Table ss:DefaultRowHeight="24">
+   <Column ss:Width="160"/>
+   <Column ss:Width="90"/>
+   <Column ss:Width="140"/>
+   <Column ss:Width="150"/>
+   <Column ss:Width="220"/>
+   <Row ss:StyleID="Header" ss:Height="30">
+    <Cell><Data ss:Type="String">الاسم</Data></Cell>
+    <Cell><Data ss:Type="String">كود الموظف</Data></Cell>
+    <Cell><Data ss:Type="String">الرقم القومي</Data></Cell>
+    <Cell><Data ss:Type="String">المنطقة</Data></Cell>
+    <Cell><Data ss:Type="String">الجائزة (اختياري)</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">أحمد محمد إبراهيم</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">1001</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">29801011234567</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">القاهرة - المعادي</Data></Cell>
+    <Cell ss:StyleID="DataWinner"><Data ss:Type="String">لابتوب فخم HP Core i7 💻</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">محمود حسن علي</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">1002</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">29505121400234</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">الإسكندرية - سموحة</Data></Cell>
+    <Cell ss:StyleID="DataWinner"><Data ss:Type="String">ساعة ذكية Smart Watch Ultra ⌚</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">سارة خالد عبد الرحمن</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">1003</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">29909201600876</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">الجيزة - الدقي</Data></Cell>
+    <Cell ss:StyleID="DataWinner"><Data ss:Type="String">قسيمة مشتريات بـ 3,000 جنيه 🛒</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">مينا سامي فوزي</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">1004</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">29711051800543</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">المنصورة - حي الجامعة</Data></Cell>
+    <Cell ss:StyleID="DataLoser"><Data ss:Type="String">حظ أوفر المرة القادمة</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">عمر طارق الشناوي</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">1005</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">29603152100122</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">طنطا - المحطة</Data></Cell>
+    <Cell ss:StyleID="DataWinner"><Data ss:Type="String">مكافأة فورية 2,000 جنيه كاش 💵</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">نورهان عصام الدين</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">1006</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">29408222400987</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">أسيوط - الهلالي</Data></Cell>
+    <Cell ss:StyleID="DataLoser"><Data ss:Type="String">حظ أوفر المرة القادمة</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">كريم عبد العزيز جلال</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">1007</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">29901010101010</Data></Cell>
+    <Cell ss:StyleID="DataText"><Data ss:Type="String">الشرقية - الزقازيق</Data></Cell>
+    <Cell ss:StyleID="DataWinner"><Data ss:Type="String">سماعة AirPods Pro أصلية 🎧</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+</Workbook>
