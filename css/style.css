@@ -787,7 +787,8 @@ main.app-container {
 }
 
 /* ========================================================
-   🔒 طبقة الجائزة المكشوفة أسفل الخربشة (Ultra HD Reveal Layer)
+   🔒 طبقة البلور الغامض أثناء الخربشة (Mystery Blur Layer)
+   يمنع رؤية تفاصيل الجائزة حتى الوصول لنسبة 70%
    ======================================================== */
 .scratch-reveal-layer {
     position: absolute;
@@ -800,27 +801,24 @@ main.app-container {
     padding: 16px;
     background: radial-gradient(circle, #FFFBEB 0%, #FEF3C7 60%, #FDE68A 100%);
     z-index: 1;
-    transition: transform 0.4s ease;
+    transition: filter 0.4s ease, transform 0.4s ease;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    transform: translateZ(0);
 }
 
-/* إزالة البلور الثقيل لمنع التشويش والرداءة على شاشات الموبايل */
+/* البلور الغامض لحجب الجائزة والتشويق أثناء الخربشة */
 .scratch-reveal-layer.mystery-blur {
-    /* نقاء عالي وبدون أي بلور بكسلي رديء على الموبايل */
-    filter: none !important;
-    transform: scale(1);
+    filter: blur(14px) brightness(0.88) contrast(1.1);
+    transform: scale(0.97);
+    user-select: none;
+    pointer-events: none;
 }
 
+/* الكشف الصافي فائق الدقة بعد انتهاء الخربشة والساسبينس */
 .scratch-reveal-layer.revealed-clear {
-    filter: none !important;
+    filter: blur(0px) brightness(1) contrast(1) !important;
     transform: scale(1) !important;
     animation: revealPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.scratch-reveal-layer.revealed-clear .mystery-pattern-overlay {
-    display: none !important;
 }
 
 @keyframes revealPop {

@@ -506,11 +506,20 @@
                     <span>🌐 المزامنة السحابية الحية (Google Sheets Cloud Webhook)</span>
                     <span id="cloudDetailBadge" style="font-size:0.85rem; color:#a5b4fc;"></span>
                 </div>
-                <p style="color:#cbd5e1; font-size:0.9rem; margin:0 0 12px 0; line-height:1.6;">
-                    يربط كل أجهزة المتسابقين (5,000 موظف على موبايلاتهم) بلوحة الإدارة لايف. يدعم رابط <strong>Google Apps Script</strong> أو رابط <strong>Firebase Realtime Database</strong> المجاني مباشرة!
-                </p>
+                
+                <!-- إرشادات سريعة واضحة جداً لكيفية وضع الرابط -->
+                <div style="background: rgba(99, 102, 241, 0.15); border: 1.5px solid #818cf8; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; font-size: 0.88rem; line-height: 1.7;">
+                    <div style="color: #FFE500; font-weight: 900; font-size: 0.95rem; margin-bottom: 6px;">
+                        💡 خطوة وحيدة لتشغيل الربط مع كل الموبايلات لايف:
+                    </div>
+                    <div style="color: #cbd5e1;">
+                        الموبايل جهاز منفصل عن اللاب، وعشان موبايل أي متسابق يبعت نتيجته للوحة الإدارة دي لايف:
+                        انسخ رابط <strong>Web App URL</strong> الناتج من ضغط <strong>Deploy (نشر)</strong> في صفحة Apps Script (الرابط الذي ينتهي بـ <code>/exec</code>)، والصقه في المستطيل بالأسفل ثم اضغط <strong>💾 حفظ وتفعيل الربط</strong>.
+                    </div>
+                </div>
+
                 <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-                    <input type="url" id="cloudWebhookInput" placeholder="رابط Google Web App أو رابط Firebase (https://...)" style="flex:1; min-width:280px; padding:11px 14px; border-radius:10px; border:2px solid #6366f1; background:#0f172a; color:#fff; font-size:0.95rem; outline:none;" dir="ltr">
+                    <input type="url" id="cloudWebhookInput" placeholder="الصق هنا رابط Web App الناتج من Deploy (ينتهي بـ /exec)" style="flex:1; min-width:280px; padding:12px 14px; border-radius:10px; border:2px solid #818cf8; background:#0f172a; color:#fff; font-size:0.95rem; outline:none;" dir="ltr">
                     <button type="button" class="dash-btn dash-btn-primary" id="saveCloudWebhookBtn">💾 حفظ وتفعيل الربط</button>
                     <button type="button" class="dash-btn dash-btn-outline" id="syncNowBtn">🔄 سحب ومزامنة لايف الآن</button>
                     <button type="button" class="dash-btn dash-btn-outline" id="sendTestPingBtn" style="background:#1e1b4b; border-color:#818cf8; color:#c7d2fe;">📲 تجربة واختبار الربط لايف</button>
