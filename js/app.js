@@ -302,25 +302,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // صورة الجائزة داخل الكارت (تظهر مباشرة تحت الخربشة بمجرد إزالة الفويل)
         const scratchRevealImg = document.getElementById('scratchRevealImage');
-        const prizePeekHint = document.getElementById('prizePeekHint');
-        const prizePeekImg = document.getElementById('prizePeekImg');
+        const scratchCroppedPeek = document.getElementById('scratchCroppedPeek');
+
         if (scratchRevealImg) {
             if (currentPrize.image && currentPrize.isWinner) {
                 scratchRevealImg.src = currentPrize.image;
                 scratchRevealImg.style.display = 'block';
                 if (prizeIcon) prizeIcon.style.display = 'none'; // إخفاء الأيقونة لإبراز صورة الفلوس الأصلية
-                // تفعيل لمحة الجائزة المغرية
-                if (prizePeekHint && prizePeekImg) {
-                    prizePeekImg.src = currentPrize.image;
-                    prizePeekHint.style.display = 'flex';
-                }
             } else {
                 scratchRevealImg.style.display = 'none';
                 if (prizeIcon) {
                     prizeIcon.style.display = 'block';
                     prizeIcon.textContent = currentPrize.icon || '💪';
                 }
-                if (prizePeekHint) prizePeekHint.style.display = 'none';
+            }
+        }
+
+        // طرف الورقة النقدية الـ 100 أو 200 الحقيقي يظهر مباشرة تحت الخربشة للتشويق
+        if (scratchCroppedPeek) {
+            if (currentPrize.isWinner) {
+                const is200 = (currentPrize.prizeKey === 'prize200' || (currentPrize.title && currentPrize.title.includes('200')));
+                scratchCroppedPeek.src = is200 ? 'images/200 cropped.png' : 'images/100 cropped.png';
+                scratchCroppedPeek.style.display = 'block';
+                scratchCroppedPeek.style.opacity = '1';
+            } else {
+                scratchCroppedPeek.style.display = 'none';
+                scratchCroppedPeek.src = '';
             }
         }
 
@@ -369,9 +376,12 @@ document.addEventListener('DOMContentLoaded', () => {
         scratchMainCard.classList.add('in-suspense');
         suspenseOverlay.classList.add('active');
 
-        // إخفاء لمحة الجائزة عند بدء الساسبينس
-        const prizePeekHint = document.getElementById('prizePeekHint');
-        if (prizePeekHint) prizePeekHint.style.display = 'none';
+        // إخفاء طرف العملة عند بدء الساسبينس
+        const scratchCroppedPeek = document.getElementById('scratchCroppedPeek');
+        if (scratchCroppedPeek) {
+            scratchCroppedPeek.style.opacity = '0';
+            setTimeout(() => { scratchCroppedPeek.style.display = 'none'; }, 400);
+        }
 
         const firstName = user.name.split(' ')[0];
         suspenseTitle.textContent = `لحظة الحسم يا ${firstName}! ⚡`;
@@ -482,8 +492,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (claimDoneSection) claimDoneSection.style.display = 'block';
                 if (claimSavedSummary) {
                     claimSavedSummary.innerHTML = `
-                        <div>طريقة الاستلام: <span style="color:#10b981;">${record.claimInfo.method}</span></div>
-                        <div style="margin-top:4px;">رقم الحساب / المحفظة: <span style="color:#FFE500; font-size:1.15rem;">${record.claimInfo.account}</span></div>
+                        <div style="font-size:0.95rem; color:#18181b; margin-bottom:4px;">
+                            طريقة الاستلام: <strong style="color:#059669;">${record.claimInfo.method}</strong>
+                        </div>
+                        <div style="font-size:0.9rem; color:#4b5563; margin-top:6px;">رقم الحساب / المحفظة:</div>
+                        <div style="background:#ffffff; color:#18181b; font-size:1.35rem; font-weight:900; padding:8px 20px; border-radius:14px; border:2.5px solid #10b981; display:inline-block; letter-spacing:1.5px; margin:4px 0 8px 0; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+                            ${record.claimInfo.account}
+                        </div>
                         <div style="font-size:0.8rem; color:#6b7280; margin-top:4px;">تاريخ التسجيل: ${record.claimInfo.formattedDate || ''}</div>
                     `;
                 }
@@ -609,8 +624,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (claimDoneSection) claimDoneSection.style.display = 'block';
             if (claimSavedSummary) {
                 claimSavedSummary.innerHTML = `
-                    <div>طريقة الاستلام: <span style="color:#10b981;">${selectedMethod}</span></div>
-                    <div style="margin-top:4px;">رقم الحساب / المحفظة: <span style="color:#FFE500; font-size:1.15rem;">${accountVal}</span></div>
+                    <div style="font-size:0.95rem; color:#18181b; margin-bottom:4px;">
+                        طريقة الاستلام: <strong style="color:#059669;">${selectedMethod}</strong>
+                    </div>
+                    <div style="font-size:0.9rem; color:#4b5563; margin-top:6px;">رقم الحساب / المحفظة:</div>
+                    <div style="background:#ffffff; color:#18181b; font-size:1.35rem; font-weight:900; padding:8px 20px; border-radius:14px; border:2.5px solid #10b981; display:inline-block; letter-spacing:1.5px; margin:4px 0 8px 0; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+                        ${accountVal}
+                    </div>
                     <div style="font-size:0.8rem; color:#6b7280; margin-top:4px;">تاريخ التسجيل: ${claimInfo.formattedDate}</div>
                 `;
             }
@@ -708,38 +728,43 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===================================================
 // 🎵 الموسيقى الخلفية الحماسية — خارج DOMContentLoaded
 // ===================================================
-let _bgMusicStarted = false;
+let _userExplicitlyMuted = false;
 
 function toggleBgMusic() {
     const audio = document.getElementById('bgMusic');
     const btn = document.getElementById('bgMuteBtn');
     if (!audio) return;
     if (audio.paused) {
-        audio.volume = 0.35;
+        _userExplicitlyMuted = false;
+        audio.volume = 0.40;
         audio.play().then(() => {
             if (btn) btn.textContent = '🔊';
         }).catch(() => {});
     } else {
+        _userExplicitlyMuted = true;
         audio.pause();
         if (btn) btn.textContent = '🔇';
     }
 }
 
-// تشغيل الموسيقى تلقائياً بعد أول تفاعل من المستخدم
+// تشغيل الموسيقى تلقائياً وتكرارها طوال وجود المستخدم في الموقع
 function _tryStartBgMusic() {
-    if (_bgMusicStarted) return;
-    _bgMusicStarted = true;
+    if (_userExplicitlyMuted) return;
     const audio = document.getElementById('bgMusic');
     const btn = document.getElementById('bgMuteBtn');
-    if (audio) {
-        audio.volume = 0.35;
+    if (audio && audio.paused) {
+        audio.volume = 0.40;
         audio.play().then(() => {
             if (btn) btn.textContent = '🔊';
         }).catch(() => {
-            if (btn) btn.textContent = '🔇';
+            // المتصفح ينتظر أول تفاعل من المستخدم
         });
     }
 }
 
-document.addEventListener('click', _tryStartBgMusic, { once: true });
-document.addEventListener('touchstart', _tryStartBgMusic, { once: true });
+// محاولة التشغيل فور تحميل الصفحة
+window.addEventListener('load', _tryStartBgMusic);
+// وعلى أي نقرة أو لمسة أو كتابة لضمان تشغيلها فوراً طوال مدة فتح الموقع
+['pointerdown', 'touchstart', 'click', 'keydown', 'scroll'].forEach(evt => {
+    document.addEventListener(evt, _tryStartBgMusic, { passive: true });
+});

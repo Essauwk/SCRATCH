@@ -24,6 +24,7 @@
     <!-- استيكرات فانكي متحركة على جوانب الشاشة -->
     <div class="side-sticker sticker-left">💥 طاقة العالمية 💥</div>
     <div class="side-sticker sticker-right">👑 بطل الأبطال 👑</div>
+    <div class="side-sticker sticker-promo">💰 اكسب مبالغ نقدية فورية 🔥</div>
 
     <!-- الهيدر والبار العلوي مع لوجو العالمية إكسبريس -->
     <header class="app-header">
@@ -47,11 +48,6 @@
             <div class="yellow-card funky-card-hover">
                 <div class="funky-badge">مسابقة حصرية 🔥</div>
                 <div class="funky-badge-left">اكسب فوراً 🎁</div>
-
-                <!-- نص متحرك فانكي على شاشة الدخول -->
-                <div class="flying-promo-text" id="flyingPromoText">
-                    <span>💰 اكسب مبالغ نقدية فورية 🔥</span>
-                </div>
 
                 <!-- اللوجو الرئيسي في شاشة تسجيل الدخول -->
                 <div class="login-header">
@@ -173,6 +169,9 @@
                         <p class="reveal-prize-desc" id="prizeDesc"></p>
                     </div>
 
+                    <!-- صورة طرف الـ 100 أو 200 الواقعية تحت الفويل تظهر أثناء الخربشة للتشويق -->
+                    <img id="scratchCroppedPeek" src="" class="scratch-cropped-peek" alt="طرف الورقة المالية" style="display:none;">
+
                     <!-- طبقة الكانفاس القابلة للمسح والخربشة -->
                     <canvas class="scratch-canvas" id="scratchCanvas"></canvas>
 
@@ -189,12 +188,6 @@
 
                     <!-- مؤشر العملة التفاعلي (Coin Follower) -->
                     <div class="coin-cursor-tool" id="coinCursorTool">🪙</div>
-
-                    <!-- لمحة الجائزة المغرية أثناء الخربشة (تظهر فقط للفائز بمبالغ نقدية) -->
-                    <div class="prize-peek-hint" id="prizePeekHint" style="display:none;">
-                        <img id="prizePeekImg" src="" alt="لمحة الجائزة">
-                        <span class="peek-label">👀 لمحة...</span>
-                    </div>
                 </div>
 
                 <!-- شريط الحماس والتشويق (بدون أي نسب مئوية) -->
@@ -364,10 +357,9 @@
         <a href="admin.html" style="opacity:0.25; text-decoration:none; margin-right:8px;" title="لوحة تحكم الإدارة والمخزن">🔒</a>
     </footer>
 
-    <!-- موسيقى خلفية حماسية -->
+    <!-- موسيقى خلفية حماسية محلية دائمة -->
     <audio id="bgMusic" loop preload="auto" style="display:none;">
-        <!-- موسيقى حماسية مجانية بدون حقوق من Pixabay -->
-        <source src="https://cdn.pixabay.com/audio/2024/02/28/audio_e09d4a9789.mp3" type="audio/mpeg">
+        <source src="audio/bg_music.mp3" type="audio/mpeg">
     </audio>
 
     <!-- ملفات الجافاسكريبت بالترتيب الصحيح -->
