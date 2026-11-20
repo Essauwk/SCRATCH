@@ -160,18 +160,11 @@
                 <!-- صندوق الكارت والكانفاس مع طبقة البلور والساسبينس -->
                 <div class="scratch-card-box" id="scratchContainer">
                     
-                    <!-- الطبقة السفلية: الجائزة مع البلور الغامض (Blurred Mystery Layer) -->
-                    <div class="scratch-reveal-layer mystery-blur" id="scratchPrizeLayer">
-                        <!-- غطاء تمويه غامض يمنع قراءة النتيجة أثناء الخربشة -->
-                        <div class="mystery-pattern-overlay">
-                            <span class="mystery-question">❓</span>
-                            <span class="mystery-text">سر الحظ محمي 🔒</span>
-                            <span class="mystery-question">❓</span>
-                        </div>
-
+                    <!-- الطبقة السفلية: الجائزة الحقيقية بصورة الفلوس عالية الدقة -->
+                    <div class="scratch-reveal-layer" id="scratchPrizeLayer">
                         <div class="reveal-prize-icon" id="prizeIcon">🎁</div>
-                        <!-- صورة الجائزة داخل الكارت (تظهر بعد الكشف) -->
-                        <img id="scratchRevealImage" src="" alt="صورة الجائزة" style="display:none; max-width:110px; border-radius:12px; border:2px solid #FFE500; margin:4px 0; box-shadow:0 4px 16px rgba(0,0,0,0.25); animation: prizeImgPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;">
+                        <!-- صورة الجائزة النقدية فائقة الوضوح تظهر مباشرة تحت كشط الفويل -->
+                        <img id="scratchRevealImage" src="" alt="صورة الجائزة" style="display:none; max-width:180px; max-height:90px; width:auto; border-radius:12px; border:2.5px solid #18181B; margin:6px auto; box-shadow:0 6px 20px rgba(0,0,0,0.3); background:#fff;">
                         <h2 class="reveal-prize-title" id="prizeTitle">جاري تحميل المفاجأة...</h2>
                         <p class="reveal-prize-desc" id="prizeDesc"></p>
                     </div>

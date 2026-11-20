@@ -234,14 +234,19 @@ document.addEventListener('DOMContentLoaded', () => {
         prizeTitle.textContent = currentPrize.title;
         prizeDesc.textContent = currentPrize.description;
 
-        // صورة الجائزة داخل الكارت (مخفية حتى يتم الكشف)
+        // صورة الجائزة داخل الكارت (تظهر مباشرة تحت الخربشة بمجرد إزالة الفويل)
         const scratchRevealImg = document.getElementById('scratchRevealImage');
         if (scratchRevealImg) {
-            if (currentPrize.image) {
+            if (currentPrize.image && currentPrize.isWinner) {
                 scratchRevealImg.src = currentPrize.image;
-                scratchRevealImg.style.display = 'none'; // ستظهر بعد الكشف
+                scratchRevealImg.style.display = 'block';
+                if (prizeIcon) prizeIcon.style.display = 'none'; // إخفاء الأيقونة لإبراز صورة الفلوس الأصلية
             } else {
                 scratchRevealImg.style.display = 'none';
+                if (prizeIcon) {
+                    prizeIcon.style.display = 'block';
+                    prizeIcon.textContent = currentPrize.icon || '💪';
+                }
             }
         }
 
@@ -374,8 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentPrize.image) {
                     resultPrizeImage.src = currentPrize.image;
                     resultPrizeImage.style.display = 'block';
+                    if (resultBigIcon) resultBigIcon.style.display = 'none'; // صورة الفلوس هي البطل الأساسي
                 } else {
                     resultPrizeImage.style.display = 'none';
+                    if (resultBigIcon) resultBigIcon.style.display = 'block';
                 }
             }
 

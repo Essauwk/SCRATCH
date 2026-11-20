@@ -4975,10 +4975,64 @@ function getCloudWebhookUrl() {
     return localStorage.getItem(CLOUD_CONFIG.storageKey) || CLOUD_CONFIG.webhookUrl || '';
 }
 
+function isFirebaseUrl(url) {
+    return Boolean(url && (url.includes('firebaseio.com') || url.includes('firebasedatabase.app')));
+}
+
+function normalizeFirebaseUrl(url) {
+    let clean = (url || '').trim().replace(/\/+$/, '');
+    if (clean.endsWith('.json')) clean = clean.slice(0, -5);
+    return clean;
+}
+
 function syncToCloud(payload) {
     const url = getCloudWebhookUrl();
     if (!url) return Promise.resolve(null);
     try {
+        if (isFirebaseUrl(url)) {
+            const base = normalizeFirebaseUrl(url);
+            if (payload.action === 'record' && payload.user?.id) {
+                return fetch(`${base}/participations/${payload.user.id}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: payload.user.id,
+                        userName: payload.user.name,
+                        nationalId: payload.user.nationalId,
+                        userRegion: payload.user.region,
+                        isTest: payload.user.isTest || false,
+                        prize: payload.prize,
+                        formattedDate: payload.formattedDate,
+                        scratchedAt: new Date().toISOString()
+                    })
+                }).catch(() => null);
+            } else if (payload.action === 'claim' && payload.userId) {
+                return fetch(`${base}/participations/${payload.userId}/claimInfo.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload.claimInfo)
+                }).catch(() => null);
+            } else if (payload.action === 'togglePaid' && payload.userId) {
+                return fetch(`${base}/participations/${payload.userId}/isPaid.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Boolean(payload.isPaid))
+                }).catch(() => null);
+            } else if (payload.action === 'updateInventory') {
+                return fetch(`${base}/inventory.json`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prize100: payload.prize100, prize200: payload.prize200 })
+                }).catch(() => null);
+            } else if (payload.action === 'resetTest') {
+                const promises = ['1','2','3','4','5','6','7','8','9','10'].map(id =>
+                    fetch(`${base}/participations/${id}.json`, { method: 'DELETE' }).catch(() => null)
+                );
+                return Promise.all(promises);
+            }
+        }
+
+        // الافتراضي: Google Apps Script Webhook
         return fetch(url, {
             method: 'POST',
             mode: 'no-cors',
@@ -4997,6 +5051,18 @@ function fetchFromCloud() {
     const url = getCloudWebhookUrl();
     if (!url) return Promise.resolve(null);
     try {
+        if (isFirebaseUrl(url)) {
+            const base = normalizeFirebaseUrl(url);
+            return Promise.all([
+                fetch(`${base}/participations.json`).then(r => r.json()).catch(() => ({})),
+                fetch(`${base}/inventory.json`).then(r => r.json()).catch(() => null)
+            ]).then(([participations, inventory]) => ({
+                status: 'success',
+                participations: participations || {},
+                inventory: inventory || null
+            })).catch(() => null);
+        }
+
         const fetchUrl = url + (url.includes('?') ? '&' : '?') + 'action=getAll&_t=' + Date.now();
         return fetch(fetchUrl)
             .then(r => r.json())

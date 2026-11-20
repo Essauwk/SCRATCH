@@ -507,12 +507,13 @@
                     <span id="cloudDetailBadge" style="font-size:0.85rem; color:#a5b4fc;"></span>
                 </div>
                 <p style="color:#cbd5e1; font-size:0.9rem; margin:0 0 12px 0; line-height:1.6;">
-                    يربط كل أجهزة المتسابقين (5,000 موظف على موبايلاتهم) بشيت جوجل لايف: يسجل كل خربشة، يحفظ بيانات الاستلام، ويحدث رصيد المخزن تلقائياً.
+                    يربط كل أجهزة المتسابقين (5,000 موظف على موبايلاتهم) بلوحة الإدارة لايف. يدعم رابط <strong>Google Apps Script</strong> أو رابط <strong>Firebase Realtime Database</strong> المجاني مباشرة!
                 </p>
                 <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-                    <input type="url" id="cloudWebhookInput" placeholder="الصق هنا رابط Web App URL الناتج من Google Apps Script (https://script.google.com/macros/s/.../exec)" style="flex:1; min-width:280px; padding:11px 14px; border-radius:10px; border:2px solid #6366f1; background:#0f172a; color:#fff; font-size:0.95rem; outline:none;" dir="ltr">
+                    <input type="url" id="cloudWebhookInput" placeholder="رابط Google Web App أو رابط Firebase (https://...)" style="flex:1; min-width:280px; padding:11px 14px; border-radius:10px; border:2px solid #6366f1; background:#0f172a; color:#fff; font-size:0.95rem; outline:none;" dir="ltr">
                     <button type="button" class="dash-btn dash-btn-primary" id="saveCloudWebhookBtn">💾 حفظ وتفعيل الربط</button>
                     <button type="button" class="dash-btn dash-btn-outline" id="syncNowBtn">🔄 سحب ومزامنة لايف الآن</button>
+                    <button type="button" class="dash-btn dash-btn-outline" id="sendTestPingBtn" style="background:#1e1b4b; border-color:#818cf8; color:#c7d2fe;">📲 تجربة واختبار الربط لايف</button>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:12px; font-size:0.85rem;">
                     <label style="display:inline-flex; align-items:center; gap:8px; color:#cbd5e1; cursor:pointer;">
@@ -906,6 +907,24 @@
         // زر المزامنة اليدوية الآن
         document.getElementById('syncNowBtn').addEventListener('click', () => {
             refreshDataFromCloud(false);
+        });
+
+        // زر تجربة واختبار الربط لايف
+        document.getElementById('sendTestPingBtn').addEventListener('click', () => {
+            const nowStr = new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+            syncToCloud({
+                action: 'record',
+                user: { id: 'TEST_PING', name: 'فحص اتصال لايف 📱', nationalId: '1234', region: 'تجربة الإدارة', isTest: true },
+                prize: { isWinner: true, title: 'فحص اتصال ناجح ✅', isTest: true },
+                formattedDate: nowStr
+            });
+            const bellBtn = document.getElementById('notifBellBtn');
+            if (bellBtn) {
+                bellBtn.classList.remove('ringing');
+                void bellBtn.offsetWidth;
+                bellBtn.classList.add('ringing');
+            }
+            showCloudAlert(`📲 تم إرسال نبضة فحص الاتصال بنجاح (${nowStr})!`, 'success');
         });
 
         // ==============================================

@@ -53,22 +53,27 @@ class ScratchCard {
 
     resize() {
         const rect = this.container.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
-        this.width = rect.width;
-        this.height = rect.height;
+        const dpr = Math.max(window.devicePixelRatio || 1, 2);
+        this.dpr = dpr;
+        this.width = rect.width || 340;
+        this.height = rect.height || 260;
 
-        this.canvas.width = this.width * dpr;
-        this.canvas.height = this.height * dpr;
+        this.canvas.width = Math.round(this.width * dpr);
+        this.canvas.height = Math.round(this.height * dpr);
         this.canvas.style.width = `${this.width}px`;
         this.canvas.style.height = `${this.height}px`;
 
-        this.particleCanvas.width = this.width * dpr;
-        this.particleCanvas.height = this.height * dpr;
+        this.particleCanvas.width = Math.round(this.width * dpr);
+        this.particleCanvas.height = Math.round(this.height * dpr);
         this.particleCanvas.style.width = `${this.width}px`;
         this.particleCanvas.style.height = `${this.height}px`;
 
-        this.ctx.scale(dpr, dpr);
-        this.pCtx.scale(dpr, dpr);
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        this.pCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        this.ctx.imageSmoothingEnabled = true;
+        this.ctx.imageSmoothingQuality = 'high';
+        this.pCtx.imageSmoothingEnabled = true;
     }
 
     drawFoil() {
