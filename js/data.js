@@ -4964,82 +4964,29 @@ function getUserParticipation(userId) {
 }
 
 // =========================================
-// ☁️ نظام المزامنة السحابية المركزية (Google Sheets Cloud Sync)
+// ☁️ سيرفر المزامنة السحابية المباشر (Upstash Realtime Cloud)
+// يعمل تلقائياً 100% بين جميع الموبايلات والأجهزة بدون الحاجة لأي جوجل شيتس أو إعدادات يدوية
 // =========================================
-const CLOUD_CONFIG = {
-    webhookUrl: '', // يتم وضع رابط Google Apps Script Web App هنا
-    storageKey: 'ALALAMIA_CLOUD_WEBHOOK_URL'
+const UPSTASH_CONFIG = {
+    endpoint: 'https://grateful-yak-126162.upstash.io',
+    token: 'gQAAAAAAAezSAQIgcDFjYjQ5ZjBhNGY3ZmU0MDhiOGEzMTgzMGRkZjNjMzVlYg',
+    keys: {
+        participations: 'alalamia:participations',
+        inventory: 'alalamia:inventory'
+    }
 };
 
-function getCloudWebhookUrl() {
-    return localStorage.getItem(CLOUD_CONFIG.storageKey) || CLOUD_CONFIG.webhookUrl || '';
-}
-
-function isFirebaseUrl(url) {
-    return Boolean(url && (url.includes('firebaseio.com') || url.includes('firebasedatabase.app')));
-}
-
-function normalizeFirebaseUrl(url) {
-    let clean = (url || '').trim().replace(/\/+$/, '');
-    if (clean.endsWith('.json')) clean = clean.slice(0, -5);
-    return clean;
-}
-
-function syncToCloud(payload) {
-    const url = getCloudWebhookUrl();
-    if (!url) return Promise.resolve(null);
+function upstashCommand(cmd) {
     try {
-        if (isFirebaseUrl(url)) {
-            const base = normalizeFirebaseUrl(url);
-            if (payload.action === 'record' && payload.user?.id) {
-                return fetch(`${base}/participations/${payload.user.id}.json`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: payload.user.id,
-                        userName: payload.user.name,
-                        nationalId: payload.user.nationalId,
-                        userRegion: payload.user.region,
-                        isTest: payload.user.isTest || false,
-                        prize: payload.prize,
-                        formattedDate: payload.formattedDate,
-                        scratchedAt: new Date().toISOString()
-                    })
-                }).catch(() => null);
-            } else if (payload.action === 'claim' && payload.userId) {
-                return fetch(`${base}/participations/${payload.userId}/claimInfo.json`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload.claimInfo)
-                }).catch(() => null);
-            } else if (payload.action === 'togglePaid' && payload.userId) {
-                return fetch(`${base}/participations/${payload.userId}/isPaid.json`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(Boolean(payload.isPaid))
-                }).catch(() => null);
-            } else if (payload.action === 'updateInventory') {
-                return fetch(`${base}/inventory.json`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prize100: payload.prize100, prize200: payload.prize200 })
-                }).catch(() => null);
-            } else if (payload.action === 'resetTest') {
-                const promises = ['1','2','3','4','5','6','7','8','9','10'].map(id =>
-                    fetch(`${base}/participations/${id}.json`, { method: 'DELETE' }).catch(() => null)
-                );
-                return Promise.all(promises);
-            }
-        }
-
-        // الافتراضي: Google Apps Script Webhook
-        return fetch(url, {
+        return fetch(UPSTASH_CONFIG.endpoint, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload)
-        }).catch(err => {
-            console.warn('Cloud sync background error (ignored):', err);
+            headers: {
+                'Authorization': 'Bearer ' + UPSTASH_CONFIG.token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(cmd)
+        }).then(r => r.json()).catch(err => {
+            console.warn('Upstash background error:', err);
             return null;
         });
     } catch (e) {
@@ -5047,32 +4994,97 @@ function syncToCloud(payload) {
     }
 }
 
-function fetchFromCloud() {
-    const url = getCloudWebhookUrl();
-    if (!url) return Promise.resolve(null);
-    try {
-        if (isFirebaseUrl(url)) {
-            const base = normalizeFirebaseUrl(url);
-            return Promise.all([
-                fetch(`${base}/participations.json`).then(r => r.json()).catch(() => ({})),
-                fetch(`${base}/inventory.json`).then(r => r.json()).catch(() => null)
-            ]).then(([participations, inventory]) => ({
-                status: 'success',
-                participations: participations || {},
-                inventory: inventory || null
-            })).catch(() => null);
-        }
+const CLOUD_CONFIG = {
+    webhookUrl: 'https://grateful-yak-126162.upstash.io',
+    storageKey: 'ALALAMIA_CLOUD_WEBHOOK_URL'
+};
 
-        const fetchUrl = url + (url.includes('?') ? '&' : '?') + 'action=getAll&_t=' + Date.now();
-        return fetch(fetchUrl)
-            .then(r => r.json())
-            .catch(err => {
-                console.warn('Cloud fetch error (ignored):', err);
-                return null;
-            });
-    } catch (e) {
-        return Promise.resolve(null);
+function getCloudWebhookUrl() {
+    return localStorage.getItem(CLOUD_CONFIG.storageKey) || CLOUD_CONFIG.webhookUrl || '';
+}
+
+function syncToCloud(payload) {
+    if (!payload) return Promise.resolve(null);
+
+    // 1. مزامنة فورية على سيرفر Upstash السحابي المركزي التلقائي
+    try {
+        if (payload.action === 'record' && payload.user?.id) {
+            const uid = String(payload.user.id).trim();
+            const record = {
+                userId: uid,
+                userName: payload.user.name,
+                nationalId: payload.user.nationalId,
+                userRegion: payload.user.region,
+                isTest: payload.user.isTest || false,
+                prize: payload.prize,
+                formattedDate: payload.formattedDate,
+                scratchedAt: new Date().toISOString(),
+                isPaid: false
+            };
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.participations, uid, JSON.stringify(record)]);
+        } else if (payload.action === 'claim' && payload.userId) {
+            const uid = String(payload.userId).trim();
+            const local = getAllParticipations();
+            const item = local[uid] || { userId: uid };
+            item.claimInfo = payload.claimInfo;
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.participations, uid, JSON.stringify(item)]);
+        } else if (payload.action === 'togglePaid' && payload.userId) {
+            const uid = String(payload.userId).trim();
+            const local = getAllParticipations();
+            const item = local[uid] || { userId: uid };
+            item.isPaid = Boolean(payload.isPaid);
+            if (item.claimInfo) item.claimInfo.isPaid = Boolean(payload.isPaid);
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.participations, uid, JSON.stringify(item)]);
+        } else if (payload.action === 'updateInventory') {
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', String(payload.prize100), 'prize200', String(payload.prize200)]);
+        } else if (payload.action === 'resetTest') {
+            const testIds = ['1','2','3','4','5','6','7','8','9','10'];
+            return upstashCommand(['HDEL', UPSTASH_CONFIG.keys.participations, ...testIds]);
+        }
+    } catch(e) {
+        console.warn('Upstash sync error:', e);
     }
+
+    return Promise.resolve(null);
+}
+
+function fetchFromCloud() {
+    // جلب ومزامنة فورية من سيرفر Upstash السحابي
+    return Promise.all([
+        upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.participations]),
+        upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.inventory])
+    ]).then(([partsRes, invRes]) => {
+        const participations = {};
+        if (partsRes && Array.isArray(partsRes.result)) {
+            for (let i = 0; i < partsRes.result.length; i += 2) {
+                const k = partsRes.result[i];
+                const v = partsRes.result[i + 1];
+                try {
+                    participations[k] = JSON.parse(v);
+                } catch(e) {}
+            }
+        }
+        let inventory = null;
+        if (invRes && Array.isArray(invRes.result)) {
+            const invObj = {};
+            for (let i = 0; i < invRes.result.length; i += 2) {
+                invObj[invRes.result[i]] = parseInt(invRes.result[i + 1], 10);
+            }
+            inventory = {
+                prize100: invObj.prize100 !== undefined ? invObj.prize100 : 500,
+                prize200: invObj.prize200 !== undefined ? invObj.prize200 : 300
+            };
+        }
+        return {
+            status: 'success',
+            source: 'upstash-cloud',
+            participations: participations,
+            inventory: inventory
+        };
+    }).catch(err => {
+        console.warn('Fetch from cloud error:', err);
+        return null;
+    });
 }
 
 function recordUserParticipation(user, prize) {
