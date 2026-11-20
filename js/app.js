@@ -145,7 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const isWin = historyRecord?.prize?.isWinner;
         const dateStr = historyRecord?.formattedDate || 'سابقاً';
         const claimText = historyRecord?.claimInfo
-            ? `<div style="margin-top:6px;color:#059669;font-weight:800;">✅ تم التسجيل: ${historyRecord.claimInfo.account} (${historyRecord.claimInfo.method})</div>`
+            ? `<div style="margin-top:10px;">
+                <div style="font-size:0.85rem;color:#059669;font-weight:700;margin-bottom:4px;">✅ تم التسجيل بنجاح:</div>
+                <div style="background:#fff;color:#111;font-size:1.2rem;font-weight:900;padding:8px 16px;border-radius:12px;border:2px solid #10b981;display:inline-block;letter-spacing:1px;">
+                    ${historyRecord.claimInfo.account}
+                </div>
+                <div style="font-size:0.8rem;color:#6b7280;margin-top:4px;">${historyRecord.claimInfo.method}</div>
+              </div>`
             : '';
 
         lockoutResultPreview.innerHTML = `
@@ -296,17 +302,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // صورة الجائزة داخل الكارت (تظهر مباشرة تحت الخربشة بمجرد إزالة الفويل)
         const scratchRevealImg = document.getElementById('scratchRevealImage');
+        const prizePeekHint = document.getElementById('prizePeekHint');
+        const prizePeekImg = document.getElementById('prizePeekImg');
         if (scratchRevealImg) {
             if (currentPrize.image && currentPrize.isWinner) {
                 scratchRevealImg.src = currentPrize.image;
                 scratchRevealImg.style.display = 'block';
                 if (prizeIcon) prizeIcon.style.display = 'none'; // إخفاء الأيقونة لإبراز صورة الفلوس الأصلية
+                // تفعيل لمحة الجائزة المغرية
+                if (prizePeekHint && prizePeekImg) {
+                    prizePeekImg.src = currentPrize.image;
+                    prizePeekHint.style.display = 'flex';
+                }
             } else {
                 scratchRevealImg.style.display = 'none';
                 if (prizeIcon) {
                     prizeIcon.style.display = 'block';
                     prizeIcon.textContent = currentPrize.icon || '💪';
                 }
+                if (prizePeekHint) prizePeekHint.style.display = 'none';
             }
         }
 
@@ -354,6 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
         soundManager.playSuspense(2.2);
         scratchMainCard.classList.add('in-suspense');
         suspenseOverlay.classList.add('active');
+
+        // إخفاء لمحة الجائزة عند بدء الساسبينس
+        const prizePeekHint = document.getElementById('prizePeekHint');
+        if (prizePeekHint) prizePeekHint.style.display = 'none';
 
         const firstName = user.name.split(' ')[0];
         suspenseTitle.textContent = `لحظة الحسم يا ${firstName}! ⚡`;
@@ -518,7 +536,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (accountInputLabel) accountInputLabel.textContent = 'عنوان انستاباي (IPA) أو رقم الموبايل:';
                     if (payoutAccountInput) payoutAccountInput.placeholder = 'name@instapay أو 01xxxxxxxxx';
                 } else {
-                    if (accountInputLabel) accountInputLabel.textContent = `رقم محفظة ${method} (01xxxxxxxxx):`;
+                    // محفظة ذكية
+                    if (accountInputLabel) accountInputLabel.textContent = 'رقم المحفظة الذكية (01xxxxxxxxx):';
                     if (payoutAccountInput) payoutAccountInput.placeholder = '01xxxxxxxxx';
                 }
             }
@@ -633,15 +652,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // أزرار الصوت والمساعدة
-    soundToggleBtn.addEventListener('click', () => {
-        const isEnabled = soundManager.toggleMute();
-        soundToggleBtn.textContent = isEnabled ? '🔊' : '🔇';
-    });
+    if (soundToggleBtn) {
+        soundToggleBtn.addEventListener('click', () => {
+            const isEnabled = soundManager.toggleMute();
+            soundToggleBtn.textContent = isEnabled ? '🔊' : '🔇';
+        });
+    }
 
-    helpInfoBtn.addEventListener('click', () => {
-        soundManager.playClick();
-        alert('🎉 مرحباً بك في مسابقة بطل العالمية اكسبريس!\n\n1. اكتب كود الموظف والرقم القومي.\n2. استلم الترحيب الملوكي.\n3. خربش 70% من الكارت بالعملة لاكتشاف نتيجتك!\n4. إذا كنت فائزاً، اضغط زر الاستلام ثم اتبع التعليمات.\n\n⚠️ ملحوظة: كل متسابق له فرصة واحدة فقط للخربشة.\n\nبالتوفيق يا عالمي! 🌟');
-    });
+    if (helpInfoBtn) {
+        helpInfoBtn.addEventListener('click', () => {
+            soundManager.playClick();
+            alert('🎉 مرحباً بك في مسابقة بطل العالمية اكسبريس!\n\n1. اكتب كود الموظف والرقم القومي.\n2. استلم الترحيب الملوكي.\n3. خربش 70% من الكارت بالعملة لاكتشاف نتيجتك!\n4. إذا كنت فائزاً، اضغط زر الاستلام ثم اتبع التعليمات.\n\n⚠️ ملحوظة: كل متسابق له فرصة واحدة فقط للخربشة.\n\nبالتوفيق يا عالمي! 🌟');
+        });
+    }
 
     // ===================================================
     // 8. 🟢 نبض التواجد الحي للمتسابقين (Live Online Presence)
@@ -681,3 +704,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     })();
 });
+
+// ===================================================
+// 🎵 الموسيقى الخلفية الحماسية — خارج DOMContentLoaded
+// ===================================================
+let _bgMusicStarted = false;
+
+function toggleBgMusic() {
+    const audio = document.getElementById('bgMusic');
+    const btn = document.getElementById('bgMuteBtn');
+    if (!audio) return;
+    if (audio.paused) {
+        audio.volume = 0.35;
+        audio.play().then(() => {
+            if (btn) btn.textContent = '🔊';
+        }).catch(() => {});
+    } else {
+        audio.pause();
+        if (btn) btn.textContent = '🔇';
+    }
+}
+
+// تشغيل الموسيقى تلقائياً بعد أول تفاعل من المستخدم
+function _tryStartBgMusic() {
+    if (_bgMusicStarted) return;
+    _bgMusicStarted = true;
+    const audio = document.getElementById('bgMusic');
+    const btn = document.getElementById('bgMuteBtn');
+    if (audio) {
+        audio.volume = 0.35;
+        audio.play().then(() => {
+            if (btn) btn.textContent = '🔊';
+        }).catch(() => {
+            if (btn) btn.textContent = '🔇';
+        });
+    }
+}
+
+document.addEventListener('click', _tryStartBgMusic, { once: true });
+document.addEventListener('touchstart', _tryStartBgMusic, { once: true });

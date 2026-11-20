@@ -33,8 +33,7 @@
             <span class="live-pill">LIVE 🔴</span>
         </div>
         <div class="header-controls">
-            <button class="icon-btn" id="soundToggleBtn" title="كتم / تشغيل الصوت">🔊</button>
-            <button class="icon-btn" id="helpInfoBtn" title="عن المسابقة">💡</button>
+            <button class="icon-btn" id="bgMuteBtn" title="كتم الموسيقى / تشغيل" onclick="toggleBgMusic()" style="font-size:1.2rem;">🔊</button>
         </div>
     </header>
 
@@ -48,6 +47,11 @@
             <div class="yellow-card funky-card-hover">
                 <div class="funky-badge">مسابقة حصرية 🔥</div>
                 <div class="funky-badge-left">اكسب فوراً 🎁</div>
+
+                <!-- نص متحرك فانكي على شاشة الدخول -->
+                <div class="flying-promo-text" id="flyingPromoText">
+                    <span>💰 اكسب مبالغ نقدية فورية 🔥</span>
+                </div>
 
                 <!-- اللوجو الرئيسي في شاشة تسجيل الدخول -->
                 <div class="login-header">
@@ -185,6 +189,12 @@
 
                     <!-- مؤشر العملة التفاعلي (Coin Follower) -->
                     <div class="coin-cursor-tool" id="coinCursorTool">🪙</div>
+
+                    <!-- لمحة الجائزة المغرية أثناء الخربشة (تظهر فقط للفائز بمبالغ نقدية) -->
+                    <div class="prize-peek-hint" id="prizePeekHint" style="display:none;">
+                        <img id="prizePeekImg" src="" alt="لمحة الجائزة">
+                        <span class="peek-label">👀 لمحة...</span>
+                    </div>
                 </div>
 
                 <!-- شريط الحماس والتشويق (بدون أي نسب مئوية) -->
@@ -252,29 +262,26 @@
                             <form id="directClaimForm" onsubmit="return false;">
                                 <div class="payment-method-selector" id="payoutMethodSelector">
                                     <label class="method-chip active">
-                                        <input type="radio" name="directPayoutMethod" value="فودافون كاش" checked>
-                                        <span>🔴 فودافون كاش</span>
+                                        <input type="radio" name="directPayoutMethod" value="محفظة ذكية" checked>
+                                        <span>🏦 محفظة ذكية</span>
                                     </label>
                                     <label class="method-chip">
                                         <input type="radio" name="directPayoutMethod" value="انستاباي InstaPay">
                                         <span>🟣 انستاباي InstaPay</span>
-                                    </label>
-                                    <label class="method-chip">
-                                        <input type="radio" name="directPayoutMethod" value="أورنج كاش">
-                                        <span>🟠 أورنج كاش</span>
-                                    </label>
-                                    <label class="method-chip">
-                                        <input type="radio" name="directPayoutMethod" value="اتصالات كاش">
-                                        <span>🟢 اتصالات كاش</span>
                                     </label>
                                 </div>
 
                                 <div class="form-group" style="margin-top:14px; text-align:right;">
                                     <label class="form-label" for="payoutAccountInput" style="font-size:0.9rem;">
                                         <span>📱</span>
-                                        <span id="accountInputLabel">رقم محفظة فودافون كاش (01xxxxxxxxx):</span>
+                                        <span id="accountInputLabel">رقم المحفظة الذكية (01xxxxxxxxx):</span>
                                     </label>
                                     <input type="text" id="payoutAccountInput" class="form-input" placeholder="01xxxxxxxxx" required autocomplete="off">
+                                </div>
+
+                                <!-- نوت مهم للفائز -->
+                                <div class="winner-important-note">
+                                    ⚠️ هتستلم جايزتك ع البيانات اللي تم إدخالها<br>ولابد المحفظة او انستا يكون بنفس الاسم
                                 </div>
 
                                 <button type="submit" class="claim-form-btn pulse-glow" id="submitClaimDirectBtn">
@@ -297,6 +304,12 @@
                         <div class="claim-form-note" style="margin-top:12px;">
                             🔒 يتم التحويل والمراجعة مباشرة من إدارة مسابقة العالمية إكسبريس.
                         </div>
+                    </div>
+
+                    <!-- لينك الفيسبوك في صفحة الفوز -->
+                    <div class="facebook-promo-box">
+                        استنانا كل شهر بمسابقات العالمية على صفحتنا على
+                        <a href="https://www.facebook.com/alalamiacompany0" target="_blank" rel="noopener" class="fb-link">فيسبوك</a> 🎉
                     </div>
                 </div>
 
@@ -326,6 +339,11 @@
                             <span class="inspire-tag">🚀 استنانا قريب</span>
                         </div>
                     </div>
+                    <!-- لينك الفيسبوك تحت الخساره -->
+                    <div class="facebook-promo-box">
+                        استنانا كل شهر بمسابقات العالمية على صفحتنا على
+                        <a href="https://www.facebook.com/alalamiacompany0" target="_blank" rel="noopener" class="fb-link">فيسبوك</a> 🎉
+                    </div>
                 </div>
 
                 <!-- أزرار الإجراءات في النتيجة -->
@@ -345,6 +363,12 @@
         صُنع من أجل أبطال <strong>العالمية اكسبريس</strong> بكل <span class="heart">❤️</span> وطاقة إيجابية!
         <a href="admin.html" style="opacity:0.25; text-decoration:none; margin-right:8px;" title="لوحة تحكم الإدارة والمخزن">🔒</a>
     </footer>
+
+    <!-- موسيقى خلفية حماسية -->
+    <audio id="bgMusic" loop preload="auto" style="display:none;">
+        <!-- موسيقى حماسية مجانية بدون حقوق من Pixabay -->
+        <source src="https://cdn.pixabay.com/audio/2024/02/28/audio_e09d4a9789.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- ملفات الجافاسكريبت بالترتيب الصحيح -->
     <script src="js/data.js"></script>

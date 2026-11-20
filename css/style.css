@@ -2341,3 +2341,149 @@ footer.app-footer span.heart {
     image-rendering: auto;
     image-rendering: crisp-edges;
 }
+
+
+/* ============================================================
+   🆕 تعديلات 20 نوفمبر: نص طيار + موسيقى + فيسبوك + نوت فائز
+   ============================================================ */
+
+/* النص المتحرك على شاشة الدخول */
+.flying-promo-text {
+    text-align: center;
+    margin: 10px 0 6px 0;
+    overflow: hidden;
+}
+
+.flying-promo-text span {
+    display: inline-block;
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #18181B;
+    background: linear-gradient(135deg, #FFE500 0%, #FF6B00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: flyingPromo 2.2s ease-in-out infinite alternate;
+    text-shadow: none;
+    letter-spacing: 0.5px;
+}
+
+@keyframes flyingPromo {
+    0% {
+        transform: translateY(0px) scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: translateY(-6px) scale(1.07);
+        filter: brightness(1.15);
+    }
+    100% {
+        transform: translateY(2px) scale(1.03);
+        filter: brightness(0.95);
+    }
+}
+
+/* بوكس لينك الفيسبوك */
+.facebook-promo-box {
+    text-align: center;
+    margin: 18px auto 4px auto;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #e7f0fd 0%, #f0f4ff 100%);
+    border: 2px solid #4267B2;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1.6;
+    max-width: 420px;
+}
+
+.fb-link {
+    color: #4267B2;
+    font-weight: 900;
+    text-decoration: underline;
+    font-size: 1rem;
+}
+
+.fb-link:hover {
+    color: #2d4a7a;
+    text-decoration: none;
+}
+
+/* نوت مهم للفائز بجانب المحفظة */
+.winner-important-note {
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 12px 0 8px 0;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #92400e;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* زرار كتم الموسيقى - نفس ستايل باقي الأزرار */
+#bgMuteBtn {
+    min-width: 38px;
+}
+
+/* ======================================================
+   شاشة موبايل: تعديل النص الطيار
+   ====================================================== */
+@media (max-width: 600px) {
+    .flying-promo-text span {
+        font-size: 1.05rem;
+    }
+
+    .facebook-promo-box {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+    }
+
+    .winner-important-note {
+        font-size: 0.82rem;
+    }
+}
+
+/* ============================================================
+   🪙 لمحة الجائزة المغرية أثناء الخربشة (Prize Peek Hint)
+   ============================================================ */
+.prize-peek-hint {
+    position: absolute;
+    bottom: -12px;
+    right: -10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    pointer-events: none;
+    animation: peekBounce 1.4s ease-in-out infinite;
+}
+
+.prize-peek-hint img {
+    width: 68px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2.5px solid #18181B;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    transform: rotate(-8deg);
+}
+
+.peek-label {
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: #fff;
+    background: #18181B;
+    border-radius: 8px;
+    padding: 1px 7px;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+}
+
+@keyframes peekBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
