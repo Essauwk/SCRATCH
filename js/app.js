@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===================================================
     // 1. تسجيل الدخول
     // ===================================================
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         soundManager.playClick();
 
@@ -188,13 +188,52 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (hasUserParticipated(user.id)) {
-            const previousRecord = getUserParticipation(user.id);
+        // --- إظهار حالة التحميل لمنع الضغط المزدوج ---
+        const submitBtn = loginForm.querySelector('button[type="submit"]') || loginForm.querySelector('button');
+        const originalBtnHTML = submitBtn ? submitBtn.innerHTML : null;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳ جاري التحقق...</span>';
+        }
+
+        // --- فحص السيرفر السحابي أولاً (المصدر الموثوق الوحيد) ---
+        let cloudRecord = null;
+        try {
+            const cloudRes = await upstashCommand(['HGET', UPSTASH_CONFIG.keys.participations, String(user.id).trim()]);
+            if (cloudRes && cloudRes.result) {
+                cloudRecord = JSON.parse(cloudRes.result);
+            }
+        } catch (cloudErr) {
+            console.warn('⚠️ تعذر الاتصال بالسيرفر السحابي، جاري الاعتماد على البيانات المحلية:', cloudErr);
+        }
+
+        // --- الفحص المحلي كاحتياط ---
+        const localRecord = getUserParticipation(user.id);
+        const existingRecord = cloudRecord || localRecord;
+
+        if (existingRecord) {
+            // إذا كان موجود في السحابة بس مش محلي، احفظه محلياً للاتساق
+            if (cloudRecord && !localRecord) {
+                try {
+                    const history = getAllParticipations();
+                    history[String(user.id).trim()] = cloudRecord;
+                    localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+                } catch (storageErr) {}
+            }
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHTML;
+            }
             soundManager.playLose();
-            showLockoutScreen(user, previousRecord);
+            showLockoutScreen(user, existingRecord);
             return;
         }
 
+        // --- مش موجود في أي مكان → اسمح له بالدخول ---
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHTML;
+        }
         loginErrorMsg.style.display = 'none';
         currentUser = user;
         soundManager.playSuccessBeep();
