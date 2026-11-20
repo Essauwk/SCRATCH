@@ -438,6 +438,114 @@
             cursor: pointer;
             accent-color: #10b981;
         }
+
+        /* =========================================
+           📱 MOBILE RESPONSIVE — admin dashboard
+           ========================================= */
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+
+            /* Header */
+            .dash-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding-bottom: 12px;
+                margin-bottom: 12px;
+            }
+            .dash-brand { gap: 10px; }
+            .dash-logo { width: 42px; height: 42px; }
+            .dash-title h1 {
+                font-size: 1rem;
+                gap: 6px;
+            }
+            .dash-title p { font-size: 0.78rem; }
+            .cloud-status-pill { font-size: 0.72rem; padding: 4px 10px; }
+            .dash-actions {
+                width: 100%;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .dash-actions .dash-btn {
+                width: 100%;
+                justify-content: center;
+                font-size: 0.85rem;
+                padding: 10px 12px;
+            }
+
+            /* Tabs */
+            .dash-tabs {
+                gap: 6px;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
+            }
+            .tab-btn {
+                padding: 8px 12px;
+                font-size: 0.82rem;
+                gap: 5px;
+            }
+
+            /* Stats grid — 2 columns on mobile */
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+            .stat-card { padding: 12px; }
+            .stat-val { font-size: 1.5rem; }
+            .stat-header { font-size: 0.78rem; }
+
+            /* Inventory box */
+            .inv-control-box { padding: 14px; margin-bottom: 15px; }
+            .inv-control-title { font-size: 0.95rem; }
+            .inv-inputs-row { flex-direction: column; gap: 10px; }
+            .inv-input-group { min-width: unset; }
+            .inv-num-input { font-size: 1rem; padding: 8px 12px; }
+
+            /* Cloud sync box */
+            .cloud-sync-box { padding: 14px; }
+            .cloud-sync-title { font-size: 0.95rem; }
+
+            /* Admin section */
+            .admin-section { padding: 12px; margin-bottom: 15px; }
+            .section-title { font-size: 0.95rem; }
+            .section-title > div,
+            .section-title > span { font-size: 0.95rem; }
+
+            /* Buttons inside sections */
+            .admin-section > div > .dash-btn,
+            .admin-section .dash-btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 6px;
+            }
+            .admin-section > div[style*="display:flex"],
+            .admin-section > div[style*="display: flex"] {
+                flex-direction: column !important;
+            }
+
+            /* Table controls */
+            .table-controls { flex-direction: column; gap: 8px; }
+            .search-box { min-width: unset; width: 100%; box-sizing: border-box; }
+            .filter-select { width: 100%; font-size: 0.85rem; }
+
+            /* Table — horizontal scroll with smaller text */
+            .table-wrap { max-height: 400px; }
+            table { font-size: 0.78rem; }
+            th, td { padding: 8px 10px; }
+
+            /* Notification bell */
+            .admin-notif-bell-wrap { bottom: 16px; left: 16px; right: auto; }
+            .admin-notif-bell-btn { width: 48px; height: 48px; font-size: 1.3rem; }
+            .notif-panel { width: calc(100vw - 32px); left: 0; bottom: 65px; right: auto; }
+        }
+
+        @media (max-width: 400px) {
+            /* Single column stats on very small screens */
+            .stats-grid { grid-template-columns: 1fr; }
+            .tab-btn { padding: 7px 9px; font-size: 0.75rem; }
+            .dash-title h1 { font-size: 0.9rem; }
+        }
     </style>
 </head>
 <body>
@@ -764,7 +872,7 @@
                 if (isAuto) {
                     refreshDataFromCloud(true);
                 }
-            }, 8000);
+            }, 3000);
         }
 
         // تحديث حالة السحابة في الواجهة
@@ -1409,7 +1517,7 @@
         }
 
         // تشغيل polling كل 12 ثانية
-        setInterval(checkCloudForNewWinners, 12000);
+        setInterval(checkCloudForNewWinners, 4000);
 
         // بدء الإشعارات بعد فتح اللوحة
         function startNotifSystem() {
