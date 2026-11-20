@@ -773,7 +773,7 @@ main.app-container {
 .scratch-card-box {
     position: relative;
     width: 100%;
-    height: 310px;
+    height: 340px;
     border-radius: 24px;
     border: 4px solid #18181B;
     box-shadow: 8px 8px 0px #18181B;
@@ -782,6 +782,8 @@ main.app-container {
     user-select: none;
     -webkit-user-select: none;
     cursor: crosshair;
+    /* تحسين الرسم على شاشات الموبايل عالية الكثافة */
+    image-rendering: -webkit-optimize-contrast;
 }
 
 /* ========================================================
@@ -1754,8 +1756,8 @@ footer.app-footer span.heart {
     }
 
     .scratch-card-box {
-        height: 250px;
-        border-radius: 18px;
+        height: 290px;
+        border-radius: 20px;
         border-width: 3.5px;
         box-shadow: 6px 6px 0px #18181B;
     }
@@ -1867,7 +1869,7 @@ footer.app-footer span.heart {
     }
 
     .scratch-card-box {
-        height: 230px;
+        height: 260px;
     }
 
     .reveal-prize-icon {
@@ -1948,16 +1950,20 @@ footer.app-footer span.heart {
     margin: 10px 0 14px 0;
 }
 .result-prize-image {
-    max-width: 200px;
-    width: 100%;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-    border: 3px solid #FFE500;
-    animation: prizeImgPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    max-width: 240px;
+    width: 90%;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3), 0 0 0 4px #FFE500;
+    border: 3px solid #18181B;
+    animation: prizeImgPop 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+    transition: transform 0.2s;
+}
+.result-prize-image:hover {
+    transform: scale(1.04) rotate(-1deg);
 }
 @keyframes prizeImgPop {
-    from { transform: scale(0.5); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
+    from { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg);   opacity: 1; }
 }
 
 /* ========================================================
@@ -2141,4 +2147,147 @@ footer.app-footer span.heart {
 .reset-test-chip:hover {
     border-color: #6b7280;
     color: #6b7280;
+}
+
+/* ========================================================
+   🔔 نظام إشعارات الأدمين اللحظية (Live Notification Bell)
+   ======================================================== */
+.admin-notif-bell-wrap {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+.admin-notif-bell-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #FFE500;
+    border: 3px solid #18181B;
+    box-shadow: 4px 4px 0px #18181B;
+    cursor: pointer;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.15s;
+}
+.admin-notif-bell-btn:hover { transform: scale(1.1); }
+.admin-notif-bell-btn.ringing { animation: ringBell 0.5s ease 3; }
+@keyframes ringBell {
+    0%,100%{ transform: rotate(0deg); }
+    25%    { transform: rotate(-18deg); }
+    75%    { transform: rotate(18deg); }
+}
+.notif-badge-count {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 900;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    animation: popBadge 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popBadge {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+}
+.notif-panel {
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 16px;
+    width: 310px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    display: none;
+    flex-direction: column;
+    padding: 0;
+}
+.notif-panel.open { display: flex; }
+.notif-panel-header {
+    padding: 12px 16px;
+    background: #0f172a;
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 14px 14px 0 0;
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: #FFE500;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.notif-clear-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+    padding: 2px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.notif-clear-btn:hover { background: #334155; color: #fff; }
+.notif-list { flex: 1; padding: 8px; }
+.notif-item {
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: slideInNotif 0.3s ease;
+}
+@keyframes slideInNotif {
+    from { transform: translateX(-20px); opacity: 0; }
+    to   { transform: translateX(0);     opacity: 1; }
+}
+.notif-item.win  { background: rgba(52,211,153,0.15); border: 1px solid #34d399; }
+.notif-item.lose { background: rgba(100,116,139,0.1); border: 1px solid #334155; }
+.notif-item-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+.notif-item-body { flex: 1; }
+.notif-item-name { color: #fff; }
+.notif-item-time { color: #94a3b8; font-size: 0.75rem; margin-top: 2px; font-weight: 600; }
+.notif-item.win  .notif-item-name { color: #34d399; }
+.notif-empty {
+    text-align: center;
+    padding: 30px 16px;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+/* ========================================================
+   📱 تحسين جودة كارت الخربشة على الموبايل
+   ======================================================== */
+#scratchContainer {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+#scratchCanvas {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    image-rendering: auto;
+    image-rendering: crisp-edges;
 }

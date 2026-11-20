@@ -234,6 +234,17 @@ document.addEventListener('DOMContentLoaded', () => {
         prizeTitle.textContent = currentPrize.title;
         prizeDesc.textContent = currentPrize.description;
 
+        // صورة الجائزة داخل الكارت (مخفية حتى يتم الكشف)
+        const scratchRevealImg = document.getElementById('scratchRevealImage');
+        if (scratchRevealImg) {
+            if (currentPrize.image) {
+                scratchRevealImg.src = currentPrize.image;
+                scratchRevealImg.style.display = 'none'; // ستظهر بعد الكشف
+            } else {
+                scratchRevealImg.style.display = 'none';
+            }
+        }
+
         scratchPrizeLayer.classList.remove('revealed-clear');
         scratchPrizeLayer.classList.add('mystery-blur');
 
@@ -297,6 +308,30 @@ document.addEventListener('DOMContentLoaded', () => {
             // تسجيل المشاركة فوراً
             recordUserParticipation(user, currentPrize);
 
+            // 🔔 إشعار لوحة الأدمين المفتوحة في نفس المتصفح فوراً (BroadcastChannel)
+            try {
+                const nowStr = new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+                // حفظ إشعار في localStorage (يفيد polling الأجهزة الأخرى)
+                const NOTIF_KEY = 'ALALAMIA_LIVE_NOTIFICATIONS';
+                let notifs = [];
+                try { notifs = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]'); } catch(e) {}
+                notifs.push({
+                    userId:     String(user.id),
+                    userName:   user.name,
+                    region:     user.region,
+                    isWinner:   currentPrize.isWinner,
+                    prizeTitle: currentPrize.title || '',
+                    time:       nowStr,
+                    ts:         Date.now()
+                });
+                localStorage.setItem(NOTIF_KEY, JSON.stringify(notifs.slice(-200)));
+
+                // بث فوري لأي تاب أدمين مفتوح
+                const bc = new BroadcastChannel('alalamia_live');
+                bc.postMessage({ type: 'new_participation', userId: user.id, isWinner: currentPrize.isWinner });
+                setTimeout(() => bc.close(), 1000);
+            } catch(e) {}
+
             if (currentPrize.isWinner) {
                 soundManager.playWin();
                 confettiManager.celebrateWin();
@@ -334,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
             resultPrizeName.textContent = currentPrize.title;
             resultPrizeSub.textContent = currentPrize.description;
 
-            // صورة الجائزة
+            // صورة الجائزة في شاشة النتيجة
             if (resultPrizeImage) {
                 if (currentPrize.image) {
                     resultPrizeImage.src = currentPrize.image;
@@ -342,6 +377,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     resultPrizeImage.style.display = 'none';
                 }
+            }
+
+            // ظهور صورة الجائزة أيضاً في الكارت بعد الكشف
+            const scratchRevealImg = document.getElementById('scratchRevealImage');
+            if (scratchRevealImg && currentPrize.image) {
+                scratchRevealImg.src = currentPrize.image;
+                scratchRevealImg.style.display = 'block';
             }
 
             // تحديث حالة نموذج الاستلام المباشر في الصفحة

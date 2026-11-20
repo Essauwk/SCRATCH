@@ -44,11 +44,11 @@ const GOOGLE_FORM_CONFIG = {
 // لا تُحتسب من مخزن الجوائز الحقيقية
 // =========================================
 const TEST_CONTESTANTS = [
-    { id: '1',  nationalId: '1234', name: 'تجربه 1',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', isTest: true } },
-    { id: '2',  nationalId: '1234', name: 'تجربه 2',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '200 جنيه 💴', description: 'مكافأة فورية 200 جنيه كاش - حساب تجريبي', icon: '💴', isTest: true } },
-    { id: '3',  nationalId: '1234', name: 'تجربه 3',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', isTest: true } },
-    { id: '4',  nationalId: '1234', name: 'تجربه 4',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '200 جنيه 💴', description: 'مكافأة فورية 200 جنيه كاش - حساب تجريبي', icon: '💴', isTest: true } },
-    { id: '5',  nationalId: '1234', name: 'تجربه 5',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', isTest: true } },
+    { id: '1',  nationalId: '1234', name: 'تجربه 1',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', image: 'images/prize_100.jpg', prizeKey: 'prize100', isTest: true } },
+    { id: '2',  nationalId: '1234', name: 'تجربه 2',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '200 جنيه 💴', description: 'مكافأة فورية 200 جنيه كاش - حساب تجريبي', icon: '💴', image: 'images/prize_200.jpg', prizeKey: 'prize200', isTest: true } },
+    { id: '3',  nationalId: '1234', name: 'تجربه 3',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', image: 'images/prize_100.jpg', prizeKey: 'prize100', isTest: true } },
+    { id: '4',  nationalId: '1234', name: 'تجربه 4',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '200 جنيه 💴', description: 'مكافأة فورية 200 جنيه كاش - حساب تجريبي', icon: '💴', image: 'images/prize_200.jpg', prizeKey: 'prize200', isTest: true } },
+    { id: '5',  nationalId: '1234', name: 'تجربه 5',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', image: 'images/prize_100.jpg', prizeKey: 'prize100', isTest: true } },
     { id: '6',  nationalId: '1234', name: 'تجربه 6',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },
     { id: '7',  nationalId: '1234', name: 'تجربه 7',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },
     { id: '8',  nationalId: '1234', name: 'تجربه 8',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },

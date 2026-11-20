@@ -713,6 +713,26 @@
 
     </div>
 
+    <!-- ===================================================
+         🔔 جرس الإشعارات الحي للأدمين (Live Notification Bell)
+         تظهر فقط عند فتح لوحة الإدارة
+         =================================================== -->
+    <div class="admin-notif-bell-wrap" id="adminNotifWrap" style="display:none;">
+        <div class="notif-panel" id="notifPanel">
+            <div class="notif-panel-header">
+                <span>🔔 الإشعارات الحية</span>
+                <button class="notif-clear-btn" id="clearNotifsBtn">مسح الكل</button>
+            </div>
+            <div class="notif-list" id="notifList">
+                <div class="notif-empty">لا توجد إشعارات جديدة بعد.<br>ستظهر هنا فور خربشة أي متسابق!</div>
+            </div>
+        </div>
+        <button class="admin-notif-bell-btn" id="notifBellBtn" title="الإشعارات الحية">
+            🔔
+            <span class="notif-badge-count" id="notifBadge" style="display:none;">0</span>
+        </button>
+    </div>
+
     <!-- ملف البيانات المشترك -->
     <script src="js/data.js"></script>
     <script>
@@ -762,6 +782,9 @@
 
             // تفعيل التحديث التلقائي الدوري كل 15 ثانية
             startAutoRefreshTimer();
+
+            // تشغيل نظام الإشعارات الحي
+            startNotifSystem();
         }
 
         // ==============================================
@@ -1254,6 +1277,167 @@
         }
 
         document.getElementById('dbSearchInput').addEventListener('input', renderDatabaseTable);
+
+        // ==============================================
+        // 🔔 نظام الإشعارات الحي بدون Google / Backend
+        // يعمل عبر: BroadcastChannel + localStorage polling
+        // ==============================================
+        const NOTIF_STORAGE_KEY = 'ALALAMIA_LIVE_NOTIFICATIONS';
+        const NOTIF_SEEN_KEY    = 'ALALAMIA_NOTIF_LAST_SEEN';
+        let notifPanelOpen = false;
+        let notifUnreadCount = 0;
+        let lastKnownNotifIds = new Set();
+
+        // قراءة الإشعارات المحفوظة
+        function getStoredNotifs() {
+            try {
+                const raw = localStorage.getItem(NOTIF_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch { return []; }
+        }
+
+        // رسم لوحة الإشعارات
+        function renderNotifPanel() {
+            const notifs = getStoredNotifs();
+            const listEl = document.getElementById('notifList');
+            const badgeEl = document.getElementById('notifBadge');
+
+            if (notifs.length === 0) {
+                listEl.innerHTML = '<div class="notif-empty">لا توجد إشعارات جديدة بعد.<br>ستظهر هنا فور خربشة أي متسابق!</div>';
+                badgeEl.style.display = 'none';
+                notifUnreadCount = 0;
+                return;
+            }
+
+            // عرض أحدث 50 إشعار
+            const recent = notifs.slice(-50).reverse();
+            listEl.innerHTML = recent.map(n => {
+                const isWin = n.isWinner;
+                return `
+                    <div class="notif-item ${isWin ? 'win' : 'lose'}">
+                        <span class="notif-item-icon">${isWin ? '🎉' : '💪'}</span>
+                        <div class="notif-item-body">
+                            <div class="notif-item-name">
+                                <strong>${n.userName || 'متسابق'}</strong>
+                                ${isWin ? `✅ كسب <strong>${n.prizeTitle}</strong>` : '— حظ أوفر'}
+                            </div>
+                            <div style="font-size:0.78rem; color:#94a3b8;">${n.region || ''}</div>
+                            <div class="notif-item-time">${n.time || ''}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // حساب الغير مقروءة
+            const lastSeen = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10);
+            notifUnreadCount = notifs.filter(n => (n.ts || 0) > lastSeen).length;
+
+            if (notifUnreadCount > 0) {
+                badgeEl.textContent = notifUnreadCount > 99 ? '99+' : notifUnreadCount;
+                badgeEl.style.display = 'flex';
+            } else {
+                badgeEl.style.display = 'none';
+            }
+        }
+
+        // فحص إشعارات جديدة ودق الجرس
+        function checkForNewNotifs() {
+            const notifs = getStoredNotifs();
+            const lastSeen = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10);
+            const newNotifs = notifs.filter(n => (n.ts || 0) > lastSeen);
+
+            if (newNotifs.length > 0) {
+                renderNotifPanel();
+                // دق الجرس
+                const bellBtn = document.getElementById('notifBellBtn');
+                bellBtn.classList.remove('ringing');
+                void bellBtn.offsetWidth; // force reflow
+                bellBtn.classList.add('ringing');
+                setTimeout(() => bellBtn.classList.remove('ringing'), 1600);
+            }
+        }
+
+        // تهيئة زرار الجرس
+        document.getElementById('notifBellBtn').addEventListener('click', () => {
+            notifPanelOpen = !notifPanelOpen;
+            const panel = document.getElementById('notifPanel');
+            panel.classList.toggle('open', notifPanelOpen);
+            if (notifPanelOpen) {
+                // علام كل الإشعارات كمقروءة
+                localStorage.setItem(NOTIF_SEEN_KEY, String(Date.now()));
+                renderNotifPanel();
+            }
+        });
+
+        document.getElementById('clearNotifsBtn').addEventListener('click', () => {
+            localStorage.removeItem(NOTIF_STORAGE_KEY);
+            localStorage.setItem(NOTIF_SEEN_KEY, String(Date.now()));
+            renderNotifPanel();
+        });
+
+        // استقبال إشعارات من نفس المتصفح عبر BroadcastChannel
+        let bc;
+        try {
+            bc = new BroadcastChannel('alalamia_live');
+            bc.onmessage = (ev) => {
+                if (ev.data && ev.data.type === 'new_participation') {
+                    checkForNewNotifs();
+                    if (!notifPanelOpen) loadDashboardData();
+                }
+            };
+        } catch(e) {}
+
+        // polling خارجي (من أجهزة أخرى) كل 10 ثواني مع refreshDataFromCloud
+        // سيتعامل مع اشعارات الأجهزة الأخرى عبر localStorage المدمج مع السحابة
+        function checkCloudForNewWinners() {
+            const url = getCloudWebhookUrl();
+            if (!url) return;
+
+            fetchFromCloud().then(cloudData => {
+                if (!cloudData || cloudData.status !== 'success') return;
+                const parts = cloudData.participations || {};
+                const notifs = getStoredNotifs();
+                const existingIds = new Set(notifs.map(n => n.userId));
+                let hasNew = false;
+
+                Object.values(parts).forEach(p => {
+                    if (!existingIds.has(p.userId) && !lastKnownNotifIds.has(p.userId)) {
+                        const nowStr = new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+                        notifs.push({
+                            userId:     p.userId,
+                            userName:   p.userName,
+                            region:     p.userRegion,
+                            isWinner:   p.prize && p.prize.isWinner,
+                            prizeTitle: p.prize ? p.prize.title : '',
+                            time:       nowStr,
+                            ts:         Date.now()
+                        });
+                        lastKnownNotifIds.add(p.userId);
+                        hasNew = true;
+                    }
+                });
+
+                if (hasNew) {
+                    // حفظ آخر 200 إشعار فقط
+                    localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(notifs.slice(-200)));
+                    checkForNewNotifs();
+                    if (!notifPanelOpen) loadDashboardData();
+                }
+            }).catch(() => {});
+        }
+
+        // تشغيل polling كل 12 ثانية
+        setInterval(checkCloudForNewWinners, 12000);
+
+        // بدء الإشعارات بعد فتح اللوحة
+        function startNotifSystem() {
+            document.getElementById('adminNotifWrap').style.display = 'flex';
+            renderNotifPanel();
+            checkForNewNotifs();
+            // ابدأ فوراً
+            checkCloudForNewWinners();
+        }
+
     </script>
 </body>
 </html>
