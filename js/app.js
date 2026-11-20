@@ -122,6 +122,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateInventoryDisplay();
 
+    // مزامنة المخزن لايف من السيرفر السحابي فور فتح الموقع
+    if (typeof syncInventoryFromCloud === 'function') {
+        syncInventoryFromCloud().then(() => updateInventoryDisplay());
+    }
+
+    try {
+        const liveBc = new BroadcastChannel('alalamia_live');
+        liveBc.onmessage = (ev) => {
+            if (ev.data && (ev.data.type === 'inventory_updated' || ev.data.type === 'new_participation')) {
+                updateInventoryDisplay();
+            }
+        };
+    } catch(e) {}
+
     // ===================================================
     // شاشة القفل (مشاركة مسبقة)
     // ===================================================
@@ -207,10 +221,13 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<span>⏳ جاري التحقق...</span>';
         }
 
-        // --- فحص السيرفر السحابي أولاً (المصدر الموثوق الوحيد) ---
+        // --- فحص السيرفر السحابي أولاً ومزامنة المخزن ---
         let cloudRecord = null;
         try {
-            const cloudRes = await upstashCommand(['HGET', UPSTASH_CONFIG.keys.participations, String(user.id).trim()]);
+            const [cloudRes] = await Promise.all([
+                upstashCommand(['HGET', UPSTASH_CONFIG.keys.participations, String(user.id).trim()]),
+                typeof syncInventoryFromCloud === 'function' ? syncInventoryFromCloud() : Promise.resolve(null)
+            ]);
             if (cloudRes && cloudRes.result) {
                 cloudRecord = JSON.parse(cloudRes.result);
             }

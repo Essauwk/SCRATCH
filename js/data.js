@@ -4843,10 +4843,37 @@ function getPrizeRemaining(prizeKey) {
 }
 
 function decrementPrize(prizeKey) {
+    if (!PRIZE_INVENTORY[prizeKey]) return false;
     const storageKey = PRIZE_INVENTORY[prizeKey].storageKey;
     const current = getPrizeRemaining(prizeKey);
     if (current > 0) {
         localStorage.setItem(storageKey, String(current - 1));
+
+        // ⚡ خصم سحابي فوري وذري من مخزن سيرفر Upstash
+        try {
+            upstashCommand(['HINCRBY', UPSTASH_CONFIG.keys.inventory, prizeKey, '-1']).then(res => {
+                if (res && res.result !== undefined) {
+                    const newCount = parseInt(res.result, 10);
+                    if (!isNaN(newCount)) {
+                        localStorage.setItem(storageKey, String(newCount));
+                    }
+                }
+            }).catch(err => {
+                console.warn('Upstash HINCRBY failed:', err);
+            });
+        } catch (e) {
+            console.warn('Upstash HINCRBY error:', e);
+        }
+
+        // إشعار فوري لجميع التابات المفتوحة
+        try {
+            if (window.BroadcastChannel) {
+                const bc = new BroadcastChannel('alalamia_live');
+                bc.postMessage({ type: 'inventory_updated', prizeKey: prizeKey, remaining: current - 1 });
+                setTimeout(() => bc.close(), 1000);
+            }
+        } catch (e) {}
+
         return true;
     }
     return false; // نفذت الجائزة
@@ -4859,6 +4886,26 @@ function getInventorySnapshot() {
         prize100_initial: PRIZE_INVENTORY.prize100.count,
         prize200_initial: PRIZE_INVENTORY.prize200.count,
     };
+}
+
+// مزامنة المخزن لايف من السيرفر السحابي
+async function syncInventoryFromCloud() {
+    try {
+        const res = await upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.inventory]);
+        if (res && Array.isArray(res.result) && res.result.length > 0) {
+            for (let i = 0; i < res.result.length; i += 2) {
+                const key = res.result[i];
+                const val = parseInt(res.result[i + 1], 10);
+                if (!isNaN(val) && PRIZE_INVENTORY[key]) {
+                    localStorage.setItem(PRIZE_INVENTORY[key].storageKey, String(val));
+                }
+            }
+            return true;
+        }
+    } catch (e) {
+        console.warn('Inventory cloud sync error:', e);
+    }
+    return false;
 }
 
 // =========================================
