@@ -293,3 +293,224 @@ class SoundEngine {
 }
 
 const soundManager = new SoundEngine();
+
+/**
+ * ========================================================
+ * 🎶 مشغل موسيقى الفائزين الاحتفالية العشوائية (Winner Music Player)
+ * ========================================================
+ * - تشغيل عشوائي من باقة أغاني مجلد music/ للفائزين فقط.
+ * - تأثير تلاشي للداخل (Fade In) متدرج عند البداية.
+ * - دوران وتكرار لا نهائي (Looping) مع تلاشي للخارج (Fade Out) قبل نهاية كل مقطع.
+ * - إيقاف موسيقى الخلفية المعتادة أثناء تشغيل أغنية الفوز.
+ */
+class WinnerMusicPlayer {
+    constructor() {
+        this.playlist = [
+            { id: '1', title: 'الجي بتاعي', path: 'music/winner_1.mp3', fallback: 'music/' + encodeURI('الجي بتاعي.mp3') },
+            { id: '2', title: 'انا فايف ستار', path: 'music/winner_2.mp3', fallback: 'music/' + encodeURI('انا فايف ستار.mp3') },
+            { id: '3', title: 'سيبك اللي خلع', path: 'music/winner_3.mp3', fallback: 'music/' + encodeURI('سيبك اللي خلع.mp3') },
+            { id: '4', title: 'عالدوغري وبرجوله', path: 'music/winner_4.mp3', fallback: 'music/' + encodeURI('عالدوغري وبرجوله.mp3') },
+            { id: '5', title: 'عم عمك', path: 'music/winner_5.mp3', fallback: 'music/' + encodeURI('عم عمك.mp3') },
+            { id: '6', title: 'نمبر 1', path: 'music/winner_6.mp3', fallback: 'music/' + encodeURI('نمبر 1.mp3') }
+        ];
+
+        this.currentAudio = null;
+        this.currentTrack = null;
+        this.lastPlayedIndex = -1;
+        this.isPlaying = false;
+        this.targetVolume = 0.85;
+        this.fadeTimer = null;
+        this.monitorTimer = null;
+        this.isFadingOut = false;
+        this.muted = false;
+    }
+
+    getRandomTrack() {
+        if (!this.playlist || this.playlist.length === 0) return null;
+        if (this.playlist.length === 1) return this.playlist[0];
+
+        let index;
+        let attempts = 0;
+        do {
+            index = Math.floor(Math.random() * this.playlist.length);
+            attempts++;
+        } while (index === this.lastPlayedIndex && attempts < 15);
+
+        this.lastPlayedIndex = index;
+        return this.playlist[index];
+    }
+
+    playRandomWinnerMusic() {
+        // إيقاف أي موسيقى فائزين سابقة فوراً
+        this.stop(false);
+
+        const track = this.getRandomTrack();
+        if (!track) return null;
+        this.currentTrack = track;
+
+        // إيقاف موسيقى الخلفية العامة للموقع
+        this.pauseBackgroundMusic();
+
+        const audio = new Audio();
+        audio.preload = 'auto';
+        audio.volume = 0; // البداية من صفر لتطبيق الفيد إن
+        audio.muted = this.muted;
+        this.currentAudio = audio;
+        this.isPlaying = true;
+        this.isFadingOut = false;
+
+        // معالجة الخطأ والرجوع للرابط البديل فوراً
+        audio.onerror = () => {
+            if (track.fallback && audio.src !== track.fallback) {
+                console.warn('Winner track fallback:', track.title);
+                audio.src = track.fallback;
+                audio.load();
+                audio.play().catch(() => {});
+            }
+        };
+
+        audio.src = track.path;
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                // تلاشي صوتي متصاعد للداخل (Fade In)
+                this.fadeIn(audio, this.targetVolume, 1800);
+                this.startTrackMonitor(audio);
+            }).catch(err => {
+                console.warn('Autoplay handled for winner music:', err);
+            });
+        }
+
+        // عند انتهاء المقطع، إعادة تشغيله بفيد إن سلس ولوب مستمر
+        audio.onended = () => {
+            if (this.currentAudio === audio && this.isPlaying) {
+                audio.currentTime = 0;
+                audio.volume = 0;
+                this.isFadingOut = false;
+                const rep = audio.play();
+                if (rep !== undefined) {
+                    rep.then(() => {
+                        this.fadeIn(audio, this.targetVolume, 1800);
+                        this.startTrackMonitor(audio);
+                    }).catch(() => {});
+                }
+            }
+        };
+
+        return audio;
+    }
+
+    startTrackMonitor(audio) {
+        if (this.monitorTimer) clearInterval(this.monitorTimer);
+
+        // مراقبة مسار الأغنية لتطبيق تلاشي الصوت للخارج (Fade Out) قبل انتهائها بـ 2.5 ثانية
+        this.monitorTimer = setInterval(() => {
+            if (!this.isPlaying || this.currentAudio !== audio) {
+                clearInterval(this.monitorTimer);
+                return;
+            }
+
+            if (audio.duration && !isNaN(audio.duration) && audio.duration > 3) {
+                const remaining = audio.duration - audio.currentTime;
+                if (remaining <= 2.5 && remaining > 0.15 && !this.isFadingOut) {
+                    this.isFadingOut = true;
+                    this.fadeOut(audio, 2200);
+                }
+            }
+        }, 200);
+    }
+
+    fadeIn(audio, targetVol, durationMs = 1800) {
+        if (!audio) return;
+        if (this.fadeTimer) clearInterval(this.fadeTimer);
+
+        const steps = 30;
+        const stepTime = durationMs / steps;
+        const volStep = targetVol / steps;
+        let cur = 0;
+        audio.volume = 0;
+
+        this.fadeTimer = setInterval(() => {
+            if (!this.isPlaying || this.currentAudio !== audio) {
+                clearInterval(this.fadeTimer);
+                return;
+            }
+            cur += volStep;
+            if (cur >= targetVol) {
+                audio.volume = targetVol;
+                clearInterval(this.fadeTimer);
+            } else {
+                audio.volume = Math.max(0, Math.min(1, cur));
+            }
+        }, stepTime);
+    }
+
+    fadeOut(audio, durationMs = 2000, callback) {
+        if (!audio) {
+            if (callback) callback();
+            return;
+        }
+
+        const steps = 25;
+        const stepTime = durationMs / steps;
+        const startVol = audio.volume;
+        const volStep = startVol / steps;
+        let cur = startVol;
+
+        const timer = setInterval(() => {
+            cur -= volStep;
+            if (cur <= 0.03 || audio.paused) {
+                audio.volume = 0;
+                clearInterval(timer);
+                if (callback) callback();
+            } else {
+                audio.volume = Math.max(0, cur);
+            }
+        }, stepTime);
+    }
+
+    stop(smooth = true, callback) {
+        this.isPlaying = false;
+        this.isFadingOut = false;
+        if (this.fadeTimer) clearInterval(this.fadeTimer);
+        if (this.monitorTimer) clearInterval(this.monitorTimer);
+
+        const audio = this.currentAudio;
+        if (!audio) {
+            if (callback) callback();
+            return;
+        }
+
+        if (smooth && !audio.paused && audio.volume > 0.05) {
+            this.fadeOut(audio, 800, () => {
+                audio.pause();
+                audio.currentTime = 0;
+                if (this.currentAudio === audio) this.currentAudio = null;
+                if (callback) callback();
+            });
+        } else {
+            audio.pause();
+            audio.currentTime = 0;
+            this.currentAudio = null;
+            if (callback) callback();
+        }
+    }
+
+    pauseBackgroundMusic() {
+        const bgAudio = document.getElementById('bgMusic');
+        if (bgAudio && !bgAudio.paused) {
+            bgAudio.pause();
+        }
+    }
+
+    setMuted(isMuted) {
+        this.muted = isMuted;
+        if (this.currentAudio) {
+            this.currentAudio.muted = isMuted;
+        }
+    }
+}
+
+const winnerMusicPlayer = new WinnerMusicPlayer();
+window.winnerMusicPlayer = winnerMusicPlayer;

@@ -4901,6 +4901,14 @@ async function syncInventoryFromCloud() {
                 }
             }
             return true;
+        } else if (res && typeof res.result === 'object' && res.result !== null) {
+            for (const [key, valStr] of Object.entries(res.result)) {
+                const val = parseInt(valStr, 10);
+                if (!isNaN(val) && PRIZE_INVENTORY[key]) {
+                    localStorage.setItem(PRIZE_INVENTORY[key].storageKey, String(val));
+                }
+            }
+            return true;
         }
     } catch (e) {
         console.warn('Inventory cloud sync error:', e);
@@ -5171,6 +5179,11 @@ function fetchFromCloud() {
             inventory = {
                 prize100: invObj.prize100 !== undefined ? invObj.prize100 : 500,
                 prize200: invObj.prize200 !== undefined ? invObj.prize200 : 300
+            };
+        } else if (invRes && typeof invRes.result === 'object' && invRes.result !== null) {
+            inventory = {
+                prize100: invRes.result.prize100 !== undefined ? parseInt(invRes.result.prize100, 10) : 500,
+                prize200: invRes.result.prize200 !== undefined ? parseInt(invRes.result.prize200, 10) : 300
             };
         }
         return {

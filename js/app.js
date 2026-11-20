@@ -544,6 +544,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (accInput) accInput.value = '';
             }
 
+            // 🎶 تشغيل موسيقى الفائزين العشوائية مع تأثير Fade-in و Loop Fade-out
+            if (window.winnerMusicPlayer && !_userExplicitlyMuted) {
+                winnerMusicPlayer.playRandomWinnerMusic();
+            }
+
             if (!isPreviousView) {
                 soundManager.playWin();
                 confettiManager.celebrateWin();
@@ -551,7 +556,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (winnerResultSection) winnerResultSection.style.display = 'none';
             if (hardLuckResultSection) hardLuckResultSection.style.display = 'block';
+            if (window.winnerMusicPlayer) winnerMusicPlayer.stop(false);
             if (!isPreviousView) soundManager.playLose();
+            if (!_userExplicitlyMuted) _tryStartBgMusic();
         }
 
         updateInventoryDisplay();
@@ -676,6 +683,24 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutBtn.addEventListener('click', () => {
         soundManager.playClick();
         clearRevealTimers();
+
+        // إيقاف موسيقى الفوز الاحتفالية بسلاسة وتلاشي
+        if (window.winnerMusicPlayer) {
+            winnerMusicPlayer.stop(true);
+        }
+
+        // استئناف موسيقى الخلفية العامة بعد الخروج إذا لم يكن المستخدم قد كتم الصوت
+        if (!_userExplicitlyMuted) {
+            setTimeout(() => {
+                const bgAudio = document.getElementById('bgMusic');
+                if (bgAudio && bgAudio.paused) {
+                    bgAudio.currentTime = 0;
+                    bgAudio.volume = 0.40;
+                    bgAudio.play().catch(() => {});
+                }
+            }, 600);
+        }
+
         currentUser = null;
         currentPrize = null;
         hideLockoutScreen();
@@ -761,30 +786,53 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===================================================
-// 🎵 الموسيقى الخلفية الحماسية — خارج DOMContentLoaded
+// 🎵 الموسيقى الخلفية الحماسية وموسيقى الفائزين — خارج DOMContentLoaded
 // ===================================================
 let _userExplicitlyMuted = false;
 
 function toggleBgMusic() {
     const audio = document.getElementById('bgMusic');
     const btn = document.getElementById('bgMuteBtn');
-    if (!audio) return;
-    if (audio.paused) {
+
+    if (_userExplicitlyMuted) {
+        // إلغاء الكتم (تشغيل الصوت)
         _userExplicitlyMuted = false;
-        audio.volume = 0.40;
-        audio.play().then(() => {
-            if (btn) btn.textContent = '🔊';
-        }).catch(() => {});
+        if (btn) btn.textContent = '🔊';
+
+        if (window.winnerMusicPlayer) {
+            winnerMusicPlayer.setMuted(false);
+            if (winnerMusicPlayer.isPlaying && winnerMusicPlayer.currentAudio) {
+                winnerMusicPlayer.currentAudio.play().catch(() => {});
+                return;
+            }
+        }
+
+        if (audio) {
+            audio.volume = 0.40;
+            audio.play().catch(() => {});
+        }
     } else {
+        // كتم الصوت
         _userExplicitlyMuted = true;
-        audio.pause();
         if (btn) btn.textContent = '🔇';
+
+        if (audio) audio.pause();
+        if (window.winnerMusicPlayer) {
+            winnerMusicPlayer.setMuted(true);
+            if (winnerMusicPlayer.currentAudio) {
+                winnerMusicPlayer.currentAudio.pause();
+            }
+        }
     }
 }
 
 // تشغيل الموسيقى تلقائياً وتكرارها طوال وجود المستخدم في الموقع
 function _tryStartBgMusic() {
     if (_userExplicitlyMuted) return;
+
+    // إذا كانت أغنية الفوز الحماسية شغالة الآن للفائز، لا نشغل موسيقى الخلفية المعتادة!
+    if (window.winnerMusicPlayer && winnerMusicPlayer.isPlaying) return;
+
     const audio = document.getElementById('bgMusic');
     const btn = document.getElementById('bgMuteBtn');
     if (audio && audio.paused) {
