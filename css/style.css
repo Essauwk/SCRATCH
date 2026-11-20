@@ -2469,17 +2469,13 @@ footer.app-footer span.heart {
    ============================================================ */
 .scratch-cropped-peek {
     position: absolute;
-    bottom: -8px;
-    right: 8px;
-    width: 180px;
-    max-width: 54%;
-    max-height: 85%;
+    width: 125px;
+    max-width: 38%;
+    max-height: 48%;
     object-fit: contain;
     z-index: 2; /* مباشرة تحت الكانفاس الذهبي اللي z-index: 3 */
     pointer-events: none;
     user-select: none;
-    filter: drop-shadow(-4px -4px 14px rgba(0, 0, 0, 0.45));
-    transform: rotate(-5deg);
-    transform-origin: bottom right;
-    transition: opacity 0.35s ease, transform 0.35s ease;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
+    transition: opacity 0.35s ease;
 }

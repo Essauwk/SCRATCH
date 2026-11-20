@@ -1366,9 +1366,15 @@
             const p100Current = snap.prize100;
             const p200Current = snap.prize200;
 
-            // تعبئة حقول الإدخال لتعديل المخزن
-            document.getElementById('inputRemaining100').value = p100Current;
-            document.getElementById('inputRemaining200').value = p200Current;
+            // تعبئة حقول الإدخال لتعديل المخزن (فقط إذا لم يكن المستخدم يكتب بداخلها حالياً لتجنب مسح كتابته أثناء التحديث التلقائي)
+            const inp100 = document.getElementById('inputRemaining100');
+            const inp200 = document.getElementById('inputRemaining200');
+            if (inp100 && document.activeElement !== inp100 && !inp100.dataset.editing) {
+                inp100.value = p100Current;
+            }
+            if (inp200 && document.activeElement !== inp200 && !inp200.dataset.editing) {
+                inp200.value = p200Current;
+            }
 
             // كروت الإحصائيات
             const p100Winners = list.filter(p => p.prize?.isWinner && p.prize.title.includes('100')).length;
@@ -1393,10 +1399,24 @@
         }
 
         // ==============================================
-        // حفظ تعديل رصيد المخزن المباشر (محلي + سحابي)
+        // حفظ تعديل رصيد المخزن المباشر (محلي + سحابي فوري)
         // ==============================================
-        document.getElementById('updateInventoryForm').addEventListener('submit', (e) => {
-            e.preventDefault();
+        const invForm = document.getElementById('updateInventoryForm');
+        const saveInvBtn = document.getElementById('saveInventoryBtn');
+        const input100El = document.getElementById('inputRemaining100');
+        const input200El = document.getElementById('inputRemaining200');
+
+        if (input100El) {
+            input100El.addEventListener('input', () => { input100El.dataset.editing = '1'; });
+            input100El.addEventListener('focus', () => { input100El.dataset.editing = '1'; });
+        }
+        if (input200El) {
+            input200El.addEventListener('input', () => { input200El.dataset.editing = '1'; });
+            input200El.addEventListener('focus', () => { input200El.dataset.editing = '1'; });
+        }
+
+        async function executeSaveInventory(e) {
+            if (e) e.preventDefault();
             const val100 = parseInt(document.getElementById('inputRemaining100').value, 10);
             const val200 = parseInt(document.getElementById('inputRemaining200').value, 10);
 
@@ -1405,22 +1425,57 @@
                 return;
             }
 
+            const origBtnText = saveInvBtn ? saveInvBtn.innerHTML : '';
+            if (saveInvBtn) {
+                saveInvBtn.disabled = true;
+                saveInvBtn.innerHTML = '<span>⏳ جاري التحديث سحابياً...</span>';
+            }
+
+            // 1. الحفظ المحلي المباشر
             localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, String(val100));
             localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, String(val200));
 
-            // مزامنة سحابية مع شيت جوجل
-            syncToCloud({
-                action: 'updateInventory',
-                prize100: val100,
-                prize200: val200
-            });
+            // إزالة قفل التعديل عن الحقول
+            if (input100El) delete input100El.dataset.editing;
+            if (input200El) delete input200El.dataset.editing;
+
+            // 2. الحفظ السحابي الفوري في سيرفر Upstash
+            try {
+                await syncToCloud({
+                    action: 'updateInventory',
+                    prize100: val100,
+                    prize200: val200
+                });
+            } catch (err) {
+                console.warn('Inventory cloud save error:', err);
+            }
+
+            // 3. إشعار فوري لكافة التابات المفتوحة
+            try {
+                if (window.BroadcastChannel) {
+                    const bc = new BroadcastChannel('alalamia_live');
+                    bc.postMessage({ type: 'inventory_updated' });
+                    setTimeout(() => bc.close(), 1000);
+                }
+            } catch (bcErr) {}
 
             loadDashboardData();
 
+            if (saveInvBtn) {
+                saveInvBtn.disabled = false;
+                saveInvBtn.innerHTML = origBtnText;
+            }
+
             const alertEl = document.getElementById('invSaveAlert');
-            alertEl.style.display = 'block';
-            setTimeout(() => { alertEl.style.display = 'none'; }, 3500);
-        });
+            if (alertEl) {
+                alertEl.textContent = `✅ تم تحديث المخزن سحابياً بنجاح! (100: ${val100} كارت | 200: ${val200} كارت)`;
+                alertEl.style.display = 'block';
+                setTimeout(() => { alertEl.style.display = 'none'; }, 4000);
+            }
+        }
+
+        if (invForm) invForm.addEventListener('submit', executeSaveInventory);
+        if (saveInvBtn) saveInvBtn.addEventListener('click', executeSaveInventory);
 
         // ==============================================
         // رسم جدول وكروت المشاركات لايف (ديسكتوب + موبايل)
@@ -1608,7 +1663,7 @@
         // ==============================================
         // حفظ حالة تشيك بوكس "استلم" (محلي + سحابي)
         // ==============================================
-        function toggleUserPaidStatus(userId, isPaid) {
+        async function toggleUserPaidStatus(userId, isPaid) {
             const history = getAllParticipations();
             if (history[userId]) {
                 history[userId].isPaid = isPaid;
@@ -1617,8 +1672,8 @@
                 }
                 localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
 
-                // مزامنة سحابية فورية مع شيت جوجل
-                syncToCloud({
+                // مزامنة سحابية فورية ومباشرة مع Upstash
+                await syncToCloud({
                     action: 'togglePaid',
                     userId: userId,
                     isPaid: isPaid
@@ -1642,7 +1697,7 @@
         // ==============================================
         // تصفير مشاركات التيست (ID 1 - 10) محلياً وسحابياً!
         // ==============================================
-        function resetTestAccounts() {
+        async function resetTestAccounts() {
             const history = getAllParticipations();
             let clearedCount = 0;
             ['1','2','3','4','5','6','7','8','9','10'].forEach(id => {
@@ -1661,7 +1716,7 @@
             localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
 
             // إرسال أمر تصفير التيست للشيت السحابي
-            syncToCloud({ action: 'resetTest' });
+            await syncToCloud({ action: 'resetTest' });
 
             loadDashboardData();
             alert(`🔄 تم تصفير مشاركات حسابات التيست بنجاح!\nيمكنك الآن الدخول بأي حساب من (1 إلى 10) لتجربته كأنه يدخل لأول مرة.`);
@@ -1677,19 +1732,19 @@
         // ==============================================
         const defaultResetBtn = document.getElementById('defaultResetInventoryBtn');
         if (defaultResetBtn) {
-            defaultResetBtn.addEventListener('click', () => {
+            defaultResetBtn.addEventListener('click', async () => {
                 if (!confirm('هل تريد إعادة تعيين المخزن إلى 500 كارت (100 جنيه) و 300 كارت (200 جنيه)؟')) return;
                 localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
                 localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
 
-                syncToCloud({
+                await syncToCloud({
                     action: 'updateInventory',
                     prize100: 500,
                     prize200: 300
                 });
 
                 loadDashboardData();
-                alert('✅ تم إعادة ضبط رصيد المخزن إلى 500 و 300 بنجاح!');
+                alert('✅ تم إعادة ضبط رصيد المخزن إلى 500 و 300 بنجاح سحابياً!');
             });
         }
 
@@ -1698,13 +1753,13 @@
         // ==============================================
         const resetAllBtn = document.getElementById('resetAllDataBtn');
         if (resetAllBtn) {
-            resetAllBtn.addEventListener('click', () => {
+            resetAllBtn.addEventListener('click', async () => {
                 const check = prompt('⚠️ تحذير: هذا سيحذف جميع مشاركات المتسابقين ويعيد تصفير كل شيء! اكتب "تأكيد" للمتابعة:');
                 if (check === 'تأكيد' || check === 'confirm') {
                     resetParticipationsStorage();
                     localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
                     localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
-                    syncToCloud({ action: 'resetAll' });
+                    await syncToCloud({ action: 'resetAll' });
                     loadDashboardData();
                     alert('🔄 تم تصفير جميع السجلات والمخزن بالكامل سحابياً ومحلياً.');
                 }

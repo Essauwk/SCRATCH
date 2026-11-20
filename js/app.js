@@ -335,11 +335,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // طرف الورقة النقدية الـ 100 أو 200 الحقيقي يظهر مباشرة تحت الخربشة للتشويق
+        // طرف الورقة النقدية الـ 100 أو 200 الحقيقي: يظهر جزء بسيط أوي بس في أحد أطراف الكارت عشوائياً
         if (scratchCroppedPeek) {
             if (currentPrize.isWinner) {
                 const is200 = (currentPrize.prizeKey === 'prize200' || (currentPrize.title && currentPrize.title.includes('200')));
                 scratchCroppedPeek.src = is200 ? 'images/200 cropped.png' : 'images/100 cropped.png';
+
+                // أطراف وأركان مختلفة في كل مرة - جزء بسيط أوي بس اللي يبان من أطراف الكارت
+                const peekPositions = [
+                    { top: 'auto', bottom: '-48px', left: 'auto', right: '-38px', transform: 'rotate(-12deg)' },
+                    { top: 'auto', bottom: '-48px', left: '-38px', right: 'auto', transform: 'rotate(12deg)' },
+                    { top: '-45px', bottom: 'auto', left: 'auto', right: '-35px', transform: 'rotate(10deg)' },
+                    { top: '-45px', bottom: 'auto', left: '-35px', right: 'auto', transform: 'rotate(-10deg)' },
+                    { top: '38%', bottom: 'auto', left: 'auto', right: '-48px', transform: 'rotate(-6deg)' },
+                    { top: '38%', bottom: 'auto', left: '-48px', right: 'auto', transform: 'rotate(6deg)' }
+                ];
+                const randomPos = peekPositions[Math.floor(Math.random() * peekPositions.length)];
+
+                scratchCroppedPeek.style.top = randomPos.top;
+                scratchCroppedPeek.style.bottom = randomPos.bottom;
+                scratchCroppedPeek.style.left = randomPos.left;
+                scratchCroppedPeek.style.right = randomPos.right;
+                scratchCroppedPeek.style.transform = randomPos.transform;
+
                 scratchCroppedPeek.style.display = 'block';
                 scratchCroppedPeek.style.opacity = '1';
             } else {
