@@ -642,4 +642,42 @@ document.addEventListener('DOMContentLoaded', () => {
         soundManager.playClick();
         alert('🎉 مرحباً بك في مسابقة بطل العالمية اكسبريس!\n\n1. اكتب كود الموظف والرقم القومي.\n2. استلم الترحيب الملوكي.\n3. خربش 70% من الكارت بالعملة لاكتشاف نتيجتك!\n4. إذا كنت فائزاً، اضغط زر الاستلام ثم اتبع التعليمات.\n\n⚠️ ملحوظة: كل متسابق له فرصة واحدة فقط للخربشة.\n\nبالتوفيق يا عالمي! 🌟');
     });
+
+    // ===================================================
+    // 8. 🟢 نبض التواجد الحي للمتسابقين (Live Online Presence)
+    // لتتبع المتواجدين حالياً في الموقع مباشرة على لوحة الإدارة
+    // ===================================================
+    (function initOnlinePresence() {
+        let visitorId = sessionStorage.getItem('alalamia_visitor_id');
+        if (!visitorId) {
+            visitorId = 'vis_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+            sessionStorage.setItem('alalamia_visitor_id', visitorId);
+        }
+
+        function sendPresencePing() {
+            try {
+                const userName = currentUser ? `${currentUser.name} (${currentUser.id})` : 'متصفح في البداية';
+                upstashCommand(['HSET', UPSTASH_CONFIG.keys.online, visitorId, JSON.stringify({
+                    ts: Date.now(),
+                    user: userName
+                })]);
+            } catch (err) {}
+        }
+
+        // إرسال نبضة فورية عند فتح الموقع
+        sendPresencePing();
+
+        // تجديد النبضة كل 3.5 ثواني
+        setInterval(sendPresencePing, 3500);
+
+        // مسح الجلسة فور مغادرة الصفحة
+        window.addEventListener('beforeunload', () => {
+            try {
+                if (navigator.sendBeacon) {
+                    const blob = new Blob([JSON.stringify(['HDEL', UPSTASH_CONFIG.keys.online, visitorId])], { type: 'application/json' });
+                    navigator.sendBeacon(UPSTASH_CONFIG.endpoint, blob);
+                }
+            } catch (err) {}
+        });
+    })();
 });

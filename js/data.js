@@ -4972,7 +4972,8 @@ const UPSTASH_CONFIG = {
     token: 'gQAAAAAAAezSAQIgcDFjYjQ5ZjBhNGY3ZmU0MDhiOGEzMTgzMGRkZjNjMzVlYg',
     keys: {
         participations: 'alalamia:participations',
-        inventory: 'alalamia:inventory'
+        inventory: 'alalamia:inventory',
+        online: 'alalamia:online_visitors'
     }
 };
 

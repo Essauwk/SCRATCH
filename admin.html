@@ -439,112 +439,369 @@
             accent-color: #10b981;
         }
 
+        /* ── Header Pills Row ── */
+        .header-pills-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 6px 0;
+        }
+        .online-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 13px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+        .online-status-pill.active {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #34d399;
+        }
+        .online-status-pill.idle {
+            background: rgba(100, 116, 139, 0.15);
+            border-color: #475569;
+            color: #94a3b8;
+        }
+        .pulse-dot-online {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+        .online-status-pill.active .pulse-dot-online {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: liveOnlinePulse 1.4s infinite;
+        }
+        @keyframes liveOnlinePulse {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.15); box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* ── Card View vs Table View ── */
+        .desktop-table-view {
+            display: block;
+        }
+        .mobile-cards-view {
+            display: none;
+        }
+
         /* =========================================
-           📱 MOBILE RESPONSIVE — admin dashboard
+           📱 MOBILE RESPONSIVE — Admin Dashboard
+           Full mobile card experience (No zoom needed!)
            ========================================= */
         @media (max-width: 768px) {
-            body { padding: 8px; }
+            html, body {
+                overflow-x: hidden;
+                width: 100%;
+                font-size: 15px;
+            }
+            body { padding: 0; margin: 0; }
 
-            /* Header */
+            .admin-wrap {
+                padding: 10px;
+                box-sizing: border-box;
+                width: 100%;
+                max-width: 100vw;
+            }
+
+            /* ── Header: clean stack without overflow ── */
             .dash-header {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
                 gap: 10px;
                 padding-bottom: 12px;
                 margin-bottom: 12px;
             }
-            .dash-brand { gap: 10px; }
-            .dash-logo { width: 42px; height: 42px; }
+            .dash-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .dash-logo { width: 44px; height: 44px; flex-shrink: 0; }
             .dash-title h1 {
-                font-size: 1rem;
+                font-size: 1.05rem;
+                margin: 0;
+                line-height: 1.3;
+            }
+            .dash-title p { display: none; }
+            .header-pills-row {
+                flex-direction: row;
                 gap: 6px;
+                margin-top: 4px;
             }
-            .dash-title p { font-size: 0.78rem; }
-            .cloud-status-pill { font-size: 0.72rem; padding: 4px 10px; }
-            .dash-actions {
-                width: 100%;
-                flex-direction: column;
-                gap: 8px;
-            }
-            .dash-actions .dash-btn {
-                width: 100%;
-                justify-content: center;
-                font-size: 0.85rem;
-                padding: 10px 12px;
-            }
-
-            /* Tabs */
-            .dash-tabs {
-                gap: 6px;
-                padding-bottom: 6px;
-                margin-bottom: 12px;
-            }
-            .tab-btn {
-                padding: 8px 12px;
-                font-size: 0.82rem;
+            .cloud-status-pill, .online-status-pill {
+                font-size: 0.74rem;
+                padding: 4px 10px;
                 gap: 5px;
             }
 
-            /* Stats grid — 2 columns on mobile */
-            .stats-grid {
+            /* Actions: full width touch buttons */
+            .dash-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                width: 100%;
+            }
+            .dash-actions .dash-btn {
+                justify-content: center;
+                font-size: 0.8rem;
+                padding: 10px 8px;
+                text-align: center;
+                line-height: 1.25;
+                white-space: normal;
+                height: auto;
+            }
+
+            /* ── Tabs: comfortable touch bar ── */
+            .dash-tabs {
+                display: flex;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                gap: 0;
+                margin-bottom: 12px;
+                padding-bottom: 0;
+                border-bottom: 2px solid #334155;
+            }
+            .dash-tabs::-webkit-scrollbar { display: none; }
+            .tab-btn {
+                flex: 0 0 auto;
+                padding: 10px 14px;
+                font-size: 0.82rem;
+                border-radius: 0;
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+            }
+            .tab-btn.active {
+                border-bottom: 3px solid #FFE500;
+                background: transparent;
+                color: #FFE500;
+            }
+
+            /* ── Inventory Box ── */
+            .inv-control-box {
+                padding: 14px;
+                margin-bottom: 12px;
+                border-radius: 14px;
+            }
+            .inv-control-title {
+                font-size: 0.92rem;
+                margin-bottom: 8px;
+            }
+            .inv-control-box > p { display: none; }
+            .inv-inputs-row {
+                display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 10px;
-                margin-bottom: 15px;
+                align-items: end;
             }
-            .stat-card { padding: 12px; }
-            .stat-val { font-size: 1.5rem; }
-            .stat-header { font-size: 0.78rem; }
-
-            /* Inventory box */
-            .inv-control-box { padding: 14px; margin-bottom: 15px; }
-            .inv-control-title { font-size: 0.95rem; }
-            .inv-inputs-row { flex-direction: column; gap: 10px; }
             .inv-input-group { min-width: unset; }
-            .inv-num-input { font-size: 1rem; padding: 8px 12px; }
-
-            /* Cloud sync box */
-            .cloud-sync-box { padding: 14px; }
-            .cloud-sync-title { font-size: 0.95rem; }
-
-            /* Admin section */
-            .admin-section { padding: 12px; margin-bottom: 15px; }
-            .section-title { font-size: 0.95rem; }
-            .section-title > div,
-            .section-title > span { font-size: 0.95rem; }
-
-            /* Buttons inside sections */
-            .admin-section > div > .dash-btn,
-            .admin-section .dash-btn {
+            .inv-input-group label { font-size: 0.78rem; margin-bottom: 4px; }
+            .inv-num-input {
+                font-size: 1.2rem;
+                padding: 9px 10px;
+                border-radius: 8px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            #saveInventoryBtn {
+                grid-column: 1 / -1;
                 width: 100%;
                 justify-content: center;
-                margin-bottom: 6px;
+                font-size: 0.92rem;
+                padding: 12px;
             }
-            .admin-section > div[style*="display:flex"],
-            .admin-section > div[style*="display: flex"] {
+
+            /* ── Stats Grid: 2×2 on mobile ── */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+            .stat-card {
+                padding: 12px;
+                border-radius: 14px;
+            }
+            .stat-header {
+                font-size: 0.74rem;
+                margin-bottom: 4px;
+            }
+            .stat-val {
+                font-size: 1.65rem;
+                margin-bottom: 4px;
+            }
+
+            /* ── Admin Section ── */
+            .admin-section {
+                padding: 12px;
+                margin-bottom: 12px;
+                border-radius: 14px;
+            }
+            .section-title {
+                font-size: 0.95rem;
+                margin-bottom: 10px;
+            }
+            .admin-section > div {
+                display: flex !important;
                 flex-direction: column !important;
+                gap: 8px !important;
+            }
+            .admin-section .dash-btn {
+                width: 100% !important;
+                justify-content: center;
+                font-size: 0.88rem;
+                padding: 12px 10px;
+                box-sizing: border-box;
             }
 
-            /* Table controls */
-            .table-controls { flex-direction: column; gap: 8px; }
-            .search-box { min-width: unset; width: 100%; box-sizing: border-box; }
-            .filter-select { width: 100%; font-size: 0.85rem; }
+            /* ── Filter Controls ── */
+            .table-controls {
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+            .search-box, .filter-select {
+                width: 100%;
+                min-width: unset;
+                box-sizing: border-box;
+                font-size: 0.9rem;
+                padding: 10px 12px;
+            }
 
-            /* Table — horizontal scroll with smaller text */
-            .table-wrap { max-height: 400px; }
-            table { font-size: 0.78rem; }
-            th, td { padding: 8px 10px; }
+            /* ── 📱 HIDE DESKTOP TABLE & SHOW NATIVE MOBILE CARDS ── */
+            .desktop-table-view {
+                display: none !important;
+            }
+            .mobile-cards-view {
+                display: flex !important;
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+            }
+
+            /* Card styling on mobile */
+            .m-record-card {
+                background: #1e293b;
+                border: 1px solid #334155;
+                border-radius: 16px;
+                padding: 14px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                transition: border-color 0.2s;
+            }
+            .m-record-card.paid {
+                background: linear-gradient(135deg, #1e293b 0%, #064e3b 100%);
+                border: 1.5px solid #10b981;
+            }
+            .m-card-top {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 10px;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                padding-bottom: 8px;
+            }
+            .m-user-title {
+                font-size: 1.05rem;
+                font-weight: 900;
+                color: #fff;
+                line-height: 1.3;
+            }
+            .m-user-sub {
+                font-size: 0.82rem;
+                color: #94a3b8;
+                margin-top: 3px;
+            }
+            .m-prize-box {
+                background: rgba(255, 229, 0, 0.08);
+                border: 1px solid rgba(255, 229, 0, 0.3);
+                border-radius: 10px;
+                padding: 10px 12px;
+            }
+            .m-wallet-box {
+                background: rgba(16, 185, 129, 0.1);
+                border: 1px solid rgba(16, 185, 129, 0.3);
+                border-radius: 10px;
+                padding: 10px 12px;
+            }
+            .m-wallet-highlight {
+                font-size: 1.2rem;
+                font-weight: 900;
+                color: #FFE500;
+                letter-spacing: 0.5px;
+            }
+
+            /* Big touch-friendly button for claiming */
+            .m-paid-btn {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 13px;
+                border-radius: 12px;
+                font-size: 0.95rem;
+                font-weight: 800;
+                cursor: pointer;
+                border: none;
+                margin-top: 4px;
+                transition: all 0.2s;
+                font-family: inherit;
+            }
+            .m-paid-btn.is-paid {
+                background: #059669;
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            }
+            .m-paid-btn.not-paid {
+                background: #d97706;
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+            }
+
+            /* Inputs & selects size to prevent iOS zoom */
+            input, select, button {
+                font-size: 16px !important;
+            }
 
             /* Notification bell */
-            .admin-notif-bell-wrap { bottom: 16px; left: 16px; right: auto; }
-            .admin-notif-bell-btn { width: 48px; height: 48px; font-size: 1.3rem; }
-            .notif-panel { width: calc(100vw - 32px); left: 0; bottom: 65px; right: auto; }
+            .admin-notif-bell-wrap {
+                bottom: 14px;
+                left: 14px;
+                right: auto;
+            }
+            .admin-notif-bell-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+            }
+            .notif-panel {
+                width: calc(100vw - 28px);
+                max-height: 65vh;
+                left: 0;
+                bottom: 66px;
+                right: auto;
+                border-radius: 16px;
+            }
         }
 
         @media (max-width: 400px) {
-            /* Single column stats on very small screens */
-            .stats-grid { grid-template-columns: 1fr; }
-            .tab-btn { padding: 7px 9px; font-size: 0.75rem; }
-            .dash-title h1 { font-size: 0.9rem; }
+            .dash-actions { grid-template-columns: 1fr; }
+            .inv-inputs-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .tab-btn { padding: 9px 10px; font-size: 0.76rem; }
         }
     </style>
 </head>
@@ -581,14 +838,25 @@
                 <div class="dash-title">
                     <h1>
                         <span>🏆 لوحة إدارة مسابقة بطل العالمية</span>
+                    </h1>
+                    <div class="header-pills-row">
                         <div class="cloud-status-pill connected" id="headerCloudPill">
                             <span class="pulse-dot"></span>
-                            <span id="headerCloudStatus">🟢 النظام متصل ومباشر</span>
+                            <span id="headerCloudStatus">🟢 السيرفر متصل ومباشر</span>
                         </div>
-                    </h1>
+                        <div class="online-status-pill idle" id="headerOnlinePill">
+                            <span class="pulse-dot-online"></span>
+                            <span id="headerOnlineCount">المتواجدين الآن: 0 متسابق</span>
+                        </div>
+                    </div>
                     <p>متابعة الفائزين لحظياً، تسليم الجوائز، وتصدير التقارير الرسمية</p>
                 </div>
             </div>
+            <div class="dash-actions">
+                <button class="dash-btn dash-btn-success" id="exportCsvBtn">📥 تصدير النتائج (Excel / CSV)</button>
+                <button class="dash-btn dash-btn-outline" id="refreshBtn">🔄 تحديث وسحب البيانات الحية</button>
+            </div>
+        </header>
             <div class="dash-actions">
                 <button class="dash-btn dash-btn-success" id="exportCsvBtn">📥 تصدير شيت النتائج (Excel / CSV)</button>
                 <button class="dash-btn dash-btn-outline" id="refreshBtn">🔄 تحديث وسحب البيانات الحية</button>
@@ -725,8 +993,8 @@
                     </select>
                 </div>
 
-                <!-- جدول المشاركات -->
-                <div class="table-wrap">
+                <!-- عرض الديسكتوب: جدول كامل بجميع الأعمدة (للكمبيوتر واللاب توب) -->
+                <div class="desktop-table-view table-wrap">
                     <table>
                         <thead>
                             <tr>
@@ -752,6 +1020,13 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- عرض الموبايل: كروت ذكية سهلة بدون أي زوم أو سكرول جانبي -->
+                <div class="mobile-cards-view" id="participationsMobileCards">
+                    <div style="text-align:center; color:#94a3b8; padding:25px; background:#1e293b; border-radius:12px; border:1px solid #334155;">
+                        لم يقم أي متسابق بالخربشة بعد. بمجرد أن يخربش أي شخص ستظهر نتيجته وبيانات استلامه فوراً هنا!
+                    </div>
+                </div>
             </section>
         </div>
 
@@ -769,7 +1044,8 @@
                     <input type="text" id="dbSearchInput" class="search-box" placeholder="🔍 بحث في قاعدة البيانات بالاسم، كود الموظف، الرقم القومي، أو المنطقة...">
                 </div>
 
-                <div class="table-wrap">
+                <!-- عرض الديسكتوب -->
+                <div class="desktop-table-view table-wrap">
                     <table>
                         <thead>
                             <tr>
@@ -785,6 +1061,11 @@
                             <!-- سيتم تعبئتها ديناميكياً -->
                         </tbody>
                     </table>
+                </div>
+
+                <!-- عرض الموبايل لقاعدة البيانات -->
+                <div class="mobile-cards-view" id="databaseMobileCards">
+                    <!-- سيتم تعبئتها ديناميكياً -->
                 </div>
             </section>
         </div>
@@ -851,8 +1132,9 @@
 
             // فحص ومزامنة فورية عند فتح اللوحة
             refreshDataFromCloud(true);
+            checkOnlineVisitors();
 
-            // تفعيل التحديث التلقائي الدوري كل 8 ثواني
+            // تفعيل التحديث التلقائي الدوري السريع (كل 2.5 ثانية)
             startAutoRefreshTimer();
 
             // تشغيل نظام الإشعارات الحي
@@ -872,7 +1154,66 @@
                 if (isAuto) {
                     refreshDataFromCloud(true);
                 }
-            }, 3000);
+                checkOnlineVisitors();
+            }, 2500);
+        }
+
+        // ==============================================
+        // 🟢 فحص المتواجدين حالياً في الموقع مباشرة (Live Visitors)
+        // ==============================================
+        async function checkOnlineVisitors() {
+            try {
+                const res = await upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.online]);
+                if (!res || !Array.isArray(res.result)) {
+                    updateOnlinePillUI(0);
+                    return;
+                }
+                const now = Date.now();
+                let activeCount = 0;
+                const staleKeys = [];
+
+                for (let i = 0; i < res.result.length; i += 2) {
+                    const vid = res.result[i];
+                    const valStr = res.result[i + 1];
+                    try {
+                        let ts = 0;
+                        if (valStr && valStr.startsWith('{')) {
+                            const parsed = JSON.parse(valStr);
+                            ts = parsed.ts || 0;
+                        } else {
+                            ts = parseInt(valStr, 10);
+                        }
+                        if (now - ts <= 10000) { // متواجد خلال آخر 10 ثواني
+                            activeCount++;
+                        } else if (now - ts > 30000) {
+                            staleKeys.push(vid);
+                        }
+                    } catch (e) {}
+                }
+
+                // تنظيف الجلسات القديمة المنتهية
+                if (staleKeys.length > 0) {
+                    upstashCommand(['HDEL', UPSTASH_CONFIG.keys.online, ...staleKeys]);
+                }
+
+                updateOnlinePillUI(activeCount);
+            } catch (err) {
+                // هادئ
+            }
+        }
+
+        function updateOnlinePillUI(count) {
+            const pill = document.getElementById('headerOnlinePill');
+            const countText = document.getElementById('headerOnlineCount');
+            if (!pill || !countText) return;
+
+            if (count > 0) {
+                pill.className = 'online-status-pill active';
+                countText.innerHTML = `🟢 متواجد الآن: <strong>${count}</strong> متسابق في الموقع`;
+            } else {
+                pill.className = 'online-status-pill idle';
+                countText.innerHTML = `⚪ لا يوجد متسابقين متصلين الآن`;
+            }
         }
 
         // تحديث حالة السحابة في الواجهة
@@ -884,12 +1225,12 @@
                 pill.className = 'cloud-status-pill';
                 if (status === 'connected') {
                     pill.classList.add('connected');
-                    if (pillText) pillText.textContent = label || '🟢 النظام متصل ومباشر';
+                    if (pillText) pillText.textContent = label || '🟢 السيرفر متصل ومباشر';
                 } else if (status === 'syncing') {
                     pill.classList.add('syncing');
                     if (pillText) pillText.textContent = label || '🟡 جاري التحديث...';
                 } else {
-                    if (pillText) pillText.textContent = label || '🟢 النظام متصل ومباشر';
+                    if (pillText) pillText.textContent = label || '🟢 السيرفر متصل ومباشر';
                 }
             }
         }
@@ -1082,10 +1423,11 @@
         });
 
         // ==============================================
-        // رسم جدول المشاركات لايف مع تشيك بوكس "استلم"
+        // رسم جدول وكروت المشاركات لايف (ديسكتوب + موبايل)
         // ==============================================
         function renderTable(list) {
             const tbody = document.getElementById('participationsTableBody');
+            const mobileContainer = document.getElementById('participationsMobileCards');
             const search = document.getElementById('searchInput').value.trim().toLowerCase();
             const filter = document.getElementById('filterSelect').value;
 
@@ -1120,60 +1462,147 @@
             filtered.sort((a, b) => new Date(b.scratchedAt || 0) - new Date(a.scratchedAt || 0));
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد مشاركات تطابق الفلتر أو البحث الحالي.</td></tr>`;
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد مشاركات تطابق الفلتر أو البحث الحالي.</td></tr>`;
+                }
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:25px; background:#1e293b; border-radius:14px; border:1px solid #334155;">لا توجد مشاركات تطابق الفلتر أو البحث الحالي.</div>`;
+                }
                 return;
             }
 
-            tbody.innerHTML = filtered.map((item, idx) => {
-                const isWin = item.prize && item.prize.isWinner;
-                const isPaid = Boolean(item.isPaid);
+            // 1. عرض جدول الديسكتوب واللاب توب (كامل بالأعمدة والتشيك بوكس)
+            if (tbody) {
+                tbody.innerHTML = filtered.map((item, idx) => {
+                    const isWin = item.prize && item.prize.isWinner;
+                    const isPaid = Boolean(item.isPaid);
 
-                const statusBadge = isWin
-                    ? `<span class="badge badge-win">🎉 فائز بالمكسب</span>`
-                    : `<span class="badge badge-lose">💪 حظ أوفر</span>`;
-                const testBadge = item.isTest ? `<span class="badge badge-test">🧪 تجربة</span> ` : '';
+                    const statusBadge = isWin
+                        ? `<span class="badge badge-win">🎉 فائز بالمكسب</span>`
+                        : `<span class="badge badge-lose">💪 حظ أوفر</span>`;
+                    const testBadge = item.isTest ? `<span class="badge badge-test">🧪 تجربة</span> ` : '';
 
-                // تشيك بوكس "استلم" للفائزين فقط!
-                let paidCell = `<span style="color:#64748b;">-</span>`;
-                if (isWin) {
-                    paidCell = `
-                        <label class="check-wrap" title="تعليم كـ تم التسليم">
-                            <input type="checkbox" class="paid-checkbox" data-id="${item.userId}" ${isPaid ? 'checked' : ''}>
-                            <span style="font-size:0.8rem; font-weight:800; color:${isPaid ? '#10b981' : '#f59e0b'};">
-                                ${isPaid ? 'تم التسليم ✅' : 'قيد الانتظار ⏳'}
-                            </span>
-                        </label>
+                    let paidCell = `<span style="color:#64748b;">-</span>`;
+                    if (isWin) {
+                        paidCell = `
+                            <label class="check-wrap" title="تعليم كـ تم التسليم">
+                                <input type="checkbox" class="paid-checkbox" data-id="${item.userId}" ${isPaid ? 'checked' : ''}>
+                                <span style="font-size:0.8rem; font-weight:800; color:${isPaid ? '#10b981' : '#f59e0b'};">
+                                    ${isPaid ? 'تم التسليم ✅' : 'قيد الانتظار ⏳'}
+                                </span>
+                            </label>
+                        `;
+                    }
+
+                    const claimMethod = item.claimInfo ? `<span style="font-weight:700; color:#38bdf8;">${item.claimInfo.method}</span>` : `<span style="color:#64748b;">لم يسجل</span>`;
+                    const claimAccount = item.claimInfo ? `<strong style="color:#FFE500; font-size:1rem;">${item.claimInfo.account}</strong>` : `<span style="color:#64748b;">-</span>`;
+
+                    return `
+                        <tr class="${isPaid ? 'row-paid' : ''}">
+                            <td>${idx + 1}</td>
+                            <td>${paidCell}</td>
+                            <td><strong>${item.userId}</strong></td>
+                            <td>${testBadge}${item.userName}</td>
+                            <td><code>${item.nationalId || '-'}</code></td>
+                            <td>${item.userRegion || '-'}</td>
+                            <td>${statusBadge}</td>
+                            <td><strong>${item.prize ? item.prize.title : '-'}</strong></td>
+                            <td>${claimMethod}</td>
+                            <td>${claimAccount}</td>
+                            <td style="color:#94a3b8; font-size:0.85rem;">${item.formattedDate || item.scratchedAt || '-'}</td>
+                        </tr>
                     `;
-                }
+                }).join('');
+            }
 
-                const claimMethod = item.claimInfo ? `<span style="font-weight:700; color:#38bdf8;">${item.claimInfo.method}</span>` : `<span style="color:#64748b;">لم يسجل</span>`;
-                const claimAccount = item.claimInfo ? `<strong style="color:#FFE500; font-size:1rem;">${item.claimInfo.account}</strong>` : `<span style="color:#64748b;">-</span>`;
+            // 2. عرض كروت الموبايل الذكية (مريحة جداً بنقرة واحدة بدون أي زوم!)
+            if (mobileContainer) {
+                mobileContainer.innerHTML = filtered.map((item, idx) => {
+                    const isWin = item.prize && item.prize.isWinner;
+                    const isPaid = Boolean(item.isPaid);
+                    const testBadge = item.isTest ? `<span class="badge badge-test" style="font-size:0.7rem;">🧪 تجربة</span> ` : '';
+                    const statusBadge = isWin
+                        ? `<span class="badge badge-win">🎉 فائز</span>`
+                        : `<span class="badge badge-lose">💪 حظ أوفر</span>`;
 
-                return `
-                    <tr class="${isPaid ? 'row-paid' : ''}">
-                        <td>${idx + 1}</td>
-                        <td>${paidCell}</td>
-                        <td><strong>${item.userId}</strong></td>
-                        <td>${testBadge}${item.userName}</td>
-                        <td><code>${item.nationalId || '-'}</code></td>
-                        <td>${item.userRegion || '-'}</td>
-                        <td>${statusBadge}</td>
-                        <td><strong>${item.prize ? item.prize.title : '-'}</strong></td>
-                        <td>${claimMethod}</td>
-                        <td>${claimAccount}</td>
-                        <td style="color:#94a3b8; font-size:0.85rem;">${item.formattedDate || item.scratchedAt || '-'}</td>
-                    </tr>
-                `;
-            }).join('');
+                    return `
+                        <div class="m-record-card ${isPaid ? 'paid' : ''}">
+                            <div class="m-card-top">
+                                <div>
+                                    <div class="m-user-title">${testBadge}${item.userName}</div>
+                                    <div class="m-user-sub">كود: <strong>${item.userId}</strong> • ${item.userRegion || 'المنطقة غير مسجلة'}</div>
+                                </div>
+                                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                                    ${statusBadge}
+                                    <span style="font-size:0.75rem; color:#94a3b8;">#${idx + 1}</span>
+                                </div>
+                            </div>
 
-            // تفعيل حدث تغيير التشيك بوكس وحفظه فورياً ومزامنته سحابياً
-            tbody.querySelectorAll('.paid-checkbox').forEach(cb => {
-                cb.addEventListener('change', (e) => {
-                    const uid = e.target.getAttribute('data-id');
-                    const isChecked = e.target.checked;
-                    toggleUserPaidStatus(uid, isChecked);
+                            ${isWin ? `
+                                <div class="m-prize-box">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <span style="color:#94a3b8; font-size:0.85rem;">🎁 الجائزة:</span>
+                                        <strong style="color:#FFE500; font-size:1.1rem;">${item.prize ? item.prize.title : ''}</strong>
+                                    </div>
+                                </div>
+
+                                ${item.claimInfo ? `
+                                    <div class="m-wallet-box">
+                                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                                            <span style="font-size:0.82rem; color:#cbd5e1;">طريقة التحويل: <strong style="color:#38bdf8;">${item.claimInfo.method}</strong></span>
+                                            <span style="font-size:0.72rem; color:#94a3b8;">${item.claimInfo.formattedDate || ''}</span>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span style="font-size:0.82rem; color:#94a3b8;">📱 رقم المحفظة / انستاباي:</span>
+                                            <span class="m-wallet-highlight">${item.claimInfo.account}</span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:10px; padding:10px; color:#fca5a5; font-size:0.82rem; text-align:center;">
+                                        ⚠️ لم يسجل بيانات الاستلام والمحفظة بعد
+                                    </div>
+                                `}
+
+                                <!-- زر كبير وسهل بضغطة واحدة للموبايل -->
+                                <button type="button" class="m-paid-btn ${isPaid ? 'is-paid' : 'not-paid'}" data-id="${item.userId}" data-paid="${isPaid}">
+                                    <span>${isPaid ? '✅ تم التسليم بنجاح (اضغط للإلغاء)' : '⏳ اضغط هنا للتأكيد: تم التسليم'}</span>
+                                </button>
+                            ` : `
+                                <div style="background:rgba(148,163,184,0.08); border-radius:10px; padding:10px 12px; font-size:0.85rem; color:#94a3b8;">
+                                    💬 النتيجة: حظ أوفر في المرات القادمة
+                                </div>
+                            `}
+
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#64748b; margin-top:2px;">
+                                <span>الرقم القومي: ${item.nationalId || '-'}</span>
+                                <span>🕒 ${item.formattedDate || item.scratchedAt || '-'}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // تفعيل حدث تغيير تشيك بوكس الديسكتوب
+            if (tbody) {
+                tbody.querySelectorAll('.paid-checkbox').forEach(cb => {
+                    cb.addEventListener('change', (e) => {
+                        const uid = e.target.getAttribute('data-id');
+                        const isChecked = e.target.checked;
+                        toggleUserPaidStatus(uid, isChecked);
+                    });
                 });
-            });
+            }
+
+            // تفعيل أزرار الموبايل الكبيرة بضغطة واحدة
+            if (mobileContainer) {
+                mobileContainer.querySelectorAll('.m-paid-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const uid = btn.getAttribute('data-id');
+                        const isPaid = btn.getAttribute('data-paid') === 'true';
+                        toggleUserPaidStatus(uid, !isPaid);
+                    });
+                });
+            }
         }
 
         // ==============================================
@@ -1322,6 +1751,7 @@
         // ==============================================
         function renderDatabaseTable() {
             const tbody = document.getElementById('databaseTableBody');
+            const mobileContainer = document.getElementById('databaseMobileCards');
             const search = document.getElementById('dbSearchInput').value.trim().toLowerCase();
             const participations = getAllParticipations();
 
@@ -1336,30 +1766,61 @@
                 });
             }
 
-            // عرض جميع المتسابقين بالكامل
-            const displayData = data;
+            // 1. عرض جدول الديسكتوب
+            if (tbody) {
+                tbody.innerHTML = data.map((u, idx) => {
+                    const hasPlayed = Boolean(participations[u.id]);
+                    const playRecord = participations[u.id];
+                    let statusBadge = `<span style="color:#64748b;">لم يشارك بعد</span>`;
+                    if (hasPlayed) {
+                        statusBadge = playRecord?.prize?.isWinner
+                            ? `<span class="badge badge-win">🎉 كسب (${playRecord.prize.title})</span>`
+                            : `<span class="badge badge-lose">💪 خربش (حظ أوفر)</span>`;
+                    }
 
-            tbody.innerHTML = displayData.map((u, idx) => {
-                const hasPlayed = Boolean(participations[u.id]);
-                const playRecord = participations[u.id];
-                let statusBadge = `<span style="color:#64748b;">لم يشارك بعد</span>`;
-                if (hasPlayed) {
-                    statusBadge = playRecord?.prize?.isWinner
-                        ? `<span class="badge badge-win">🎉 كسب (${playRecord.prize.title})</span>`
-                        : `<span class="badge badge-lose">💪 خربش (حظ أوفر)</span>`;
-                }
+                    return `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td><strong>${u.id}</strong></td>
+                            <td>${u.name}</td>
+                            <td><code>${u.nationalId}</code></td>
+                            <td>${u.region}</td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
 
-                return `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td><strong>${u.id}</strong></td>
-                        <td>${u.name}</td>
-                        <td><code>${u.nationalId}</code></td>
-                        <td>${u.region}</td>
-                        <td>${statusBadge}</td>
-                    </tr>
-                `;
-            }).join('');
+            // 2. عرض كروت الموبايل (عرض أول 60 نتيجة لتسريع استجابة الموبايل أثناء البحث)
+            if (mobileContainer) {
+                const mobileSlice = data.slice(0, 60);
+                mobileContainer.innerHTML = mobileSlice.map((u, idx) => {
+                    const hasPlayed = Boolean(participations[u.id]);
+                    const playRecord = participations[u.id];
+                    let statusBadge = `<span style="color:#64748b; font-size:0.75rem;">لم يشارك بعد</span>`;
+                    if (hasPlayed) {
+                        statusBadge = playRecord?.prize?.isWinner
+                            ? `<span class="badge badge-win" style="font-size:0.72rem;">🎉 كسب (${playRecord.prize.title})</span>`
+                            : `<span class="badge badge-lose" style="font-size:0.72rem;">💪 خربش</span>`;
+                    }
+
+                    return `
+                        <div class="m-record-card" style="padding:10px 12px;">
+                            <div class="m-card-top" style="padding-bottom:6px; margin-bottom:6px;">
+                                <div>
+                                    <div class="m-user-title" style="font-size:0.95rem;">${u.name}</div>
+                                    <div class="m-user-sub">كود: <strong>${u.id}</strong> • ${u.region}</div>
+                                </div>
+                                <div>${statusBadge}</div>
+                            </div>
+                            <div style="font-size:0.75rem; color:#94a3b8; display:flex; justify-content:space-between;">
+                                <span>الرقم القومي: <code>${u.nationalId}</code></span>
+                                <span>#${idx + 1}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
 
             document.getElementById('dbCountLabel').textContent = search 
                 ? `${data.length} متسابق مطابق للبحث`
