@@ -335,20 +335,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // طرف الورقة النقدية الـ 100 أو 200 الحقيقي: يظهر جزء بسيط أوي بس في أحد أطراف الكارت عشوائياً
+        // طرف الورقة النقدية الـ 100 أو 200 العادية: يظهر جزء بسيط أوي في أحد أطراف الكارت عشوائياً
         if (scratchCroppedPeek) {
             if (currentPrize.isWinner) {
                 const is200 = (currentPrize.prizeKey === 'prize200' || (currentPrize.title && currentPrize.title.includes('200')));
-                scratchCroppedPeek.src = is200 ? 'images/200 cropped.png' : 'images/100 cropped.png';
+                // استخدام الصور العادية للعملات النقدية
+                scratchCroppedPeek.src = is200 ? 'images/prize_200.jpg' : 'images/prize_100.jpg';
 
-                // أطراف وأركان مختلفة في كل مرة - جزء بسيط أوي بس اللي يبان من أطراف الكارت
+                // أطراف وأركان مختلفة في كل مرة - تبرز الورقة جزئياً من خارج إطار الكارت (فقط طرفها يظهر داخل الكارت)
                 const peekPositions = [
-                    { top: 'auto', bottom: '-48px', left: 'auto', right: '-38px', transform: 'rotate(-12deg)' },
-                    { top: 'auto', bottom: '-48px', left: '-38px', right: 'auto', transform: 'rotate(12deg)' },
-                    { top: '-45px', bottom: 'auto', left: 'auto', right: '-35px', transform: 'rotate(10deg)' },
-                    { top: '-45px', bottom: 'auto', left: '-35px', right: 'auto', transform: 'rotate(-10deg)' },
-                    { top: '38%', bottom: 'auto', left: 'auto', right: '-48px', transform: 'rotate(-6deg)' },
-                    { top: '38%', bottom: 'auto', left: '-48px', right: 'auto', transform: 'rotate(6deg)' }
+                    { top: '-45px', bottom: 'auto', left: 'auto', right: '-80px', transform: 'rotate(22deg)' },
+                    { top: '-45px', bottom: 'auto', left: '-80px', right: 'auto', transform: 'rotate(-22deg)' },
+                    { top: 'auto', bottom: '-45px', left: 'auto', right: '-80px', transform: 'rotate(-18deg)' },
+                    { top: 'auto', bottom: '-45px', left: '-80px', right: 'auto', transform: 'rotate(18deg)' },
+                    { top: '30%', bottom: 'auto', left: 'auto', right: '-125px', transform: 'rotate(-8deg)' },
+                    { top: '30%', bottom: 'auto', left: '-125px', right: 'auto', transform: 'rotate(8deg)' }
                 ];
                 const randomPos = peekPositions[Math.floor(Math.random() * peekPositions.length)];
 
@@ -534,6 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="background:#ffffff; color:#18181b; font-size:1.35rem; font-weight:900; padding:8px 20px; border-radius:14px; border:2.5px solid #10b981; display:inline-block; letter-spacing:1.5px; margin:4px 0 8px 0; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
                             ${record.claimInfo.account}
                         </div>
+                        <div style="font-size:0.85rem; color:#059669; font-weight:800; margin-top:4px;">⏱️ توصل الجائزة خلال 48 ساعة</div>
                         <div style="font-size:0.8rem; color:#6b7280; margin-top:4px;">تاريخ التسجيل: ${record.claimInfo.formattedDate || ''}</div>
                     `;
                 }
@@ -673,6 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div style="background:#ffffff; color:#18181b; font-size:1.35rem; font-weight:900; padding:8px 20px; border-radius:14px; border:2.5px solid #10b981; display:inline-block; letter-spacing:1.5px; margin:4px 0 8px 0; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
                         ${accountVal}
                     </div>
+                    <div style="font-size:0.85rem; color:#059669; font-weight:800; margin-top:4px;">⏱️ توصل الجائزة خلال 48 ساعة</div>
                     <div style="font-size:0.8rem; color:#6b7280; margin-top:4px;">تاريخ التسجيل: ${claimInfo.formattedDate}</div>
                 `;
             }

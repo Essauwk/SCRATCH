@@ -2464,18 +2464,42 @@ footer.app-footer span.heart {
 }
 
 /* ============================================================
-   🪙 طرف ورقة الـ 100 أو 200 الواقعي تحت الخربشة (Cropped Peek Note)
+   🪙 طرف ورقة الـ 100 أو 200 الأصلية تحت الخربشة (Banknote Peek Note)
    موجود مباشرة تحت طبقة الكانفاس الذهبي ليظهر بحماس أثناء المسح
    ============================================================ */
 .scratch-cropped-peek {
     position: absolute;
-    width: 125px;
-    max-width: 38%;
-    max-height: 48%;
-    object-fit: contain;
+    width: 215px;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    border-radius: 8px;
+    border: 2px solid rgba(24, 24, 27, 0.4);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
     z-index: 2; /* مباشرة تحت الكانفاس الذهبي اللي z-index: 3 */
     pointer-events: none;
     user-select: none;
-    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
     transition: opacity 0.35s ease;
+}
+
+@media (max-width: 600px) {
+    .scratch-cropped-peek {
+        width: 185px;
+    }
+}
+
+/* شارة تسليم الجائزة خلال 48 ساعة */
+.prize-delivery-pill {
+    display: inline-block;
+    background: #18181B;
+    color: #FFE500;
+    font-size: 0.95rem;
+    font-weight: 900;
+    font-family: var(--font-heading);
+    padding: 6px 18px;
+    border-radius: 999px;
+    border: 2px solid #FFE500;
+    margin-top: 10px;
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+    letter-spacing: 0.5px;
 }
