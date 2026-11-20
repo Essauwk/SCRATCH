@@ -473,18 +473,17 @@
                 <div class="dash-title">
                     <h1>
                         <span>🏆 لوحة إدارة مسابقة بطل العالمية</span>
-                        <div class="cloud-status-pill" id="headerCloudPill">
+                        <div class="cloud-status-pill connected" id="headerCloudPill">
                             <span class="pulse-dot"></span>
-                            <span id="headerCloudStatus">جاري فحص المزامنة...</span>
+                            <span id="headerCloudStatus">🟢 النظام متصل ومباشر</span>
                         </div>
                     </h1>
-                    <p>متابعة المخزن لايف، تسليم الجوائز، وتصفير التيست</p>
+                    <p>متابعة الفائزين لحظياً، تسليم الجوائز، وتصدير التقارير الرسمية</p>
                 </div>
             </div>
             <div class="dash-actions">
                 <button class="dash-btn dash-btn-success" id="exportCsvBtn">📥 تصدير شيت النتائج (Excel / CSV)</button>
                 <button class="dash-btn dash-btn-outline" id="refreshBtn">🔄 تحديث وسحب البيانات الحية</button>
-                <a href="index.html" class="dash-btn dash-btn-primary" target="_blank">🎮 تجربة كمتسابق</a>
             </div>
         </header>
 
@@ -500,35 +499,9 @@
              ========================================== -->
         <div id="tab-overview" class="tab-content">
             
-            <!-- أداة الربط والمزامنة السحابية الحية (Upstash Realtime Cloud) -->
-            <div class="cloud-sync-box" style="background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%); border-color: #10b981;">
-                <div class="cloud-sync-title">
-                    <span>⚡ سيرفر المزامنة السحابية الحية (بدون جوجل شيتس - يعمل تلقائياً)</span>
-                    <span id="cloudDetailBadge" style="font-size:0.85rem; color:#6ee7b7; font-weight:900;">🟢 السيرفر السحابي متصل ويعمل تلقائياً بين كل الأجهزة</span>
-                </div>
-                
-                <div style="background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10b981; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; font-size: 0.88rem; line-height: 1.7;">
-                    <div style="color: #34d399; font-weight: 900; font-size: 0.95rem; margin-bottom: 4px;">
-                        ✅ الربط التلقائي شغال 100% بين الموبايل واللاب!
-                    </div>
-                    <div style="color: #e2e8f0;">
-                        تم ربط الموقع بسيرفر سحابي فوري فائق السرعة (Upstash Cloud Server): أي متسابق يخربش من أي تليفون في أي مكان، نتيجته بتتسجل في السيرفر وتظهر عندك هنا فوراً بدون الحاجة لجوجل شيتس وبدون أي إعدادات يدوية!
-                    </div>
-                </div>
-
-                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-                    <button type="button" class="dash-btn dash-btn-success" id="syncNowBtn" style="padding:12px 20px; font-size:0.95rem;">🔄 تحديث وسحب البيانات الحية لايف</button>
-                    <button type="button" class="dash-btn dash-btn-outline" id="sendTestPingBtn" style="background:#0f172a; border-color:#34d399; color:#34d399; padding:12px 18px;">📲 تجربة واختبار الربط السحابي</button>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:12px; font-size:0.85rem;">
-                    <label style="display:inline-flex; align-items:center; gap:8px; color:#cbd5e1; cursor:pointer;">
-                        <input type="checkbox" id="autoRefreshCheckbox" checked style="accent-color:#10b981; width:16px; height:16px;">
-                        <span>تحديث تلقائي مستمر كل 8 ثواني في الخلفية (Live Polling) 📡</span>
-                    </label>
-                    <span id="lastSyncTimeText" style="color:#94a3b8;">جاري الاتصال بالسيرفر السحابي...</span>
-                </div>
-                <div id="cloudAlertMsg" style="margin-top:10px; font-size:0.9rem; font-weight:700; display:none; padding:10px; border-radius:8px;"></div>
-            </div>
+            <!-- عناصر المزامنة التلقائية الصامتة في الخلفية -->
+            <input type="checkbox" id="autoRefreshCheckbox" checked style="display:none;">
+            <div id="cloudAlertMsg" style="display:none;"></div>
 
             <!-- أداة تعديل رصيد المخزن المباشرة -->
             <div class="inv-control-box">
@@ -603,21 +576,21 @@
                 </div>
             </div>
 
-            <!-- أزرار الإدارة والتحكم السريعة -->
+            <!-- إجراءات الإدارة الرسمية -->
             <section class="admin-section">
                 <div class="section-title">
-                    <span>⚡ أدوات التحكم والتصفير السريعة</span>
+                    <span>⚡ إجراءات الإدارة الرسمية</span>
                 </div>
-                <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                    <button class="dash-btn dash-btn-primary" id="quickResetTestBtn">
-                        🔄 تصفير مشاركات التيست (ID 1 - 10) للدخول بها مجدداً
+                <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                    <button class="dash-btn dash-btn-success" onclick="document.getElementById('exportCsvBtn').click()">
+                        📥 تصدير تقرير الفائزين والمشاركات (Excel / CSV)
                     </button>
-                    <button class="dash-btn dash-btn-outline" id="defaultResetInventoryBtn">
-                        📦 استعادة رصيد المخزن للقيم الافتراضية (500 و 300)
+                    <button class="dash-btn dash-btn-outline" onclick="refreshDataFromCloud(false)">
+                        🔄 تحديث وسحب البيانات الحية الآن
                     </button>
-                    <button class="dash-btn dash-btn-danger" id="resetAllDataBtn">
-                        ⚠️ تصفير كافة السجلات بالكامل (ابدأ من الصفر)
-                    </button>
+                    <a href="/admin/test" class="dash-btn dash-btn-outline" style="border-color:#334155; color:#94a3b8; font-size:0.85rem; margin-right:auto;">
+                        🛠️ أدوات الاختبار الفني والتصفير للمطور (/admin/test)
+                    </a>
                 </div>
             </section>
         </div>
@@ -644,13 +617,7 @@
                         <option value="unpaid">⏳ فائزين لم يستلموا بعد (غير مُعلَّم استلم)</option>
                         <option value="paid">✅ فائزين تم تسليمهم (مُعلَّم استلم)</option>
                         <option value="hardluck">💪 الحظ الأوفر فقط</option>
-                        <option value="real">👥 المتسابقين الحقيقيين فقط</option>
-                        <option value="test">🧪 حسابات التجربة فقط (ID 1-10)</option>
                     </select>
-
-                    <button class="dash-btn dash-btn-outline" id="clearTestFromTableBtn">
-                        🔄 تصفير التيست
-                    </button>
                 </div>
 
                 <!-- جدول المشاركات -->
@@ -803,23 +770,21 @@
             }, 8000);
         }
 
+        // تحديث حالة السحابة في الواجهة
         function updateCloudStatusUI(status, label) {
             const pill = document.getElementById('headerCloudPill');
             const pillText = document.getElementById('headerCloudStatus');
-            const detailBadge = document.getElementById('cloudDetailBadge');
 
             if (pill) {
                 pill.className = 'cloud-status-pill';
                 if (status === 'connected') {
                     pill.classList.add('connected');
-                    if (pillText) pillText.textContent = label || '🟢 متصل بالسحابة لايف (⚡ Upstash)';
-                    if (detailBadge) detailBadge.textContent = '🟢 السيرفر السحابي متصل ويعمل تلقائياً بين كل الأجهزة';
+                    if (pillText) pillText.textContent = label || '🟢 النظام متصل ومباشر';
                 } else if (status === 'syncing') {
                     pill.classList.add('syncing');
-                    if (pillText) pillText.textContent = label || '🟡 جاري المزامنة...';
+                    if (pillText) pillText.textContent = label || '🟡 جاري التحديث...';
                 } else {
-                    if (pillText) pillText.textContent = label || '🟢 جاهز للاتصال السحابي';
-                    if (detailBadge) detailBadge.textContent = '🟢 السيرفر جاهز للمزامنة التلقائية';
+                    if (pillText) pillText.textContent = label || '🟢 النظام متصل ومباشر';
                 }
             }
         }
@@ -1168,40 +1133,49 @@
             alert(`🔄 تم تصفير مشاركات حسابات التيست بنجاح!\nيمكنك الآن الدخول بأي حساب من (1 إلى 10) لتجربته كأنه يدخل لأول مرة.`);
         }
 
-        document.getElementById('quickResetTestBtn').addEventListener('click', resetTestAccounts);
-        document.getElementById('clearTestFromTableBtn').addEventListener('click', resetTestAccounts);
+        const quickResetBtn = document.getElementById('quickResetTestBtn');
+        if (quickResetBtn) quickResetBtn.addEventListener('click', resetTestAccounts);
+        const clearTestBtn = document.getElementById('clearTestFromTableBtn');
+        if (clearTestBtn) clearTestBtn.addEventListener('click', resetTestAccounts);
 
         // ==============================================
         // استعادة رصيد المخزن الافتراضي (500 و 300)
         // ==============================================
-        document.getElementById('defaultResetInventoryBtn').addEventListener('click', () => {
-            if (!confirm('هل تريد إعادة تعيين المخزن إلى 500 كارت (100 جنيه) و 300 كارت (200 جنيه)؟')) return;
-            localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
-            localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
+        const defaultResetBtn = document.getElementById('defaultResetInventoryBtn');
+        if (defaultResetBtn) {
+            defaultResetBtn.addEventListener('click', () => {
+                if (!confirm('هل تريد إعادة تعيين المخزن إلى 500 كارت (100 جنيه) و 300 كارت (200 جنيه)؟')) return;
+                localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
+                localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
 
-            syncToCloud({
-                action: 'updateInventory',
-                prize100: 500,
-                prize200: 300
+                syncToCloud({
+                    action: 'updateInventory',
+                    prize100: 500,
+                    prize200: 300
+                });
+
+                loadDashboardData();
+                alert('✅ تم إعادة ضبط رصيد المخزن إلى 500 و 300 بنجاح!');
             });
-
-            loadDashboardData();
-            alert('✅ تم إعادة ضبط رصيد المخزن إلى 500 و 300 بنجاح!');
-        });
+        }
 
         // ==============================================
         // تصفير شامل
         // ==============================================
-        document.getElementById('resetAllDataBtn').addEventListener('click', () => {
-            const check = prompt('⚠️ تحذير: هذا سيحذف جميع مشاركات المتسابقين ويعيد تصفير كل شيء! اكتب "تأكيد" للمتابعة:');
-            if (check === 'تأكيد' || check === 'confirm') {
-                resetParticipationsStorage();
-                localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
-                localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
-                loadDashboardData();
-                alert('🔄 تم تصفير جميع السجلات والمخزن بالكامل.');
-            }
-        });
+        const resetAllBtn = document.getElementById('resetAllDataBtn');
+        if (resetAllBtn) {
+            resetAllBtn.addEventListener('click', () => {
+                const check = prompt('⚠️ تحذير: هذا سيحذف جميع مشاركات المتسابقين ويعيد تصفير كل شيء! اكتب "تأكيد" للمتابعة:');
+                if (check === 'تأكيد' || check === 'confirm') {
+                    resetParticipationsStorage();
+                    localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
+                    localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
+                    syncToCloud({ action: 'resetAll' });
+                    loadDashboardData();
+                    alert('🔄 تم تصفير جميع السجلات والمخزن بالكامل سحابياً ومحلياً.');
+                }
+            });
+        }
 
         // ==============================================
         // تصدير النتائج إلى ملف Excel / CSV بالعربي

@@ -5038,14 +5038,67 @@ function syncToCloud(payload) {
         } else if (payload.action === 'updateInventory') {
             return upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', String(payload.prize100), 'prize200', String(payload.prize200)]);
         } else if (payload.action === 'resetTest') {
-            const testIds = ['1','2','3','4','5','6','7','8','9','10'];
-            return upstashCommand(['HDEL', UPSTASH_CONFIG.keys.participations, ...testIds]);
+            const baseTestIds = ['1','2','3','4','5','6','7','8','9','10'];
+            if (payload.extraIds && Array.isArray(payload.extraIds)) {
+                baseTestIds.push(...payload.extraIds);
+            }
+            return upstashCommand(['HDEL', UPSTASH_CONFIG.keys.participations, ...baseTestIds]).then(() => {
+                return upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.participations]).then(res => {
+                    if (res && Array.isArray(res.result)) {
+                        const toDel = [];
+                        for (let i = 0; i < res.result.length; i += 2) {
+                            const k = res.result[i];
+                            const v = res.result[i+1];
+                            try {
+                                const parsed = JSON.parse(v);
+                                if (parsed.isTest || k.startsWith('TEST') || k.startsWith('PING')) {
+                                    toDel.push(k);
+                                }
+                            } catch(e){}
+                        }
+                        if (toDel.length > 0) {
+                            return upstashCommand(['HDEL', UPSTASH_CONFIG.keys.participations, ...toDel]);
+                        }
+                    }
+                });
+            });
+        } else if (payload.action === 'deleteParticipation' && payload.userId) {
+            const uid = String(payload.userId).trim();
+            return upstashCommand(['HDEL', UPSTASH_CONFIG.keys.participations, uid]);
+        } else if (payload.action === 'resetAll') {
+            return Promise.all([
+                upstashCommand(['DEL', UPSTASH_CONFIG.keys.participations]),
+                upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', '500', 'prize200', '300'])
+            ]);
         }
     } catch(e) {
         console.warn('Upstash sync error:', e);
     }
 
     return Promise.resolve(null);
+}
+
+function deleteParticipationRecord(userId) {
+    if (!userId) return Promise.resolve(null);
+    const uid = String(userId).trim();
+    const history = getAllParticipations();
+    delete history[uid];
+    try {
+        localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+    } catch(e) {}
+    return syncToCloud({
+        action: 'deleteParticipation',
+        userId: uid
+    });
+}
+
+function resetAllParticipationsCloud() {
+    try {
+        localStorage.setItem(PARTICIPATION_STORAGE_KEY, '{}');
+        localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
+        localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
+    } catch(e) {}
+    return syncToCloud({ action: 'resetAll' });
 }
 
 function fetchFromCloud() {
