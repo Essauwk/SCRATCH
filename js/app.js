@@ -835,7 +835,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.fillStyle = '#18181B';
         ctx.font = 'bold 28px "Cairo", sans-serif';
-        ctx.fillText('⚡ تم كشط كارت الحظ الذهبي والفوز بالهدية فوراً ⚡', 540, 745);
+        ctx.fillText('⚡ تم خربشة كارت الحظ الذهبي والفوز بالهدية فوراً ⚡', 540, 745);
         ctx.fillStyle = '#059669';
         ctx.font = '800 24px "Cairo", sans-serif';
         ctx.fillText('⏱️ استلام الجائزة خلال 48 ساعة فقط!', 540, 785);
@@ -857,6 +857,44 @@ document.addEventListener('DOMContentLoaded', () => {
         return `🏆🎉 الحمد لله كسبت ${prizeTitle} في مسابقة بطل العالمية إكسبريس الرسمية! 🌟🔥\n\nشكراً جداً لإدارة شركة العالمية إكسبريس على الهدية الجميلة وعقبال كل زمايلي وأبطال الشركة! 🎁👑\n\nادخلوا شاركوا يا أبطال، الجوائز حقيقية والتسليم فوري! 🚀\n\nالصفحة الرسمية: @alalamiacompany0\nhttps://www.facebook.com/alalamiacompany0`;
     }
 
+    function showShareToast(message) {
+        let toast = document.getElementById('appShareToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'appShareToast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%) translateY(20px);
+                background: #18181B;
+                color: #FFE500;
+                padding: 12px 24px;
+                border-radius: 999px;
+                font-size: 0.92rem;
+                font-weight: 800;
+                border: 2px solid #FFE500;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+                z-index: 99999;
+                text-align: center;
+                pointer-events: none;
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                white-space: nowrap;
+                max-width: 90vw;
+                opacity: 0;
+            `;
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+        }, 4000);
+    }
+
     // زر مشاركة الهدية على فيسبوك - بضغطة واحدة فورية
     const shareWinOnFacebookBtn = document.getElementById('shareWinOnFacebookBtn');
     if (shareWinOnFacebookBtn) {
@@ -872,11 +910,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const caption = getWinnerCaption(winnerName, prizeTitle);
 
             try {
-                // ---- توليد صورة البوست ----
+                // ---- توليد صورة البوست المجهزة بالكامل باسم الفائز وهديته واللوجو ----
                 const { blob } = await generateWinnerPostImage(currentUser, currentPrize);
                 const file = new File([blob], 'alalamia_winner.png', { type: 'image/png' });
 
-                // ---- على الموبايل: Share Sheet الأصلي مع الصورة + البوست الجاهز ----
+                // نسخ الكابشن في الحافظة فوراً وتلقائياً لتسهيل اللصق المباشر
+                try {
+                    if (navigator.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(caption);
+                    }
+                } catch (e) {}
+
+                showShareToast('📋 تم نسخ كلام البوست تلقائياً! الصقه في فيسبوك مع صورتك 🚀');
+
+                // ---- على الموبايل: Share Sheet الأصلي مع الصورة والبوست ----
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try {
                         await navigator.share({
@@ -884,16 +931,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             title: `🏆 كسبت ${prizeTitle} في مسابقة العالمية!`,
                             text: caption
                         });
-                        // شير ناجح - انتهى
                         return;
                     } catch (shareErr) {
-                        // المستخدم ألغى نافذة الشير - لا نعمل شيء إضافي
                         return;
                     }
                 }
 
                 // ---- على الكمبيوتر / الأجهزة التي لا تدعم File Share ----
-                // ننزّل الصورة تلقائياً ونفتح فيسبوك مباشرة بالبوست الجاهز
                 const imgUrl = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = imgUrl;
@@ -902,20 +946,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 a.click();
                 setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(imgUrl); }, 2000);
 
-                // نسخ الكابشن للحافظة صامتاً
-                try {
-                    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(caption);
-                } catch (e) {}
-
-                // فتح فيسبوك كومبوزر مع الكابشن الجاهز في أسرع وقت
-                const fbComposeUrl = `https://www.facebook.com/dialog/feed?app_id=966242223397198&display=popup&caption=${encodeURIComponent(caption)}&redirect_uri=https://www.facebook.com/`;
-                window.open(fbComposeUrl, '_blank');
+                window.open('https://www.facebook.com/', '_blank');
 
             } catch (err) {
-                // Fallback نهائي - نسخ وفتح فيسبوك
-                try {
-                    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(caption);
-                } catch (e) {}
                 window.open('https://www.facebook.com/', '_blank');
             } finally {
                 if (btnText) btnText.textContent = origText;

@@ -1577,51 +1577,10 @@ footer.app-footer span.heart {
 /* ========================================================
    📱 التجاوب الفائق مع شاشات الموبايل (Mobile-First Polish)
    ======================================================== */
-@media (max-width: 600px) {
-    /* إظهار الاستيكرات الجانبية على شاشات الموبايل بشكل متناسق ومميز بدون حجب أي أزرار */
+@media (max-width: 768px) {
+    /* إخفاء الاستيكرات الجانبية على الموبايل والتابلت */
     .side-sticker {
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        position: fixed !important;
-        font-size: 0.72rem !important;
-        padding: 4px 10px !important;
-        border-radius: 999px !important;
-        border: 2.5px solid #FFFFFF !important;
-        box-shadow: 2px 2px 0px rgba(0,0,0,0.7) !important;
-        z-index: 25 !important;
-        pointer-events: none !important;
-        white-space: nowrap !important;
-    }
-
-    /* اكسب مبالغ نقدية فورية - أعلى اليسار تحت الهيدر */
-    .sticker-promo {
-        top: 56px !important;
-        left: 6px !important;
-        transform: rotate(-4deg) !important;
-        border-color: #FFE500 !important;
-        animation: wigglePromo 3.2s infinite ease-in-out !important;
-    }
-
-    /* بطل الأبطال - أعلى اليمين تحت الهيدر */
-    .sticker-right {
-        top: 56px !important;
-        right: 6px !important;
-        left: auto !important;
-        bottom: auto !important;
-        transform: rotate(4deg) !important;
-        animation: wiggleSticker 3s infinite ease-in-out !important;
-    }
-
-    /* طاقة العالمية - أسفل اليسار */
-    .sticker-left {
-        bottom: 12px !important;
-        left: 8px !important;
-        top: auto !important;
-        right: auto !important;
-        transform: rotate(-4deg) !important;
-        animation: wiggleSticker 3s infinite ease-in-out !important;
+        display: none !important;
     }
 
     /* تخفيف العناصر العائمة بالخلفية */
