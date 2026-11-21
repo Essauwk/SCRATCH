@@ -895,64 +895,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     }
 
-    // زر مشاركة الهدية على فيسبوك - بضغطة واحدة فورية
+    // زر مشاركة الهدية على فيسبوك - نقله مباشرة لفيسبوك بدون أي نوافذ اختيار نظام
     const shareWinOnFacebookBtn = document.getElementById('shareWinOnFacebookBtn');
     if (shareWinOnFacebookBtn) {
         shareWinOnFacebookBtn.addEventListener('click', async () => {
             soundManager.playClick();
             const btnText = document.getElementById('shareBtnText');
             const origText = btnText ? btnText.textContent : '📢 شارك فرحتك على فيسبوك 🚀';
-            if (btnText) btnText.textContent = '⏳ جاري التجهيز...';
-            shareWinOnFacebookBtn.disabled = true;
+            if (btnText) btnText.textContent = '🚀 جاري فتح فيسبوك...';
 
             const prizeTitle = currentPrize?.title || 'هدية قيمة';
             const winnerName = currentUser?.name || 'أحد أبطال الشركة';
             const caption = getWinnerCaption(winnerName, prizeTitle);
 
-            try {
-                // ---- توليد صورة البوست المجهزة بالكامل باسم الفائز وهديته واللوجو ----
-                const { blob } = await generateWinnerPostImage(currentUser, currentPrize);
-                const file = new File([blob], 'alalamia_winner.png', { type: 'image/png' });
+            // تحديد صفحة الشير الخاصة بالهدية بالضبط (صورة الهدية + عنوان الفوز + منشن @alalamiacompany0)
+            let sharePage = 'share-100.html';
+            if (prizeTitle.includes('زيت') || currentPrize?.prizeKey === 'prizeOil') {
+                sharePage = 'share-oil.html';
+            } else if (prizeTitle.includes('200') || currentPrize?.prizeKey === 'prize200') {
+                sharePage = 'share-200.html';
+            }
 
-                // نسخ الكابشن في الحافظة فوراً وتلقائياً لتسهيل اللصق المباشر
+            // رابط صفحة الفوز المجهزة لفيسبوك
+            const shareUrl = `https://alamia-delta.vercel.app/${sharePage}`;
+            const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+
+            try {
+                // نسخ نص البوست الفخري في الحافظة تلقائياً
                 try {
                     if (navigator.clipboard?.writeText) {
                         await navigator.clipboard.writeText(caption);
                     }
                 } catch (e) {}
 
-                showShareToast('📋 تم نسخ كلام البوست تلقائياً! الصقه في فيسبوك مع صورتك 🚀');
+                showShareToast('🚀 جاري نقلك لفيسبوك فوراً لنشر البوست!');
 
-                // ---- على الموبايل: Share Sheet الأصلي مع الصورة والبوست ----
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            files: [file],
-                            title: `🏆 كسبت ${prizeTitle} في مسابقة العالمية!`,
-                            text: caption
-                        });
-                        return;
-                    } catch (shareErr) {
-                        return;
-                    }
-                }
-
-                // ---- على الكمبيوتر / الأجهزة التي لا تدعم File Share ----
-                const imgUrl = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = imgUrl;
-                a.download = 'كارت_فوز_العالمية.png';
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(imgUrl); }, 2000);
-
-                window.open('https://www.facebook.com/', '_blank');
-
+                // فتح فيسبوك مباشرة 100% بدون أي نوافذ اختيار نظام (ويندوز أو أندرويد)
+                window.open(fbShareUrl, '_blank');
             } catch (err) {
-                window.open('https://www.facebook.com/', '_blank');
+                window.open(fbShareUrl, '_blank');
             } finally {
-                if (btnText) btnText.textContent = origText;
-                shareWinOnFacebookBtn.disabled = false;
+                setTimeout(() => {
+                    if (btnText) btnText.textContent = origText;
+                }, 1500);
             }
         });
     }
