@@ -4224,75 +4224,136 @@ const CONTESTANTS_DATABASE = [
     { id: "133716", nationalId: "30308242300156", name: "عبدالرحمن سيد أحمد", region: "القاهرة الجديدة - المستثمرين جنوب" }
 ];
 
+
+// للتوافق مع الكود السابق
+const USERS_DATABASE = CONTESTANTS_DATABASE;
+
 // =========================================
-// 🛠️ دوال الوصول لقاعدة البيانات
+// 🔍 البحث والتحقق من المتسابق
 // =========================================
-function findContestant(id, nationalId) {
+function findUser(id, nationalId) {
     const cleanId = String(id || '').trim();
     const cleanNatId = String(nationalId || '').trim();
 
-    // 1. فحص حسابات التجربة أولاً
-    const testMatch = TEST_CONTESTANTS.find(u => 
-        String(u.id).trim() === cleanId && 
-        String(u.nationalId).trim() === cleanNatId
-    );
-    if (testMatch) return { ...testMatch };
+    // فحص حسابات التجربة أولاً
+    const testUser = TEST_CONTESTANTS.find(u => u.id === cleanId && u.nationalId === cleanNatId);
+    if (testUser) return testUser;
 
-    // 2. فحص قاعدة البيانات الرسمية
-    const realMatch = CONTESTANTS_DATABASE.find(u => 
-        String(u.id).trim() === cleanId && 
-        String(u.nationalId).trim() === cleanNatId
-    );
-    if (realMatch) return { ...realMatch, isTest: false };
-
-    return null;
-}
-
-function findContestantByIdOnly(id) {
-    const cleanId = String(id || '').trim();
-    const testMatch = TEST_CONTESTANTS.find(u => String(u.id).trim() === cleanId);
-    if (testMatch) return { ...testMatch };
-    const realMatch = CONTESTANTS_DATABASE.find(u => String(u.id).trim() === cleanId);
-    if (realMatch) return { ...realMatch, isTest: false };
-    return null;
+    // ثم البحث في قاعدة البيانات الحقيقية
+    return CONTESTANTS_DATABASE.find(u => u.id === cleanId && u.nationalId === cleanNatId);
 }
 
 // =========================================
-// 📦 إدارة المخزن الحي المحلي
+// 🏆 نظام مخزن الجوائز (Prize Inventory System)
 // =========================================
+
 function getPrizeRemaining(prizeKey) {
-    const p = PRIZE_INVENTORY[prizeKey];
-    if (!p) return 0;
-    const val = localStorage.getItem(p.storageKey);
-    if (val === null) {
-        localStorage.setItem(p.storageKey, String(p.count));
-        return p.count;
+    const storageKey = PRIZE_INVENTORY[prizeKey].storageKey;
+    const stored = localStorage.getItem(storageKey);
+    if (stored === null) {
+        // أول مرة: نهيئ المخزن بالقيمة الابتدائية
+        const initial = PRIZE_INVENTORY[prizeKey].count;
+        localStorage.setItem(storageKey, String(initial));
+        return initial;
     }
-    return Math.max(0, parseInt(val, 10) || 0);
+    return parseInt(stored, 10);
 }
 
 function decrementPrize(prizeKey) {
-    const p = PRIZE_INVENTORY[prizeKey];
-    if (!p) return;
-    const curr = getPrizeRemaining(prizeKey);
-    const next = Math.max(0, curr - 1);
-    localStorage.setItem(p.storageKey, String(next));
+    if (!PRIZE_INVENTORY[prizeKey]) return false;
+    const storageKey = PRIZE_INVENTORY[prizeKey].storageKey;
+    const current = getPrizeRemaining(prizeKey);
+    if (current > 0) {
+        localStorage.setItem(storageKey, String(current - 1));
+
+        // ⚡ خصم سحابي فوري وذري من مخزن سيرفر Upstash
+        try {
+            upstashCommand(['HINCRBY', UPSTASH_CONFIG.keys.inventory, prizeKey, '-1']).then(res => {
+                if (res && res.result !== undefined) {
+                    const newCount = parseInt(res.result, 10);
+                    if (!isNaN(newCount)) {
+                        localStorage.setItem(storageKey, String(newCount));
+                    }
+                }
+            }).catch(err => {
+                console.warn('Upstash HINCRBY failed:', err);
+            });
+        } catch (e) {
+            console.warn('Upstash HINCRBY error:', e);
+        }
+
+        // إشعار فوري لجميع التابات المفتوحة
+        try {
+            if (window.BroadcastChannel) {
+                const bc = new BroadcastChannel('alalamia_live');
+                bc.postMessage({ type: 'inventory_updated', prizeKey: prizeKey, remaining: current - 1 });
+                setTimeout(() => bc.close(), 1000);
+            }
+        } catch (e) {}
+
+        return true;
+    }
+    return false; // نفذت الجائزة
+}
+
+function getInventorySnapshot() {
+    return {
+        prize100: getPrizeRemaining('prize100'),
+        prize200: getPrizeRemaining('prize200'),
+        prizeOil: getPrizeRemaining('prizeOil'),
+        prize100_initial: PRIZE_INVENTORY.prize100.count,
+        prize200_initial: PRIZE_INVENTORY.prize200.count,
+        prizeOil_initial: PRIZE_INVENTORY.prizeOil.count,
+    };
+}
+
+// مزامنة المخزن لايف من السيرفر السحابي
+async function syncInventoryFromCloud() {
+    try {
+        const res = await upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.inventory]);
+        if (res && Array.isArray(res.result) && res.result.length > 0) {
+            for (let i = 0; i < res.result.length; i += 2) {
+                const key = res.result[i];
+                const val = parseInt(res.result[i + 1], 10);
+                if (!isNaN(val) && PRIZE_INVENTORY[key]) {
+                    localStorage.setItem(PRIZE_INVENTORY[key].storageKey, String(val));
+                }
+            }
+            return true;
+        } else if (res && typeof res.result === 'object' && res.result !== null) {
+            for (const [key, valStr] of Object.entries(res.result)) {
+                const val = parseInt(valStr, 10);
+                if (!isNaN(val) && PRIZE_INVENTORY[key]) {
+                    localStorage.setItem(PRIZE_INVENTORY[key].storageKey, String(val));
+                }
+            }
+            return true;
+        }
+    } catch (e) {
+        console.warn('Inventory cloud sync error:', e);
+    }
+    return false;
 }
 
 // =========================================
-// 🎲 تحديد جائزة المتسابق (استهلاك وتوزيع المخزون بالكامل)
+// 🎲 تحديد جائزة المتسابق
 // =========================================
 function getUserPrize(user) {
+    // حسابات التجربة: جائزة ثابتة ولا تُخصم من المخزن
     if (user.isTest && user.fixedPrize) {
         return user.fixedPrize;
     }
 
+    // ==============================
+    // توزيع عشوائي من المخزن الحقيقي (100ج + 200ج + جركن زيت)
+    // ==============================
     const rem100 = getPrizeRemaining('prize100');
     const rem200 = getPrizeRemaining('prize200');
     const remOil = getPrizeRemaining('prizeOil');
     const totalWinners = rem100 + rem200 + remOil;
 
     if (totalWinners <= 0) {
+        // انتهت كل الجوائز
         return {
             isWinner: false,
             title: 'حظ أوفر المرة القادمة',
@@ -4302,11 +4363,13 @@ function getUserPrize(user) {
         };
     }
 
-    // نسبة فوز ديناميكية تضمن خروج الجوائز وتوزيعها بالكامل على المتسابقين حتى نفاذ المخزن
-    const winChance = Math.min(1.0, Math.max(0.55, totalWinners / 1000));
+    // 🎯 شرط أساسي: توزيع واستهلاك كل جوائز المخزن بالكامل على المتسابقين حتى نفاذ المخزون تماماً (0 متبقي)
+    // نسبة الفوز ديناميكية بنسبة 50% كحد أدنى طالما يوجد أي رصيد جوائز في المخزن
+    const winChance = Math.min(1.0, Math.max(0.50, totalWinners / 1400));
+
     const rand = Math.random();
-
     if (rand >= winChance) {
+        // حظ أوفر (فقط بنسبة مدروسة أثناء وجود جوائز، أو 100% فور نفاذ رصيد المخزن)
         return {
             isWinner: false,
             title: 'حظ أوفر المرة القادمة',
@@ -4316,7 +4379,9 @@ function getUserPrize(user) {
         };
     }
 
+    // فاز! نختار نوع الجائزة بنسبة المخزون الحالي بين الجوائز الثلاث
     const r = Math.random() * totalWinners;
+
     if (r < remOil && remOil > 0) {
         decrementPrize('prizeOil');
         return {
@@ -4355,6 +4420,7 @@ function getUserPrize(user) {
         };
     }
 
+    // fallback - لو حدث تعارض
     return {
         isWinner: false,
         title: 'حظ أوفر المرة القادمة',
@@ -4365,9 +4431,250 @@ function getUserPrize(user) {
 }
 
 // =========================================
-// 📝 إدارة سجل المشاركات
+// 🔒 نظام منع الدخول أكثر من مرة (Single Participation)
 // =========================================
-const PARTICIPATION_STORAGE_KEY = 'ALALAMIA_PARTICIPATIONS_V2';
+const PARTICIPATION_STORAGE_KEY = 'ALALAMIA_SCRATCH_PARTICIPATIONS_V2';
+
+function hasUserParticipated(userId) {
+    if (!userId) return false;
+    const history = getAllParticipations();
+    return Boolean(history[String(userId).trim()]);
+}
+
+function getUserParticipation(userId) {
+    if (!userId) return null;
+    const history = getAllParticipations();
+    return history[String(userId).trim()] || null;
+}
+
+// =========================================
+// ☁️ سيرفر المزامنة السحابية المباشر (Upstash Realtime Cloud)
+// يعمل تلقائياً 100% بين جميع الموبايلات والأجهزة بدون الحاجة لأي جوجل شيتس أو إعدادات يدوية
+// =========================================
+const UPSTASH_CONFIG = {
+    endpoint: 'https://grateful-yak-126162.upstash.io',
+    token: 'gQAAAAAAAezSAQIgcDFjYjQ5ZjBhNGY3ZmU0MDhiOGEzMTgzMGRkZjNjMzVlYg',
+    keys: {
+        participations: 'alalamia:participations',
+        inventory: 'alalamia:inventory',
+        online: 'alalamia:online_visitors'
+    }
+};
+
+function upstashCommand(cmd) {
+    try {
+        return fetch(UPSTASH_CONFIG.endpoint, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + UPSTASH_CONFIG.token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(cmd)
+        }).then(r => r.json()).catch(err => {
+            console.warn('Upstash background error:', err);
+            return null;
+        });
+    } catch (e) {
+        return Promise.resolve(null);
+    }
+}
+
+const CLOUD_CONFIG = {
+    webhookUrl: 'https://grateful-yak-126162.upstash.io',
+    storageKey: 'ALALAMIA_CLOUD_WEBHOOK_URL'
+};
+
+function getCloudWebhookUrl() {
+    return localStorage.getItem(CLOUD_CONFIG.storageKey) || CLOUD_CONFIG.webhookUrl || '';
+}
+
+function syncToCloud(payload) {
+    if (!payload) return Promise.resolve(null);
+
+    // 1. مزامنة فورية على سيرفر Upstash السحابي المركزي التلقائي
+    try {
+        if (payload.action === 'record' && payload.user?.id) {
+            const uid = String(payload.user.id).trim();
+            const record = {
+                userId: uid,
+                userName: payload.user.name,
+                nationalId: payload.user.nationalId,
+                userRegion: payload.user.region,
+                isTest: payload.user.isTest || false,
+                prize: payload.prize,
+                formattedDate: payload.formattedDate,
+                scratchedAt: new Date().toISOString(),
+                isPaid: false
+            };
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.participations, uid, JSON.stringify(record)]);
+        } else if (payload.action === 'claim' && payload.userId) {
+            const uid = String(payload.userId).trim();
+            const local = getAllParticipations();
+            const item = local[uid] || { userId: uid };
+            item.claimInfo = payload.claimInfo;
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.participations, uid, JSON.stringify(item)]);
+        } else if (payload.action === 'togglePaid' && payload.userId) {
+            const uid = String(payload.userId).trim();
+            const local = getAllParticipations();
+            const item = local[uid] || { userId: uid };
+            item.isPaid = Boolean(payload.isPaid);
+            if (item.claimInfo) item.claimInfo.isPaid = Boolean(payload.isPaid);
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.participations, uid, JSON.stringify(item)]);
+        } else if (payload.action === 'updateInventory') {
+            const p100 = payload.prize100 !== undefined ? String(payload.prize100) : '400';
+            const p200 = payload.prize200 !== undefined ? String(payload.prize200) : '150';
+            const pOil = payload.prizeOil !== undefined ? String(payload.prizeOil) : '150';
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', p100, 'prize200', p200, 'prizeOil', pOil]);
+        } else if (payload.action === 'resetTest') {
+            const baseTestIds = ['1','2','3','4','5','6','7','8','9','10'];
+            if (payload.extraIds && Array.isArray(payload.extraIds)) {
+                baseTestIds.push(...payload.extraIds);
+            }
+            return upstashCommand(['HDEL', UPSTASH_CONFIG.keys.participations, ...baseTestIds]).then(() => {
+                return upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.participations]).then(res => {
+                    if (res && Array.isArray(res.result)) {
+                        const toDel = [];
+                        for (let i = 0; i < res.result.length; i += 2) {
+                            const k = res.result[i];
+                            const v = res.result[i+1];
+                            try {
+                                const parsed = JSON.parse(v);
+                                if (parsed.isTest || k.startsWith('TEST') || k.startsWith('PING')) {
+                                    toDel.push(k);
+                                }
+                            } catch(e){}
+                        }
+                        if (toDel.length > 0) {
+                            return upstashCommand(['HDEL', UPSTASH_CONFIG.keys.participations, ...toDel]);
+                        }
+                    }
+                });
+            });
+        } else if (payload.action === 'deleteParticipation' && payload.userId) {
+            const uid = String(payload.userId).trim();
+            return upstashCommand(['HDEL', UPSTASH_CONFIG.keys.participations, uid]);
+        } else if (payload.action === 'resetAll') {
+            return Promise.all([
+                upstashCommand(['DEL', UPSTASH_CONFIG.keys.participations]),
+                upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', '400', 'prize200', '150', 'prizeOil', '150'])
+            ]);
+        }
+    } catch(e) {
+        console.warn('Upstash sync error:', e);
+    }
+
+    return Promise.resolve(null);
+}
+
+function deleteParticipationRecord(userId) {
+    if (!userId) return Promise.resolve(null);
+    const uid = String(userId).trim();
+    const history = getAllParticipations();
+    delete history[uid];
+    try {
+        localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+    } catch(e) {}
+    return syncToCloud({
+        action: 'deleteParticipation',
+        userId: uid
+    });
+}
+
+function resetAllParticipationsCloud() {
+    try {
+        localStorage.setItem(PARTICIPATION_STORAGE_KEY, '{}');
+        localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '400');
+        localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '150');
+        localStorage.setItem(PRIZE_INVENTORY.prizeOil.storageKey, '150');
+    } catch(e) {}
+    return syncToCloud({ action: 'resetAll' });
+}
+
+function fetchFromCloud() {
+    // جلب ومزامنة فورية من سيرفر Upstash السحابي
+    return Promise.all([
+        upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.participations]),
+        upstashCommand(['HGETALL', UPSTASH_CONFIG.keys.inventory])
+    ]).then(([partsRes, invRes]) => {
+        const participations = {};
+        if (partsRes && Array.isArray(partsRes.result)) {
+            for (let i = 0; i < partsRes.result.length; i += 2) {
+                const k = partsRes.result[i];
+                const v = partsRes.result[i + 1];
+                try {
+                    participations[k] = JSON.parse(v);
+                } catch(e) {}
+            }
+        }
+        let inventory = null;
+        if (invRes && Array.isArray(invRes.result)) {
+            const invObj = {};
+            for (let i = 0; i < invRes.result.length; i += 2) {
+                invObj[invRes.result[i]] = parseInt(invRes.result[i + 1], 10);
+            }
+            inventory = {
+                prize100: invObj.prize100 !== undefined ? invObj.prize100 : 400,
+                prize200: invObj.prize200 !== undefined ? invObj.prize200 : 150,
+                prizeOil: invObj.prizeOil !== undefined ? invObj.prizeOil : 150
+            };
+        } else if (invRes && typeof invRes.result === 'object' && invRes.result !== null) {
+            inventory = {
+                prize100: invRes.result.prize100 !== undefined ? parseInt(invRes.result.prize100, 10) : 400,
+                prize200: invRes.result.prize200 !== undefined ? parseInt(invRes.result.prize200, 10) : 150,
+                prizeOil: invRes.result.prizeOil !== undefined ? parseInt(invRes.result.prizeOil, 10) : 150
+            };
+        }
+        return {
+            status: 'success',
+            source: 'upstash-cloud',
+            participations: participations,
+            inventory: inventory
+        };
+    }).catch(err => {
+        console.warn('Fetch from cloud error:', err);
+        return null;
+    });
+}
+
+function recordUserParticipation(user, prize) {
+    if (!user || !user.id) return;
+    const history = getAllParticipations();
+    const now = new Date();
+    const formattedDate = new Intl.DateTimeFormat('ar-EG', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+    }).format(now);
+
+    history[String(user.id).trim()] = {
+        userId: user.id,
+        nationalId: user.nationalId,
+        userName: user.name,
+        userRegion: user.region,
+        isTest: user.isTest || false,
+        prize: prize,
+        scratchedAt: now.toISOString(),
+        formattedDate: formattedDate
+    };
+    try {
+        localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+    } catch (e) {
+        console.warn('Storage save failed:', e);
+    }
+
+    // إرسال سحابي فوري في الخلفية للشيت المركزي
+    syncToCloud({
+        action: 'record',
+        user: {
+            id: user.id,
+            name: user.name,
+            nationalId: user.nationalId,
+            region: user.region,
+            isTest: user.isTest || false
+        },
+        prize: prize,
+        formattedDate: formattedDate
+    });
+}
 
 function getAllParticipations() {
     try {
@@ -4378,59 +4685,6 @@ function getAllParticipations() {
     }
 }
 
-function getUserParticipation(userId) {
-    const all = getAllParticipations();
-    return all[String(userId).trim()] || null;
-}
-
-function recordUserParticipation(user, prize, claimInfo = null) {
-    const all = getAllParticipations();
-    const cleanId = String(user.id).trim();
-    all[cleanId] = {
-        userId: cleanId,
-        userName: user.name,
-        nationalId: user.nationalId,
-        userRegion: user.region,
-        prize: prize,
-        scratchedAt: new Date().toISOString(),
-        formattedDate: new Date().toLocaleString('ar-EG'),
-        isTest: Boolean(user.isTest),
-        isPaid: false,
-        claimInfo: claimInfo
-    };
-    try {
-        localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(all));
-    } catch (e) {}
-    return all[cleanId];
-}
-
-function updateUserClaimInfo(userId, claimInfo) {
-    const all = getAllParticipations();
-    const cleanId = String(userId).trim();
-    if (all[cleanId]) {
-        all[cleanId].claimInfo = claimInfo;
-        try {
-            localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(all));
-        } catch (e) {}
-        return true;
-    }
-    return false;
-}
-
-function togglePaidStatus(userId) {
-    const all = getAllParticipations();
-    const cleanId = String(userId).trim();
-    if (all[cleanId]) {
-        all[cleanId].isPaid = !all[cleanId].isPaid;
-        all[cleanId].paidAt = all[cleanId].isPaid ? new Date().toISOString() : null;
-        try {
-            localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(all));
-        } catch (e) {}
-        return all[cleanId].isPaid;
-    }
-    return false;
-}
-
 function resetParticipationsStorage() {
     try {
         localStorage.removeItem(PARTICIPATION_STORAGE_KEY);
@@ -4438,4 +4692,42 @@ function resetParticipationsStorage() {
     } catch (e) {
         return false;
     }
+}
+
+// =========================================
+// 🔗 بناء رابط Google Form لاستلام الجائزة
+// =========================================
+function buildGoogleFormUrl(user, prize) {
+    const customUrl = localStorage.getItem('ALALAMIA_GOOGLE_FORM_URL');
+    let url = customUrl || GOOGLE_FORM_CONFIG.url;
+    if (!url || url === 'GOOGLE_FORM_URL_PLACEHOLDER') {
+        return null;
+    }
+    const params = new URLSearchParams();
+    if (GOOGLE_FORM_CONFIG.nameEntryId && user?.name) {
+        params.append(GOOGLE_FORM_CONFIG.nameEntryId, user.name);
+    }
+    if (GOOGLE_FORM_CONFIG.idEntryId && user?.id) {
+        params.append(GOOGLE_FORM_CONFIG.idEntryId, user.id);
+    }
+    const queryString = params.toString();
+    if (queryString) {
+        url += (url.includes('?') ? '&' : '?') + queryString;
+    }
+    return url;
+}
+
+function findContestant(id, nationalId) {
+    return findUser(id, nationalId);
+}
+
+function findContestantByIdOnly(id) {
+    const cleanId = String(id || '').trim();
+    const testUser = TEST_CONTESTANTS.find(u => u.id === cleanId);
+    if (testUser) return testUser;
+    return CONTESTANTS_DATABASE.find(u => u.id === cleanId);
+}
+
+function findUserByIdOnly(id) {
+    return findContestantByIdOnly(id);
 }
