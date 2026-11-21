@@ -523,7 +523,7 @@
                         <td style="color:#FFE500;">${claimText}</td>
                         <td style="color:#94a3b8; font-size:0.8rem;">${dateText}</td>
                         <td>
-                            <button class="btn-del-row" onclick="deleteUserRow('${item.userId}')">حذف 🗑️</button>
+                            <button class="btn-del-row" onclick="deleteUserRow('${item.storageId || item.userId}')">حذف 🗑️</button>
                         </td>
                     </tr>
                 `;
@@ -550,7 +550,12 @@
                 return;
             }
             await deleteParticipationRecord(inputVal);
-            if (String(inputVal).trim() === localStorage.getItem('ALALAMIA_BOUND_USER_ID')) {
+            if (inputVal === '10') {
+                await deleteParticipationRecord('10_may');
+                await deleteParticipationRecord('10_malika');
+            }
+            const boundId = localStorage.getItem('ALALAMIA_BOUND_USER_ID');
+            if (boundId && (String(inputVal).trim() === boundId || boundId.startsWith(inputVal + '_'))) {
                 localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
                 localStorage.removeItem('ALALAMIA_BOUND_NID');
             }
@@ -559,12 +564,12 @@
             inspectCloud();
         });
 
-        // 5. تصفير حسابات التيست (ID 1 - 10)
+        // 5. تصفير حسابات التيست (ID 1 - 18)
         document.getElementById('resetTestOfficialBtn').addEventListener('click', async () => {
             showToast('⏳ جاري تصفير حسابات التجربة سحابياً ومحلياً...');
             // محلياً
             const history = getAllParticipations();
-            ['1','2','3','4','5','6','7','8','9','10'].forEach(id => { delete history[id]; });
+            ['1','2','3','4','5','6','7','8','9','10','10_may','10_malika','11','12','13','14','15','16','17','18'].forEach(id => { delete history[id]; });
             Object.keys(history).forEach(k => {
                 if (history[k].isTest || k.startsWith('TEST') || k.startsWith('PING')) delete history[k];
             });

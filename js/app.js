@@ -224,8 +224,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // ===================================================
         // 🔒 فحص قفل الهاتف/الجهاز (محاولة واحدة فقط لكل جهاز لمنع التلاعب)
         // ===================================================
+        const userKey = String(user.storageId || user.id).trim();
         const boundUserId = localStorage.getItem('ALALAMIA_BOUND_USER_ID');
-        if (boundUserId && String(boundUserId).trim() !== String(user.id).trim()) {
+        if (boundUserId && String(boundUserId).trim() !== userKey) {
             // هذا الجهاز مسجل عليه متسابق آخر. نتحقق هل ما زال موجوداً أم تم حذفه من صفحة التيست/الأدمن
             let boundUserStillActive = false;
             try {
@@ -247,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitBtn.innerHTML = originalBtnHTML;
                 }
                 loginErrorMsg.style.display = 'block';
-                loginErrorMsg.innerHTML = `⚠️ <strong>تم رصد مشاركة سابقة من هذا الهاتف!</strong><br>هذا الجهاز مسجل بالفعل للمتسابق (كود: ${boundUserId}). مسموح بمحاولة واحدة فقط لكل هاتف لمنع التلاعب.`;
+                loginErrorMsg.innerHTML = `⚠️ <strong>تم رصد مشاركة سابقة من هذا الهاتف!</strong><br>هذا الجهاز مسجل بالفعل لمشارك آخر. مسموح بمحاولة واحدة فقط لكل هاتف لمنع التلاعب.`;
                 loginErrorMsg.classList.remove('shakeError');
                 void loginErrorMsg.offsetWidth;
                 loginErrorMsg.classList.add('shakeError');
@@ -264,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let cloudRecord = null;
         try {
             const [cloudRes] = await Promise.all([
-                upstashCommand(['HGET', UPSTASH_CONFIG.keys.participations, String(user.id).trim()]),
+                upstashCommand(['HGET', UPSTASH_CONFIG.keys.participations, userKey]),
                 typeof syncInventoryFromCloud === 'function' ? syncInventoryFromCloud() : Promise.resolve(null)
             ]);
             if (cloudRes && cloudRes.result) {
@@ -275,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- الفحص المحلي كاحتياط ---
-        const localRecord = getUserParticipation(user.id);
+        const localRecord = getUserParticipation(userKey);
 
         // 🔑 مهم: لو السيرفر قال "مفيش سجل" (cloudRecord = null) ونجح الاتصال، امسح المحلي
         // ده يحل مشكلة: لو الأدمن/ديفلوبر مسح التسجيل من السيرفر، المستخدم يقدر يلعب تاني
@@ -286,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!localRecord) {
                 try {
                     const history = getAllParticipations();
-                    history[String(user.id).trim()] = cloudRecord;
+                    history[userKey] = cloudRecord;
                     localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
                 } catch (storageErr) {}
             }
@@ -295,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (localRecord) {
                 try {
                     const history = getAllParticipations();
-                    delete history[String(user.id).trim()];
+                    delete history[userKey];
                     localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
                 } catch (storageErr) {}
             }
@@ -309,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // ربط هذا الجهاز بالمتسابق الحالي
             try {
-                localStorage.setItem('ALALAMIA_BOUND_USER_ID', String(user.id).trim());
+                localStorage.setItem('ALALAMIA_BOUND_USER_ID', userKey);
                 localStorage.setItem('ALALAMIA_BOUND_NID', String(user.nationalId).trim());
             } catch (e) {}
             soundManager.playLose();
@@ -334,9 +335,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupWelcomeScreen(user) {
         const avatars = ['🦁', '🚀', '👑', '⚡', '🌟', '🦾'];
         welcomeAvatar.textContent = avatars[Math.floor(Math.random() * avatars.length)];
+        const regionHtml = user.region ? `من منطقة <span class="user-highlight-region">${user.region}</span> ` : '';
         welcomeGreetingText.innerHTML = `
             أهلاً بيك يا <span class="user-highlight-name">${user.name}</span><br>
-            يا بطل العالمية من منطقة <span class="user-highlight-region">${user.region}</span> 🚀👑
+            يا بطل العالمية ${regionHtml}🚀👑
         `;
         showScreen('welcome');
         setTimeout(() => soundManager.playWelcome(), 150);
@@ -488,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 🔒 قفل هذا الهاتف للمتسابق الحالي لمنع التلاعب بأكثر من حساب
             try {
-                localStorage.setItem('ALALAMIA_BOUND_USER_ID', String(user.id).trim());
+                localStorage.setItem('ALALAMIA_BOUND_USER_ID', String(user.storageId || user.id).trim());
                 localStorage.setItem('ALALAMIA_BOUND_NID', String(user.nationalId).trim());
             } catch (e) {}
 
@@ -520,7 +522,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 soundManager.playWin();
                 confettiManager.celebrateWin();
                 hypeIcon.textContent = '🎉';
-                hypeMsg.innerHTML = `🎉 مبروووك كسبت <strong>${currentPrize.title}</strong>!`;
+                if (currentPrize.specialMessage) {
+                    hypeMsg.innerHTML = `🎉 مبروووك كسبت <strong>${currentPrize.title}</strong>!<br><span style="font-size:0.95rem; color:#b45309; font-weight:800; display:inline-block; margin-top:4px;">${currentPrize.specialMessage}</span>`;
+                } else {
+                    hypeMsg.innerHTML = `🎉 مبروووك كسبت <strong>${currentPrize.title}</strong>!`;
+                }
             } else {
                 soundManager.playLose();
                 hypeIcon.textContent = '💪';
@@ -551,7 +557,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             resultMainHeading.innerHTML = `مبروووك المكسب يا <br><span style="color:#059669">${user.name}</span><br> يا بطل العالمية! 🏆🎁🎉`;
             resultPrizeName.textContent = currentPrize.title;
-            resultPrizeSub.textContent = currentPrize.description;
+            if (currentPrize.specialMessage) {
+                resultPrizeSub.innerHTML = `<span style="font-size:1.15rem; font-weight:900; color:#b45309; display:block; padding:10px 14px; background:#fef3c7; border-radius:12px; margin-top:6px; border:2px dashed #f59e0b; line-height:1.6;">${currentPrize.specialMessage}</span>`;
+            } else {
+                resultPrizeSub.textContent = currentPrize.description;
+            }
 
             // صورة الجائزة في شاشة النتيجة
             if (resultPrizeImage) {
@@ -613,7 +623,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // تحديث حالة نموذج الاستلام المباشر في الصفحة
-            const record = getUserParticipation(user.id);
+            const userKey = String(user.storageId || user.id).trim();
+            const record = getUserParticipation(userKey);
             const claimInputSection = document.getElementById('claimInputSection');
             const claimDoneSection = document.getElementById('claimDoneSection');
             const claimSavedSummary = document.getElementById('claimSavedSummary');
@@ -733,11 +744,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 formattedDate: new Intl.DateTimeFormat('ar-EG', { dateStyle: 'medium', timeStyle: 'short' }).format(now)
             };
 
-            if (history[currentUser.id]) {
-                history[currentUser.id].claimInfo = claimInfo;
+            const userKey = String(currentUser.storageId || currentUser.id).trim();
+            if (history[userKey]) {
+                history[userKey].claimInfo = claimInfo;
             } else {
-                history[currentUser.id] = {
+                history[userKey] = {
                     userId: currentUser.id,
+                    storageId: userKey,
                     nationalId: currentUser.nationalId,
                     userName: currentUser.name,
                     userRegion: currentUser.region,
@@ -757,7 +770,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // إرسال سحابي فوري في الخلفية للشيت المركزي
             syncToCloud({
                 action: 'claim',
-                userId: currentUser.id,
+                userId: userKey,
                 claimInfo: claimInfo
             });
 

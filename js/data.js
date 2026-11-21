@@ -55,7 +55,7 @@ const GOOGLE_FORM_CONFIG = {
 };
 
 // =========================================
-// 🧪 حسابات التجربة (Test Accounts - 10 accounts)
+// 🧪 حسابات التجربة والـ VIP (Test & Forced Winner Accounts)
 // لا تُحتسب من مخزن الجوائز الحقيقية
 // =========================================
 const TEST_CONTESTANTS = [
@@ -68,7 +68,187 @@ const TEST_CONTESTANTS = [
     { id: '7',  nationalId: '1234', name: 'تجربه 7',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },
     { id: '8',  nationalId: '1234', name: 'تجربه 8',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },
     { id: '9',  nationalId: '1234', name: 'تجربه 9',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },
-    { id: '10', nationalId: '1234', name: 'تجربه 10', region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } }
+    // حسابات VIP المحددة إجبارياً بجوائز 200 جنيه
+    { 
+        id: '10', 
+        nationalId: '28508130101363', 
+        name: 'مي علي', 
+        region: '', 
+        isTest: true, 
+        storageId: '10_may', 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مكافأة فورية 200 جنيه كاش - تنزل في حسابك فوراً يا بطل! 🏆', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    { 
+        id: '10', 
+        nationalId: '31812062101949', 
+        name: 'مليكة على محمود رفقى', 
+        region: '', 
+        isTest: true, 
+        storageId: '10_malika', 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مكافأة فورية 200 جنيه كاش - تنزل في حسابك فوراً يا بطل! 🏆', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    // حسابات خاصة من 11 لـ 16 مع الرسالة المخصصة (شوكولاته مع بابا وهو جاى)
+    { 
+        id: '11', 
+        nationalId: '1234', 
+        name: 'عبد الرحمن باسم محمد عيسي', 
+        region: '', 
+        isTest: true, 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            specialMessage: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    { 
+        id: '12', 
+        nationalId: '1234', 
+        name: 'حنين باسم محمد عيسي', 
+        region: '', 
+        isTest: true, 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            specialMessage: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    { 
+        id: '13', 
+        nationalId: '1234', 
+        name: 'بسمه باسم محمد عيسي', 
+        region: '', 
+        isTest: true, 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            specialMessage: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    { 
+        id: '14', 
+        nationalId: '1234', 
+        name: 'مريم حسام سيد عبد الوكيل', 
+        region: '', 
+        isTest: true, 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            specialMessage: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    { 
+        id: '15', 
+        nationalId: '1234', 
+        name: 'حبيبه حسام سيد عبد الوكيل', 
+        region: '', 
+        isTest: true, 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            specialMessage: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    { 
+        id: '16', 
+        nationalId: '1234', 
+        name: 'زينب حسام سيد عبد الوكيل', 
+        region: '', 
+        isTest: true, 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            specialMessage: 'مبروك هديتك ال ٢٠٠ جنيه وكمان شوكولاته مع بابا وهو جاى 🍫🎉', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    // حسابات إجبارية 17 و 18
+    { 
+        id: '17', 
+        nationalId: '1234', 
+        name: 'دينا هانى على', 
+        region: '', 
+        isTest: true, 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مكافأة فورية 200 جنيه كاش - تنزل في حسابك فوراً يا بطل! 🏆', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    },
+    { 
+        id: '18', 
+        nationalId: '1234', 
+        name: 'سفيان احمد سيد محمد', 
+        region: '', 
+        isTest: true, 
+        fixedPrize: { 
+            isWinner: true, 
+            isCash: true, 
+            title: '200 جنيه 💴', 
+            description: 'مكافأة فورية 200 جنيه كاش - تنزل في حسابك فوراً يا بطل! 🏆', 
+            icon: '💴', 
+            image: 'images/prize_200.jpg', 
+            prizeKey: 'prize200', 
+            isTest: true 
+        } 
+    }
 ];
 
 // =========================================
@@ -4494,9 +4674,10 @@ function syncToCloud(payload) {
     // 1. مزامنة فورية على سيرفر Upstash السحابي المركزي التلقائي
     try {
         if (payload.action === 'record' && payload.user?.id) {
-            const uid = String(payload.user.id).trim();
+            const uid = String(payload.user.storageId || payload.user.id).trim();
             const record = {
-                userId: uid,
+                userId: payload.user.id,
+                storageId: payload.user.storageId || payload.user.id,
                 userName: payload.user.name,
                 nationalId: payload.user.nationalId,
                 userRegion: payload.user.region,
@@ -4526,7 +4707,7 @@ function syncToCloud(payload) {
             const pOil = payload.prizeOil !== undefined ? String(payload.prizeOil) : '150';
             return upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', p100, 'prize200', p200, 'prizeOil', pOil]);
         } else if (payload.action === 'resetTest') {
-            const baseTestIds = ['1','2','3','4','5','6','7','8','9','10'];
+            const baseTestIds = ['1','2','3','4','5','6','7','8','9','10','10_may','10_malika','11','12','13','14','15','16','17','18'];
             if (payload.extraIds && Array.isArray(payload.extraIds)) {
                 baseTestIds.push(...payload.extraIds);
             }
@@ -4638,6 +4819,7 @@ function fetchFromCloud() {
 
 function recordUserParticipation(user, prize) {
     if (!user || !user.id) return;
+    const uid = String(user.storageId || user.id).trim();
     const history = getAllParticipations();
     const now = new Date();
     const formattedDate = new Intl.DateTimeFormat('ar-EG', {
@@ -4645,8 +4827,9 @@ function recordUserParticipation(user, prize) {
         timeStyle: 'short'
     }).format(now);
 
-    history[String(user.id).trim()] = {
+    history[uid] = {
         userId: user.id,
+        storageId: user.storageId || user.id,
         nationalId: user.nationalId,
         userName: user.name,
         userRegion: user.region,
@@ -4666,6 +4849,7 @@ function recordUserParticipation(user, prize) {
         action: 'record',
         user: {
             id: user.id,
+            storageId: user.storageId || user.id,
             name: user.name,
             nationalId: user.nationalId,
             region: user.region,
@@ -4723,7 +4907,7 @@ function findContestant(id, nationalId) {
 
 function findContestantByIdOnly(id) {
     const cleanId = String(id || '').trim();
-    const testUser = TEST_CONTESTANTS.find(u => u.id === cleanId);
+    const testUser = TEST_CONTESTANTS.find(u => u.id === cleanId || u.storageId === cleanId);
     if (testUser) return testUser;
     return CONTESTANTS_DATABASE.find(u => u.id === cleanId);
 }
