@@ -221,6 +221,45 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<span>⏳ جاري التحقق...</span>';
         }
 
+        // ===================================================
+        // 🔒 فحص قفل الهاتف/الجهاز (محاولة واحدة فقط لكل جهاز لمنع التلاعب)
+        // ===================================================
+        const boundUserId = localStorage.getItem('ALALAMIA_BOUND_USER_ID');
+        if (boundUserId && String(boundUserId).trim() !== String(user.id).trim()) {
+            // هذا الجهاز مسجل عليه متسابق آخر. نتحقق هل ما زال موجوداً أم تم حذفه من صفحة التيست/الأدمن
+            let boundUserStillActive = false;
+            try {
+                const boundCloudRes = await upstashCommand(['HGET', UPSTASH_CONFIG.keys.participations, String(boundUserId).trim()]);
+                if (boundCloudRes && boundCloudRes.result) {
+                    boundUserStillActive = true;
+                }
+            } catch (e) {}
+
+            if (!boundUserStillActive) {
+                const localCheck = getUserParticipation(boundUserId);
+                if (localCheck) boundUserStillActive = true;
+            }
+
+            if (boundUserStillActive) {
+                // المتسابق الآخر ما زال نشطاً -> منع هذا الهاتف من استخدام أي حساب آخر
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHTML;
+                }
+                loginErrorMsg.style.display = 'block';
+                loginErrorMsg.innerHTML = `⚠️ <strong>تم رصد مشاركة سابقة من هذا الهاتف!</strong><br>هذا الجهاز مسجل بالفعل للمتسابق (كود: ${boundUserId}). مسموح بمحاولة واحدة فقط لكل هاتف لمنع التلاعب.`;
+                loginErrorMsg.classList.remove('shakeError');
+                void loginErrorMsg.offsetWidth;
+                loginErrorMsg.classList.add('shakeError');
+                soundManager.playLose();
+                return;
+            } else {
+                // تم مسح المتسابق السابق من صفحة التيست/الأدمن -> فك قفل الجهاز تلقائياً فوراً!
+                localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
+                localStorage.removeItem('ALALAMIA_BOUND_NID');
+            }
+        }
+
         // --- فحص السيرفر السحابي أولاً ومزامنة المخزن ---
         let cloudRecord = null;
         try {
@@ -268,6 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnHTML;
             }
+            // ربط هذا الجهاز بالمتسابق الحالي
+            try {
+                localStorage.setItem('ALALAMIA_BOUND_USER_ID', String(user.id).trim());
+                localStorage.setItem('ALALAMIA_BOUND_NID', String(user.nationalId).trim());
+            } catch (e) {}
             soundManager.playLose();
             showLockoutScreen(user, existingRecord);
             return;
@@ -441,6 +485,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // تسجيل المشاركة فوراً
             recordUserParticipation(user, currentPrize);
+
+            // 🔒 قفل هذا الهاتف للمتسابق الحالي لمنع التلاعب بأكثر من حساب
+            try {
+                localStorage.setItem('ALALAMIA_BOUND_USER_ID', String(user.id).trim());
+                localStorage.setItem('ALALAMIA_BOUND_NID', String(user.nationalId).trim());
+            } catch (e) {}
 
             // 🔔 إشعار لوحة الأدمين المفتوحة في نفس المتصفح فوراً (BroadcastChannel)
             try {

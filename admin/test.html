@@ -373,6 +373,11 @@
                 <button class="action-btn btn-danger" id="wipeAllDataMasterBtn">
                     ⚠️ تصفير شامل لقاعدة البيانات بالكامل (Master Wipe)
                 </button>
+
+                <!-- فك قفل هذا الجهاز -->
+                <button class="action-btn" id="unlockCurrentDeviceBtn" style="background:#0284c7; color:#fff; border:none; margin-top:10px; font-weight:800;" onclick="unlockThisDevice()">
+                    🔓 فك قفل هذا الهاتف/الجهاز الآن (يسمح بإعادة التجربة بحساب جديد فوراً)
+                </button>
             </div>
         </div>
 
@@ -529,7 +534,11 @@
         async function deleteUserRow(userId) {
             if (!confirm(`هل أنت متأكد من مسح مشاركة الموظف (ID: ${userId})؟`)) return;
             await deleteParticipationRecord(userId);
-            showToast(`✅ تم مسح مشاركة الكود (${userId}) من السيرفر بنجاح!`);
+            if (String(userId).trim() === localStorage.getItem('ALALAMIA_BOUND_USER_ID')) {
+                localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
+                localStorage.removeItem('ALALAMIA_BOUND_NID');
+            }
+            showToast(`✅ تم مسح مشاركة الكود (${userId}) وفك قفل الجهاز بنجاح!`);
             inspectCloud();
         }
 
@@ -541,8 +550,12 @@
                 return;
             }
             await deleteParticipationRecord(inputVal);
+            if (String(inputVal).trim() === localStorage.getItem('ALALAMIA_BOUND_USER_ID')) {
+                localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
+                localStorage.removeItem('ALALAMIA_BOUND_NID');
+            }
             document.getElementById('targetUserIdInput').value = '';
-            showToast(`✅ تم مسح مشاركة الموظف (${inputVal}) بنجاح! يمكنه الآن الخربشة مجدداً.`);
+            showToast(`✅ تم مسح مشاركة الموظف (${inputVal}) وفك قفل الجهاز بنجاح! يمكنه الآن الخربشة مجدداً.`);
             inspectCloud();
         });
 
@@ -556,10 +569,12 @@
                 if (history[k].isTest || k.startsWith('TEST') || k.startsWith('PING')) delete history[k];
             });
             localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+            localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
+            localStorage.removeItem('ALALAMIA_BOUND_NID');
 
             // سحابياً
             await syncToCloud({ action: 'resetTest' });
-            showToast('🔄 تم تصفير جميع حسابات التيست بنجاح!');
+            showToast('🔄 تم تصفير جميع حسابات التيست وفك قفل الجهاز بنجاح!');
             inspectCloud();
         });
 
@@ -579,10 +594,19 @@
             if (check === 'تأكيد' || check === 'confirm') {
                 showToast('⏳ جاري مسح كافة السجلات سحابياً...');
                 await resetAllParticipationsCloud();
-                showToast('🔄 تم تصفير قاعدة البيانات السحابية بالكامل!');
+                localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
+                localStorage.removeItem('ALALAMIA_BOUND_NID');
+                showToast('🔄 تم تصفير قاعدة البيانات السحابية وفك قفل الأجهزة بالكامل!');
                 inspectCloud();
             }
         });
+
+        // فك قفل هذا الهاتف/الجهاز يدوياً
+        function unlockThisDevice() {
+            localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
+            localStorage.removeItem('ALALAMIA_BOUND_NID');
+            showToast('✅ تم فك قفل هذا الهاتف بنجاح! يمكنك الآن تجربة الدخول بأي حساب كأنه جهاز جديد تماماً.');
+        }
 
         // 8. زر فحص الاتصال Ping
         document.getElementById('pingServerBtn').addEventListener('click', async () => {

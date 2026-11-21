@@ -862,7 +862,7 @@
         <nav class="dash-tabs">
             <button class="tab-btn active" data-tab="tab-overview">📊 الإحصائيات وإدارة المخزن</button>
             <button class="tab-btn" data-tab="tab-live-sheet">📋 شيت المشاركات والجوائز لايف</button>
-            <button class="tab-btn" data-tab="tab-database">👥 قاعدة بيانات المتسابقين (4,745)</button>
+            <button class="tab-btn" data-tab="tab-database">👥 قاعدة بيانات المتسابقين (4,147)</button>
         </nav>
 
         <!-- ==========================================
@@ -959,7 +959,7 @@
                         <span>متسابق</span>
                     </div>
                     <div class="stat-val" id="statTotalParticipated">0</div>
-                    <div style="font-size:0.8rem; color:#94a3b8;" id="statContestantsTotalSub">من أصل 4,745 متسابق</div>
+                    <div style="font-size:0.8rem; color:#94a3b8;" id="statContestantsTotalSub">من أصل 4,147 متسابق</div>
                 </div>
             </div>
 
@@ -1043,13 +1043,13 @@
         </div>
 
         <!-- ==========================================
-             التاب 3: قاعدة بيانات كل المتسابقين (4,745)
+             التاب 3: قاعدة بيانات كل المتسابقين (4,147)
              ========================================== -->
         <div id="tab-database" class="tab-content" style="display:none;">
             <section class="admin-section">
                 <div class="section-title">
-                    <span>👥 قاعدة بيانات المتسابقين المسجلين في الشيت (4,745 متسابق)</span>
-                    <span style="font-size:0.85rem; color:#94a3b8;" id="dbCountLabel">4,745 متسابق</span>
+                    <span>👥 قاعدة بيانات المتسابقين المسجلين في الشيت (4,147 متسابق)</span>
+                    <span style="font-size:0.85rem; color:#94a3b8;" id="dbCountLabel">4,147 متسابق</span>
                 </div>
 
                 <div class="table-controls">
@@ -1774,6 +1774,8 @@
             });
 
             localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(history));
+            localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
+            localStorage.removeItem('ALALAMIA_BOUND_NID');
 
             // إرسال أمر تصفير التيست للشيت السحابي
             await syncToCloud({ action: 'resetTest' });
@@ -1819,6 +1821,8 @@
                 const check = prompt('⚠️ تحذير: هذا سيحذف جميع مشاركات المتسابقين ويعيد تصفير كل شيء! اكتب "تأكيد" للمتابعة:');
                 if (check === 'تأكيد' || check === 'confirm') {
                     resetParticipationsStorage();
+                    localStorage.removeItem('ALALAMIA_BOUND_USER_ID');
+                    localStorage.removeItem('ALALAMIA_BOUND_NID');
                     localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '400');
                     localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '150');
                     localStorage.setItem(PRIZE_INVENTORY.prizeOil.storageKey, '150');
@@ -1894,7 +1898,7 @@
         }
 
         // ==============================================
-        // رسم جدول قاعدة البيانات الكاملة (4,745 متسابق)
+        // رسم جدول قاعدة البيانات الكاملة (4,147 متسابق)
         // ==============================================
         function renderDatabaseTable() {
             const tbody = document.getElementById('databaseTableBody');
