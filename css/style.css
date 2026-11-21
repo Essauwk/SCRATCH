@@ -1578,9 +1578,50 @@ footer.app-footer span.heart {
    📱 التجاوب الفائق مع شاشات الموبايل (Mobile-First Polish)
    ======================================================== */
 @media (max-width: 600px) {
-    /* إخفاء الاستيكرات الجانبية حتى لا تضايق المستخدم على الشاشات الصغيرة */
+    /* إظهار الاستيكرات الجانبية على شاشات الموبايل بشكل متناسق ومميز بدون حجب أي أزرار */
     .side-sticker {
-        display: none !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        position: fixed !important;
+        font-size: 0.72rem !important;
+        padding: 4px 10px !important;
+        border-radius: 999px !important;
+        border: 2.5px solid #FFFFFF !important;
+        box-shadow: 2px 2px 0px rgba(0,0,0,0.7) !important;
+        z-index: 25 !important;
+        pointer-events: none !important;
+        white-space: nowrap !important;
+    }
+
+    /* اكسب مبالغ نقدية فورية - أعلى اليسار تحت الهيدر */
+    .sticker-promo {
+        top: 56px !important;
+        left: 6px !important;
+        transform: rotate(-4deg) !important;
+        border-color: #FFE500 !important;
+        animation: wigglePromo 3.2s infinite ease-in-out !important;
+    }
+
+    /* بطل الأبطال - أعلى اليمين تحت الهيدر */
+    .sticker-right {
+        top: 56px !important;
+        right: 6px !important;
+        left: auto !important;
+        bottom: auto !important;
+        transform: rotate(4deg) !important;
+        animation: wiggleSticker 3s infinite ease-in-out !important;
+    }
+
+    /* طاقة العالمية - أسفل اليسار */
+    .sticker-left {
+        bottom: 12px !important;
+        left: 8px !important;
+        top: auto !important;
+        right: auto !important;
+        transform: rotate(-4deg) !important;
+        animation: wiggleSticker 3s infinite ease-in-out !important;
     }
 
     /* تخفيف العناصر العائمة بالخلفية */
@@ -2622,6 +2663,52 @@ footer.app-footer span.heart {
 .funky-share-btn:active {
     transform: translateY(2px);
     box-shadow: 2px 2px 0px #18181B;
+}
+
+.share-secondary-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.share-sub-btn {
+    flex: 1;
+    background: #18181B;
+    color: #FFE500;
+    border: 2px solid #FFE500;
+    padding: 9px 10px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    font-family: var(--font-heading);
+    cursor: pointer;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.share-sub-btn:hover {
+    background: #27272a;
+    transform: translateY(-1px);
+}
+
+.share-sub-btn:active {
+    transform: translateY(1px);
+}
+
+.share-ready-hint {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    margin-top: 10px;
+    line-height: 1.45;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 8px 12px;
+    border-radius: 10px;
+    text-align: center;
 }
 
 /* ============================================================

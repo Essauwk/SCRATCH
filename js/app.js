@@ -742,39 +742,273 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ===================================================
-    // 6.2. مشاركة الفوز والهدية على فيسبوك (Facebook Share Action)
+    // 6.2. توليد صورة بوست التهنئة ومشاركتها على فيسبوك (Facebook Post & Image Share)
     // ===================================================
+    function drawCanvasRoundedRect(ctx, x, y, width, height, radius, fill, stroke, strokeWidth) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        if (fill) {
+            ctx.fillStyle = fill;
+            ctx.fill();
+        }
+        if (stroke) {
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = strokeWidth || 2;
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    function loadCanvasImage(src) {
+        return new Promise((resolve) => {
+            if (!src) return resolve(null);
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+    }
+
+    async function generateWinnerPostImage(user, prize) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1080;
+        const ctx = canvas.getContext('2d');
+
+        // 1. خلفية صفراء زاهية بثيم مسابقة العالمية
+        ctx.fillStyle = '#FFE500';
+        ctx.fillRect(0, 0, 1080, 1080);
+
+        // تأثير شبكة النقط الكوميك/فانكي
+        ctx.fillStyle = 'rgba(24, 24, 27, 0.06)';
+        for (let x = 24; x < 1080; x += 36) {
+            for (let y = 24; y < 1080; y += 36) {
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // 2. إطار خارجي سميك وفخم
+        ctx.strokeStyle = '#18181B';
+        ctx.lineWidth = 24;
+        ctx.strokeRect(12, 12, 1056, 1056);
+
+        // خط تزييني داخلي
+        ctx.strokeStyle = '#18181B';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(34, 34, 1012, 1012);
+
+        // 3. الهيدر العلوي الأبيض مع لوجو العالمية إكسبريس
+        drawCanvasRoundedRect(ctx, 70, 60, 940, 120, 26, '#FFFFFF', '#18181B', 6);
+        try {
+            const logoImg = await loadCanvasImage('logo.png');
+            if (logoImg) {
+                ctx.drawImage(logoImg, 870, 75, 115, 90);
+            }
+        } catch (e) {}
+
+        ctx.fillStyle = '#18181B';
+        ctx.font = 'bold 36px "Cairo", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.direction = 'rtl';
+        ctx.fillText('🏆 مسابقة بطل العالمية إكسبريس الرسمية 🏆', 490, 134);
+
+        // 4. بانر اسم المتسابق البطل
+        drawCanvasRoundedRect(ctx, 110, 205, 860, 95, 24, '#18181B', '#FFFFFF', 4);
+        ctx.fillStyle = '#FFE500';
+        ctx.font = '900 36px "Cairo", sans-serif';
+        const winnerDisplayName = user?.name || 'أحد أبطال الشركة';
+        ctx.fillText(`🎉 كسبت الهدية! البطل: ${winnerDisplayName} 🎉`, 540, 266);
+
+        // 5. كارت الهدية الرئيسي (مربع أبيض مع ظل ثلاثي الأبعاد)
+        drawCanvasRoundedRect(ctx, 110, 325, 860, 500, 32, '#FFFFFF', '#18181B', 8);
+
+        // عنوان الجائزة باللون الأخضر الجميل
+        const prizeTitleText = prize?.title || 'هدية قيمة';
+        ctx.fillStyle = '#059669';
+        ctx.font = '900 44px "Cairo", sans-serif';
+        ctx.fillText(`🎁 الجائزة: ${prizeTitleText} 🎁`, 540, 395);
+
+        // صورة الجائزة الفعلية (100 جنيه أو 200 جنيه أو جركن زيت)
+        try {
+            let prizeSrc = prize?.image;
+            if (!prizeSrc) {
+                if (prizeTitleText.includes('200')) prizeSrc = 'images/prize_200.jpg';
+                else if (prizeTitleText.includes('زيت')) prizeSrc = 'images/oil.png';
+                else prizeSrc = 'images/prize_100.jpg';
+            }
+            const prizeImg = await loadCanvasImage(prizeSrc);
+            if (prizeImg) {
+                // رسم الصورة بأبعاد متناسقة ومحاذاة ممتازة
+                const maxWidth = 520;
+                const maxHeight = 270;
+                let w = prizeImg.width || 400;
+                let h = prizeImg.height || 300;
+                const ratio = Math.min(maxWidth / w, maxHeight / h);
+                w = w * ratio;
+                h = h * ratio;
+                const imgX = 540 - (w / 2);
+                const imgY = 415 + (maxHeight - h) / 2;
+
+                // إطار خفيف وجميل حول صورة الجائزة
+                drawCanvasRoundedRect(ctx, imgX - 6, imgY - 6, w + 12, h + 12, 14, '#F8FAFC', '#E2E8F0', 2);
+                ctx.drawImage(prizeImg, imgX, imgY, w, h);
+            }
+        } catch (e) {}
+
+        // ملاحظة تحت الجائزة
+        ctx.fillStyle = '#18181B';
+        ctx.font = 'bold 28px "Cairo", sans-serif';
+        ctx.fillText('⚡ تم كشط كارت الحظ الذهبي والفوز بالهدية فوراً ⚡', 540, 745);
+
+        ctx.fillStyle = '#059669';
+        ctx.font = '800 24px "Cairo", sans-serif';
+        ctx.fillText('⏱️ استلام الجائزة خلال 48 ساعة فقط!', 540, 785);
+
+        // 6. الفوتر السفلي ودعوة المشاركة مع منشن صفحة العالمية
+        drawCanvasRoundedRect(ctx, 90, 850, 900, 150, 28, '#18181B', '#FFE500', 5);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '900 32px "Cairo", sans-serif';
+        ctx.fillText('🚀 شاركوا في مسابقة العالمية واكسبوا جوائز فورية! 🪙✨', 540, 908);
+
+        ctx.fillStyle = '#FFE500';
+        ctx.font = 'bold 27px "Cairo", sans-serif';
+        ctx.fillText('صفحتنا الرسمية على فيسبوك: شركة العالمية اكسبريس @alalamiacompany0', 540, 958);
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                resolve({ canvas, blob, dataUrl: canvas.toDataURL('image/png') });
+            }, 'image/png', 0.95);
+        });
+    }
+
+    function getWinnerFacebookCaption(winnerName, prizeTitle) {
+        return `🏆🎉 الحمد لله كسبت ${prizeTitle} في مسابقة بطل العالمية إكسبريس الرسمية! 🌟🔥\n\nشكراً جداً لإدارة شركة العالمية إكسبريس على الهدية الجميلة وعقبال كل زمايلي وأبطال الشركة! 🛢️💵\n\nادخلوا شاركوا يا أبطال، الجوائز حقيقية والتسليم فوري! 🚀👑\n\nصفحة المسابقة الرسمية: شركة العالمية اكسبريس @alalamiacompany0\nرابط المسابقة: https://alamia-delta.vercel.app`;
+    }
+
+    function triggerImageDownload(blob, filename = 'كارت_فوز_مسابقة_العالمية.png') {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            if (document.body.contains(a)) document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 2000);
+    }
+
+    // زر مشاركة صورة الهدية على فيسبوك
     const shareWinOnFacebookBtn = document.getElementById('shareWinOnFacebookBtn');
     if (shareWinOnFacebookBtn) {
         shareWinOnFacebookBtn.addEventListener('click', async () => {
             soundManager.playClick();
+            const btnText = document.getElementById('shareBtnText');
+            const origText = btnText ? btnText.textContent : '📢 مشاركة صورة الهدية على فيسبوك';
+            if (btnText) btnText.textContent = '⏳ جاري تجهيز صورة الهدية...';
+
             const prizeTitle = currentPrize?.title || 'هدية قيمة';
             const winnerName = currentUser?.name || 'أحد أبطال الشركة';
-            const shareUrl = 'https://alamia-delta.vercel.app';
-            const caption = `🏆🎉 الحمد لله كسبت ${prizeTitle} في مسابقة بطل العالمية إكسبريس الرسمية! 🌟🔥 شكراً جداً لإدارة شركة العالمية إكسبريس على الهدية الجميلة وعقبال كل زمايلي وأبطال الشركة! ادخلوا جربوا حظكم يا أبطال 🪙🎁\n${shareUrl}`;
+            const caption = getWinnerFacebookCaption(winnerName, prizeTitle);
 
-            // 1. نسخ الكابشن التلقائي للحافظة
+            // 1. نسخ كابشن البوست الجاهز مع المنشن للحافظة
             try {
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     await navigator.clipboard.writeText(caption);
                 }
             } catch (clipErr) {}
 
-            // 2. محاولة الشير الأصلي على الموبايل عبر Web Share API
-            if (navigator.share) {
-                navigator.share({
-                    title: '🏆 مسابقة بطل العالمية إكسبريس',
-                    text: caption,
-                    url: shareUrl
-                }).catch(() => {
-                    // في حال إلغاء الشير أو عدم اكتماله نفتح نافذة فيسبوك
-                    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(caption)}`;
-                    window.open(fbUrl, '_blank');
-                });
-            } else {
-                alert('✅ تم نسخ كابشن الفوز الترويجي بنجاح! جاري فتح فيسبوك الآن لتنشر بوست الهدية 🌟🎉');
-                const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(caption)}`;
-                window.open(fbUrl, '_blank');
+            try {
+                // 2. توليد صورة البوست المصممة بثيم العالمية
+                const { blob } = await generateWinnerPostImage(currentUser, currentPrize);
+                const file = new File([blob], 'alalamia_winner_prize.png', { type: 'image/png' });
+
+                // 3. محاولة الشير كـ صورة حقيقية عبر Web Share API على الموبايل
+                let sharedSuccessfully = false;
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: `🏆 كسبت ${prizeTitle} في مسابقة العالمية!`,
+                            text: caption
+                        });
+                        sharedSuccessfully = true;
+                    } catch (shareErr) {
+                        // المستخدم ألغى نافذة الشير
+                    }
+                }
+
+                // 4. في حالة عدم دعم مشاركة الملفات أو في أجهزة الديسكتوب
+                if (!sharedSuccessfully) {
+                    // تنزيل الصورة تلقائياً لجهاز المستخدم
+                    triggerImageDownload(blob);
+
+                    alert(`📸 تم حفظ صورة هديتك المصممة في جهازك، ونسخ بوست التهنئة الجاهز مع منشن صفحة العالمية (@alalamiacompany0)!\n\nجاري فتح فيسبوك الآن لتنشر الصورة كبوست رسمي وتشارك فرحتك مع زمايلك 🚀✨`);
+
+                    // فتح فيسبوك للنشر مباشرة
+                    window.open('https://www.facebook.com/', '_blank');
+                }
+            } catch (err) {
+                console.error('Share generation error:', err);
+                alert('✅ تم نسخ نص بوست التهنئة مع منشن صفحة العالمية! جاري فتح فيسبوك الآن...');
+                window.open('https://www.facebook.com/', '_blank');
+            } finally {
+                if (btnText) btnText.textContent = origText;
+            }
+        });
+    }
+
+    // زر تنزيل صورة الهدية فقط
+    const downloadShareCardBtn = document.getElementById('downloadShareCardBtn');
+    if (downloadShareCardBtn) {
+        downloadShareCardBtn.addEventListener('click', async () => {
+            soundManager.playClick();
+            downloadShareCardBtn.disabled = true;
+            const origHtml = downloadShareCardBtn.innerHTML;
+            downloadShareCardBtn.innerHTML = '<span>⏳ جاري التصميم...</span>';
+
+            try {
+                const { blob } = await generateWinnerPostImage(currentUser, currentPrize);
+                triggerImageDownload(blob);
+            } catch (err) {
+                console.error('Download error:', err);
+            } finally {
+                downloadShareCardBtn.disabled = false;
+                downloadShareCardBtn.innerHTML = origHtml;
+            }
+        });
+    }
+
+    // زر نسخ كابشن البوست الجاهز مع المنشن
+    const copyShareCaptionBtn = document.getElementById('copyShareCaptionBtn');
+    if (copyShareCaptionBtn) {
+        copyShareCaptionBtn.addEventListener('click', async () => {
+            soundManager.playClick();
+            const prizeTitle = currentPrize?.title || 'هدية قيمة';
+            const winnerName = currentUser?.name || 'أحد أبطال الشركة';
+            const caption = getWinnerFacebookCaption(winnerName, prizeTitle);
+
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(caption);
+                }
+                alert('✅ تم نسخ نص بوست التهنئة مع منشن صفحة العالمية (@alalamiacompany0) جاهزاً للصق على فيسبوك! 📋✨');
+            } catch (e) {
+                prompt('انسخ نص البوست التالي:', caption);
             }
         });
     }
