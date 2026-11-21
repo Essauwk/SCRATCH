@@ -241,14 +241,48 @@
                         <img id="resultPrizeImage" src="" alt="صورة الجائزة" class="result-prize-image" style="display:none;">
                     </div>
 
+                    <!-- كارت فخم لمشاركة الهدية على فيسبوك -->
+                    <div class="winner-share-card" id="winnerShareCard">
+                        <div class="share-card-header">
+                            <img src="logo.png" alt="العالمية" class="share-card-logo">
+                            <span class="share-card-tag">🏆 بطل مسابقة العالمية إكسبريس</span>
+                        </div>
+                        <div class="share-card-body">
+                            <h3 class="share-card-winner-name" id="shareCardWinnerName">اسم البطل</h3>
+                            <p class="share-card-congrats">ألف مبروك فوزك بكارت الحظ الذهبي! 🎉</p>
+                            <div class="share-card-prize-box">
+                                <img id="shareCardPrizeImg" src="" alt="الهدية" class="share-card-prize-img">
+                                <div class="share-card-prize-title" id="shareCardPrizeTitle">100 جنيه كاش</div>
+                            </div>
+                        </div>
+                        <button type="button" class="funky-share-btn" id="shareWinOnFacebookBtn">
+                            <span>📢 اعمل شير للهدية على فيسبوك</span>
+                            <span>🚀✨</span>
+                        </button>
+                    </div>
+
+                    <!-- شرط أساسي: كتابة كومنت على بوست المسابقة على فيسبوك -->
+                    <div class="fb-comment-condition-box">
+                        <div class="condition-badge-title">
+                            <span>⚠️</span>
+                            <span>شرط أساسي لتأكيد واستلام الهدية:</span>
+                        </div>
+                        <p class="condition-desc">
+                            لازم تكتب كومنت باسمك على <strong>بوست المسابقة الرسمي</strong> بصفحتنا على فيسبوك لتأكيد فوزك واستلام الهدية فوراً! 💬🔥
+                        </p>
+                        <a href="https://www.facebook.com/alalamiacompany0" target="_blank" rel="noopener" class="fb-comment-link-btn">
+                            <span>الانتقال لبوست المسابقة على فيسبوك وكتابة الكومنت 💬🚀</span>
+                        </a>
+                    </div>
+
                     <!-- صندوق تسجيل بيانات استلام الجائزة المباشر -->
                     <div class="claim-form-box" id="winnerClaimBox">
-                        <div class="claim-form-badge">⚡ استلام الجائزة فوراً</div>
+                        <div class="claim-form-badge" id="claimBoxBadge">⚡ استلام الجائزة فوراً</div>
                         
-                        <!-- نموذج إدخال المحفظة / انستاباي -->
+                        <!-- نموذج إدخال المحفظة / انستاباي / رقم التواصل -->
                         <div id="claimInputSection">
-                            <h3 class="claim-form-title">سجل وسيلة الاستلام لتحويل المكافأة لحسابك 🚀</h3>
-                            <p class="claim-form-desc">
+                            <h3 class="claim-form-title" id="claimFormTitle">سجل وسيلة الاستلام لتحويل المكافأة لحسابك 🚀</h3>
+                            <p class="claim-form-desc" id="claimFormDesc">
                                 اختر وسيلة الدفع واكتب رقم المحفظة أو عنوان InstaPay:
                             </p>
 
@@ -273,13 +307,13 @@
                                 </div>
 
                                 <!-- نوت مهم للفائز -->
-                                <div class="winner-important-note">
+                                <div class="winner-important-note" id="winnerImportantNote">
                                     ⚠️ هتستلم جايزتك ع البيانات اللي تم إدخالها<br>ولابد المحفظة او انستا يكون بنفس الاسم<br>
                                     <span style="color:#059669; font-weight:800; font-size:0.95rem; display:inline-block; margin-top:4px;">⏱️ توصل الجائزة خلال 48 ساعة</span>
                                 </div>
 
                                 <button type="submit" class="claim-form-btn pulse-glow" id="submitClaimDirectBtn">
-                                    <span class="btn-text">تأكيد وإرسال بيانات الاستلام 🚀</span>
+                                    <span class="btn-text" id="submitClaimBtnText">تأكيد وإرسال بيانات الاستلام 🚀</span>
                                     <span class="btn-icon">✨</span>
                                 </button>
                             </form>
@@ -288,15 +322,15 @@
                         <!-- حالة النجاح بعد التسجيل -->
                         <div id="claimDoneSection" style="display:none; text-align:center;">
                             <div style="font-size:3rem; margin-bottom:8px;">✅🎉</div>
-                            <h3 style="color:#10b981; margin:0 0 8px 0; font-size:1.3rem;">تم تسجيل بيانات الاستلام بنجاح!</h3>
-                            <p style="color:#374151; font-size:0.95rem; margin-bottom:12px; font-weight:600;">
+                            <h3 style="color:#10b981; margin:0 0 8px 0; font-size:1.3rem;" id="claimDoneHeading">تم تسجيل بيانات الاستلام بنجاح!</h3>
+                            <p style="color:#374151; font-size:0.95rem; margin-bottom:12px; font-weight:600;" id="claimDoneSubDesc">
                                 تم إرسال بيانات محفظتك إلى إدارة مسابقة العالمية، وسيتم مراجعة الطلب وتحويل المبلغ لحسابك.<br>
                                 <span style="color:#059669; font-weight:800; font-size:1.05rem; display:inline-block; margin-top:6px;">⏱️ توصل الجائزة خلال 48 ساعة</span>
                             </p>
                             <div id="claimSavedSummary" style="background:#f3f4f6; border:2px solid #10b981; padding:12px; border-radius:12px; font-size:0.95rem; color:#18181b; font-weight:700;"></div>
                         </div>
 
-                        <div class="claim-form-note" style="margin-top:12px;">
+                        <div class="claim-form-note" id="claimFormBottomNote" style="margin-top:12px;">
                             🔒 يتم التحويل والمراجعة مباشرة من إدارة مسابقة العالمية إكسبريس.<br>
                             <strong style="color:#059669; font-size:0.95rem; display:inline-block; margin-top:4px;">⏱️ توصل الجائزة خلال 48 ساعة</strong>
                         </div>

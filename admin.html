@@ -853,13 +853,8 @@
                 </div>
             </div>
             <div class="dash-actions">
-                <button class="dash-btn dash-btn-success" id="exportCsvBtn">📥 تصدير النتائج (Excel / CSV)</button>
-                <button class="dash-btn dash-btn-outline" id="refreshBtn">🔄 تحديث وسحب البيانات الحية</button>
-            </div>
-        </header>
-            <div class="dash-actions">
-                <button class="dash-btn dash-btn-success" id="exportCsvBtn">📥 تصدير شيت النتائج (Excel / CSV)</button>
-                <button class="dash-btn dash-btn-outline" id="refreshBtn">🔄 تحديث وسحب البيانات الحية</button>
+                <button class="dash-btn dash-btn-success" id="exportCsvBtn" onclick="exportDataToCsv()">📥 تصدير شيت النتائج (Excel / CSV)</button>
+                <button class="dash-btn dash-btn-outline" id="refreshBtn" onclick="refreshDataFromCloud(false)">🔄 تحديث وسحب البيانات الحية</button>
             </div>
         </header>
 
@@ -891,11 +886,15 @@
                     <div class="inv-inputs-row">
                         <div class="inv-input-group">
                             <label for="inputRemaining100">💵 رصيد جوائز 100 جنيه المتبقي:</label>
-                            <input type="number" id="inputRemaining100" class="inv-num-input" min="0" step="1">
+                            <input type="number" id="inputRemaining100" class="inv-num-input" min="0" step="1" value="400">
                         </div>
                         <div class="inv-input-group">
                             <label for="inputRemaining200">💴 رصيد جوائز 200 جنيه المتبقي:</label>
-                            <input type="number" id="inputRemaining200" class="inv-num-input" min="0" step="1">
+                            <input type="number" id="inputRemaining200" class="inv-num-input" min="0" step="1" value="150">
+                        </div>
+                        <div class="inv-input-group">
+                            <label for="inputRemainingOil">🛢️ رصيد جركن زيت المتبقي:</label>
+                            <input type="number" id="inputRemainingOil" class="inv-num-input" min="0" step="1" value="150">
                         </div>
                         <button type="button" class="dash-btn dash-btn-primary" id="saveInventoryBtn" onclick="executeSaveInventory(event)" style="padding:12px 20px; font-size:1rem;">
                             <span>حفظ وتحديث المخزن 💾</span>
@@ -914,7 +913,7 @@
                         <span>💵 مخزن جوائز 100 جنيه</span>
                         <span>المتبقي</span>
                     </div>
-                    <div class="stat-val green" id="stat100Val">500</div>
+                    <div class="stat-val green" id="stat100Val">400</div>
                     <div class="stat-bar">
                         <div class="stat-bar-fill fill-100" id="stat100Bar" style="width: 100%;"></div>
                     </div>
@@ -926,11 +925,23 @@
                         <span>💴 مخزن جوائز 200 جنيه</span>
                         <span>المتبقي</span>
                     </div>
-                    <div class="stat-val blue" id="stat200Val">300</div>
+                    <div class="stat-val blue" id="stat200Val">150</div>
                     <div class="stat-bar">
                         <div class="stat-bar-fill fill-200" id="stat200Bar" style="width: 100%;"></div>
                     </div>
                     <div style="font-size:0.8rem; color:#94a3b8; margin-top:8px;" id="stat200Sub">تم كسب 0 كارت</div>
+                </div>
+
+                <div class="stat-card featured" style="border-color:#f59e0b;">
+                    <div class="stat-header">
+                        <span>🛢️ مخزن جوائز جركن زيت</span>
+                        <span>المتبقي</span>
+                    </div>
+                    <div class="stat-val" style="color:#f59e0b;" id="statOilVal">150</div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" id="statOilBar" style="background:linear-gradient(90deg, #f59e0b, #fbbf24); width: 100%;"></div>
+                    </div>
+                    <div style="font-size:0.8rem; color:#94a3b8; margin-top:8px;" id="statOilSub">تم كسب 0 جركن</div>
                 </div>
 
                 <div class="stat-card">
@@ -939,7 +950,7 @@
                         <span>فائز</span>
                     </div>
                     <div class="stat-val gold" id="statWinnersCount">0</div>
-                    <div style="font-size:0.8rem; color:#94a3b8;" id="statWinnersSub">0 جنيه و 200 جنيه</div>
+                    <div style="font-size:0.8rem; color:#94a3b8;" id="statWinnersSub">0 كسبوا 100ج | 0 كسبوا 200ج | 0 زيت</div>
                 </div>
 
                 <div class="stat-card">
@@ -984,9 +995,10 @@
                     
                     <select id="filterSelect" class="filter-select">
                         <option value="all">كل المشاركات (فائزين + حظ أوفر)</option>
-                        <option value="winners_all">🏆 الفائزين معاً (100 و 200 جنيه)</option>
+                        <option value="winners_all">🏆 جميع الفائزين (100ج + 200ج + زيت)</option>
                         <option value="winners_100">💵 فائزين 100 جنيه فقط</option>
                         <option value="winners_200">💴 فائزين 200 جنيه فقط</option>
+                        <option value="winners_oil">🛢️ فائزين جركن زيت فقط</option>
                         <option value="unpaid">⏳ فائزين لم يستلموا بعد (غير مُعلَّم استلم)</option>
                         <option value="paid">✅ فائزين تم تسليمهم (مُعلَّم استلم)</option>
                         <option value="hardluck">💪 الحظ الأوفر فقط</option>
@@ -1007,7 +1019,7 @@
                                 <th>النتيجة</th>
                                 <th>الجائزة</th>
                                 <th>طريقة الاستلام المسجلة</th>
-                                <th>رقم المحفظة / انستاباي</th>
+                                <th>رقم المحفظة / التواصل</th>
                                 <th>تاريخ ووقت الخربشة</th>
                             </tr>
                         </thead>
@@ -1271,6 +1283,9 @@
                         if (cloudData.inventory.prize200 !== undefined) {
                             localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, String(cloudData.inventory.prize200));
                         }
+                        if (cloudData.inventory.prizeOil !== undefined) {
+                            localStorage.setItem(PRIZE_INVENTORY.prizeOil.storageKey, String(cloudData.inventory.prizeOil));
+                        }
                     }
 
                     // تحديث الواجهات
@@ -1365,32 +1380,45 @@
             const snap = getInventorySnapshot();
             const p100Current = snap.prize100;
             const p200Current = snap.prize200;
+            const pOilCurrent = snap.prizeOil !== undefined ? snap.prizeOil : 150;
 
             // تعبئة حقول الإدخال لتعديل المخزن (فقط إذا لم يكن المستخدم يكتب بداخلها حالياً لتجنب مسح كتابته أثناء التحديث التلقائي)
             const inp100 = document.getElementById('inputRemaining100');
             const inp200 = document.getElementById('inputRemaining200');
+            const inpOil = document.getElementById('inputRemainingOil');
             if (inp100 && document.activeElement !== inp100 && !inp100.dataset.editing) {
                 inp100.value = p100Current;
             }
             if (inp200 && document.activeElement !== inp200 && !inp200.dataset.editing) {
                 inp200.value = p200Current;
             }
+            if (inpOil && document.activeElement !== inpOil && !inpOil.dataset.editing) {
+                inpOil.value = pOilCurrent;
+            }
 
             // كروت الإحصائيات
             const p100Winners = list.filter(p => p.prize?.isWinner && p.prize.title.includes('100')).length;
             const p200Winners = list.filter(p => p.prize?.isWinner && p.prize.title.includes('200')).length;
+            const pOilWinners = list.filter(p => p.prize?.isWinner && (p.prize.title.includes('زيت') || p.prize.prizeKey === 'prizeOil')).length;
 
             document.getElementById('stat100Val').textContent = p100Current;
             document.getElementById('stat100Sub').textContent = `تم كسب ${p100Winners} كارت حتى الآن`;
-            document.getElementById('stat100Bar').style.width = `${Math.max(0, Math.min(100, (p100Current / 500) * 100))}%`;
+            document.getElementById('stat100Bar').style.width = `${Math.max(0, Math.min(100, (p100Current / 400) * 100))}%`;
 
             document.getElementById('stat200Val').textContent = p200Current;
             document.getElementById('stat200Sub').textContent = `تم كسب ${p200Winners} كارت حتى الآن`;
-            document.getElementById('stat200Bar').style.width = `${Math.max(0, Math.min(100, (p200Current / 300) * 100))}%`;
+            document.getElementById('stat200Bar').style.width = `${Math.max(0, Math.min(100, (p200Current / 150) * 100))}%`;
+
+            const statOilVal = document.getElementById('statOilVal');
+            if (statOilVal) statOilVal.textContent = pOilCurrent;
+            const statOilSub = document.getElementById('statOilSub');
+            if (statOilSub) statOilSub.textContent = `تم كسب ${pOilWinners} جركن حتى الآن`;
+            const statOilBar = document.getElementById('statOilBar');
+            if (statOilBar) statOilBar.style.width = `${Math.max(0, Math.min(100, (pOilCurrent / 150) * 100))}%`;
 
             const totalWinners = list.filter(p => p.prize && p.prize.isWinner).length;
             document.getElementById('statWinnersCount').textContent = totalWinners;
-            document.getElementById('statWinnersSub').textContent = `${p100Winners} كسبوا 100 ج | ${p200Winners} كسبوا 200 ج`;
+            document.getElementById('statWinnersSub').textContent = `${p100Winners} كسبوا 100 ج | ${p200Winners} كسبوا 200 ج | ${pOilWinners} جركن زيت`;
 
             document.getElementById('statTotalParticipated').textContent = list.length;
             document.getElementById('recordCountLabel').textContent = `${list.length} مشاركة مسجلة`;
@@ -1405,6 +1433,7 @@
         const saveInvBtn = document.getElementById('saveInventoryBtn');
         const input100El = document.getElementById('inputRemaining100');
         const input200El = document.getElementById('inputRemaining200');
+        const inputOilEl = document.getElementById('inputRemainingOil');
 
         if (input100El) {
             input100El.addEventListener('input', () => { input100El.dataset.editing = '1'; });
@@ -1414,6 +1443,10 @@
             input200El.addEventListener('input', () => { input200El.dataset.editing = '1'; });
             input200El.addEventListener('focus', () => { input200El.dataset.editing = '1'; });
         }
+        if (inputOilEl) {
+            inputOilEl.addEventListener('input', () => { inputOilEl.dataset.editing = '1'; });
+            inputOilEl.addEventListener('focus', () => { inputOilEl.dataset.editing = '1'; });
+        }
 
         async function executeSaveInventory(e) {
             if (e) e.preventDefault();
@@ -1421,12 +1454,14 @@
             const alertEl = document.getElementById('invSaveAlert');
             const inp100 = document.getElementById('inputRemaining100');
             const inp200 = document.getElementById('inputRemaining200');
+            const inpOil = document.getElementById('inputRemainingOil');
 
             const val100 = parseInt(inp100 ? inp100.value : '0', 10);
             const val200 = parseInt(inp200 ? inp200.value : '0', 10);
+            const valOil = parseInt(inpOil ? inpOil.value : '0', 10);
 
-            if (isNaN(val100) || val100 < 0 || isNaN(val200) || val200 < 0) {
-                alert('يرجى إدخال أرقام صحيحة أكبر من أو تساوي الصفر!');
+            if (isNaN(val100) || val100 < 0 || isNaN(val200) || val200 < 0 || isNaN(valOil) || valOil < 0) {
+                alert('يرجى إدخال أرقام صحيحة أكبر من أو تساوي الصفر لكافة الجوائز!');
                 return;
             }
 
@@ -1439,13 +1474,15 @@
             // 1. الحفظ المحلي المباشر
             localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, String(val100));
             localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, String(val200));
+            localStorage.setItem(PRIZE_INVENTORY.prizeOil.storageKey, String(valOil));
 
             // 2. الحفظ السحابي الفوري في سيرفر Upstash
             try {
                 await syncToCloud({
                     action: 'updateInventory',
                     prize100: val100,
-                    prize200: val200
+                    prize200: val200,
+                    prizeOil: valOil
                 });
             } catch (err) {
                 console.warn('Inventory cloud save error:', err);
@@ -1454,13 +1491,17 @@
             // 3. تحديث واجهة المخزن والأرقام والكروت فوراً
             const stat100El = document.getElementById('stat100Val');
             const stat200El = document.getElementById('stat200Val');
+            const statOilEl = document.getElementById('statOilVal');
             const stat100BarEl = document.getElementById('stat100Bar');
             const stat200BarEl = document.getElementById('stat200Bar');
+            const statOilBarEl = document.getElementById('statOilBar');
 
             if (stat100El) stat100El.textContent = val100;
             if (stat200El) stat200El.textContent = val200;
-            if (stat100BarEl) stat100BarEl.style.width = Math.max(0, Math.min(100, (val100 / 500) * 100)) + '%';
-            if (stat200BarEl) stat200BarEl.style.width = Math.max(0, Math.min(100, (val200 / 300) * 100)) + '%';
+            if (statOilEl) statOilEl.textContent = valOil;
+            if (stat100BarEl) stat100BarEl.style.width = Math.max(0, Math.min(100, (val100 / 400) * 100)) + '%';
+            if (stat200BarEl) stat200BarEl.style.width = Math.max(0, Math.min(100, (val200 / 150) * 100)) + '%';
+            if (statOilBarEl) statOilBarEl.style.width = Math.max(0, Math.min(100, (valOil / 150) * 100)) + '%';
 
             // 4. إشعار فوري لكافة التابات المفتوحة
             try {
@@ -1474,6 +1515,7 @@
             // إزالة قفل التعديل عن الحقول بعد اكتمال الحفظ بنجاح
             if (inp100) delete inp100.dataset.editing;
             if (inp200) delete inp200.dataset.editing;
+            if (inpOil) delete inpOil.dataset.editing;
 
             loadDashboardData();
 
@@ -1483,7 +1525,7 @@
             }
 
             if (alertEl) {
-                alertEl.textContent = `✅ تم تحديث المخزن سحابياً بنجاح! (100: ${val100} كارت | 200: ${val200} كارت)`;
+                alertEl.textContent = `✅ تم تحديث المخزن سحابياً بنجاح! (100ج: ${val100} | 200ج: ${val200} | زيت: ${valOil})`;
                 alertEl.style.display = 'block';
                 setTimeout(() => { alertEl.style.display = 'none'; }, 4000);
             }
@@ -1506,11 +1548,13 @@
                 const isWin = item.prize && item.prize.isWinner;
                 const is100 = isWin && item.prize.title.includes('100');
                 const is200 = isWin && item.prize.title.includes('200');
+                const isOil = isWin && (item.prize.title.includes('زيت') || item.prize.prizeKey === 'prizeOil');
                 const isPaid = Boolean(item.isPaid);
 
                 if (filter === 'winners_all' && !isWin) return false;
                 if (filter === 'winners_100' && !is100) return false;
                 if (filter === 'winners_200' && !is200) return false;
+                if (filter === 'winners_oil' && !isOil) return false;
                 if (filter === 'unpaid' && (!isWin || isPaid)) return false;
                 if (filter === 'paid' && (!isWin || !isPaid)) return false;
                 if (filter === 'hardluck' && isWin) return false;
@@ -1566,7 +1610,7 @@
                     }
 
                     const claimMethod = item.claimInfo ? `<span style="font-weight:700; color:#38bdf8;">${item.claimInfo.method}</span>` : `<span style="color:#64748b;">لم يسجل</span>`;
-                    const claimAccount = item.claimInfo ? `<strong style="color:#FFE500; font-size:1rem;">${item.claimInfo.account}</strong>` : `<span style="color:#64748b;">-</span>`;
+                    const claimAccount = item.claimInfo ? `<strong style="background:#ffffff; color:#0f172a; padding:4px 10px; border-radius:8px; border:2px solid #10b981; font-size:0.95rem; display:inline-block; letter-spacing:0.5px;">${item.claimInfo.account}</strong>` : `<span style="color:#64748b;">-</span>`;
 
                     return `
                         <tr class="${isPaid ? 'row-paid' : ''}">
@@ -1624,8 +1668,8 @@
                                             <span style="font-size:0.72rem; color:#94a3b8;">${item.claimInfo.formattedDate || ''}</span>
                                         </div>
                                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                                            <span style="font-size:0.82rem; color:#94a3b8;">📱 رقم المحفظة / انستاباي:</span>
-                                            <span class="m-wallet-highlight">${item.claimInfo.account}</span>
+                                            <span style="font-size:0.82rem; color:#94a3b8;">${isWin && (item.prize?.title?.includes('زيت') || item.prize?.prizeKey === 'prizeOil') ? '📱 رقم الهاتف للتواصل:' : '📱 رقم المحفظة / انستاباي:'}</span>
+                                            <span class="m-wallet-highlight" style="background:#ffffff; color:#0f172a; padding:4px 10px; border-radius:8px; border:2px solid #10b981; font-weight:800; letter-spacing:0.5px;">${item.claimInfo.account}</span>
                                         </div>
                                     </div>
                                 ` : `
@@ -1744,23 +1788,25 @@
         if (clearTestBtn) clearTestBtn.addEventListener('click', resetTestAccounts);
 
         // ==============================================
-        // استعادة رصيد المخزن الافتراضي (500 و 300)
+        // استعادة رصيد المخزن الافتراضي (400 و 150 و 150)
         // ==============================================
         const defaultResetBtn = document.getElementById('defaultResetInventoryBtn');
         if (defaultResetBtn) {
             defaultResetBtn.addEventListener('click', async () => {
-                if (!confirm('هل تريد إعادة تعيين المخزن إلى 500 كارت (100 جنيه) و 300 كارت (200 جنيه)؟')) return;
-                localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
-                localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
+                if (!confirm('هل تريد إعادة تعيين المخزن إلى القيم المعتمدة: 400 كارت (100ج)، 150 كارت (200ج)، و 150 جركن زيت؟')) return;
+                localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '400');
+                localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '150');
+                localStorage.setItem(PRIZE_INVENTORY.prizeOil.storageKey, '150');
 
                 await syncToCloud({
                     action: 'updateInventory',
-                    prize100: 500,
-                    prize200: 300
+                    prize100: 400,
+                    prize200: 150,
+                    prizeOil: 150
                 });
 
                 loadDashboardData();
-                alert('✅ تم إعادة ضبط رصيد المخزن إلى 500 و 300 بنجاح سحابياً!');
+                alert('✅ تم إعادة ضبط رصيد المخزن إلى (400 لـ 100ج | 150 لـ 200ج | 150 لجركن الزيت) بنجاح سحابياً ومحلياً!');
             });
         }
 
@@ -1773,8 +1819,9 @@
                 const check = prompt('⚠️ تحذير: هذا سيحذف جميع مشاركات المتسابقين ويعيد تصفير كل شيء! اكتب "تأكيد" للمتابعة:');
                 if (check === 'تأكيد' || check === 'confirm') {
                     resetParticipationsStorage();
-                    localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
-                    localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
+                    localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '400');
+                    localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '150');
+                    localStorage.setItem(PRIZE_INVENTORY.prizeOil.storageKey, '150');
                     await syncToCloud({ action: 'resetAll' });
                     loadDashboardData();
                     alert('🔄 تم تصفير جميع السجلات والمخزن بالكامل سحابياً ومحلياً.');
@@ -1785,37 +1832,66 @@
         // ==============================================
         // تصدير النتائج إلى ملف Excel / CSV بالعربي
         // ==============================================
-        document.getElementById('exportCsvBtn').addEventListener('click', () => {
-            const list = Object.values(getAllParticipations());
+        async function exportDataToCsv() {
+            let list = Object.values(getAllParticipations());
+
+            // إذا كانت السجلات المحلية فارغة، نحاول سحبها فوراً من السيرفر السحابي
             if (list.length === 0) {
-                alert('لا توجد مشاركات مسجلة حالياً لتصديرها!');
+                try {
+                    const cloud = await fetchFromCloud();
+                    if (cloud && cloud.participations && Object.keys(cloud.participations).length > 0) {
+                        list = Object.values(cloud.participations);
+                        localStorage.setItem(PARTICIPATION_STORAGE_KEY, JSON.stringify(cloud.participations));
+                    }
+                } catch (e) {
+                    console.warn('Export cloud fallback error:', e);
+                }
+            }
+
+            if (list.length === 0) {
+                alert('⚠️ لا توجد مشاركات مسجلة حالياً لتصديرها! بمجرد أن يخربش أي متسابق ستتمكن من التصدير فوراً.');
                 return;
             }
 
-            let csvContent = '\uFEFF'; // UTF-8 BOM
-            csvContent += 'كود الموظف,الاسم,الرقم القومي,المنطقة,النتيجة,الجائزة,طريقة الاستلام,رقم المحفظة / انستاباي,حالة الاستلام,التاريخ والوقت,نوع الحساب\n';
+            let csvContent = '\uFEFF'; // UTF-8 BOM لفتح العربي بشكل صحيح في Excel بدون أي لخبطة
+            csvContent += 'كود الموظف,الاسم,الرقم القومي,المنطقة,النتيجة,الجائزة,طريقة الاستلام,رقم المحفظة / الهاتف المسجل,حالة التسليم,التاريخ والوقت,نوع الحساب\n';
 
             list.forEach(item => {
                 const isWin = item.prize && item.prize.isWinner ? 'فائز' : 'حظ أوفر';
-                const prize = (item.prize?.title || '').replace(/,/g, ' ');
-                const method = (item.claimInfo?.method || 'لم يسجل').replace(/,/g, ' ');
-                const account = (item.claimInfo?.account || '-').replace(/,/g, ' ');
+                const prize = (item.prize?.title || '').replace(/"/g, '""');
+                const method = (item.claimInfo?.method || 'لم يسجل').replace(/"/g, '""');
+                const rawAccount = (item.claimInfo?.account || '-').replace(/"/g, '""');
+                const accountVal = rawAccount !== '-' ? `="${rawAccount}"` : '-';
                 const isPaidText = item.isPaid ? 'تم التسليم' : 'قيد الانتظار';
                 const type = item.isTest ? 'حساب تجريبي' : 'متسابق حقيقي';
+                const natVal = item.nationalId ? `="${item.nationalId}"` : '-';
 
-                csvContent += `"${item.userId}","${item.userName}","=""${item.nationalId}""","${item.userRegion}","${isWin}","${prize}","${method}","${account}","${isPaidText}","${item.formattedDate || item.scratchedAt}","${type}"\n`;
+                csvContent += `"${item.userId}","${(item.userName || '').replace(/"/g, '""')}","${natVal}","${(item.userRegion || '').replace(/"/g, '""')}","${isWin}","${prize}","${method}","${accountVal}","${isPaidText}","${item.formattedDate || item.scratchedAt || '-'}","${type}"\n`;
             });
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `نتائج_مسابقة_العالمية_${new Date().toISOString().slice(0,10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
+            try {
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.setAttribute('download', `نتائج_مسابقة_العالمية_${new Date().toISOString().slice(0,10)}.csv`);
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    if (document.body.contains(a)) document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 2000);
+            } catch (err) {
+                console.error('CSV Export download error:', err);
+                alert('حدث خطأ أثناء تحميل الملف، يرجى المحاولة مرة أخرى.');
+            }
+        }
+        window.exportDataToCsv = exportDataToCsv;
+
+        const exportBtn = document.getElementById('exportCsvBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', exportDataToCsv);
+        }
 
         // ==============================================
         // رسم جدول قاعدة البيانات الكاملة (4,745 متسابق)

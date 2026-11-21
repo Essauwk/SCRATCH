@@ -11,22 +11,37 @@
 // هذه القيم قابلة للتعديل من هنا مباشرة
 const PRIZE_INVENTORY = {
     prize100: {
-        count: 500,          // العدد الابتدائي لجوائز الـ 100 جنيه
+        key: 'prize100',
+        count: 400,          // العدد الابتدائي لجوائز الـ 100 جنيه
         label: '100 جنيه 💵',
         image: 'images/prize_100.jpg',
         isWinner: true,
+        isCash: true,
         icon: '💵',
         description: 'مكافأة فورية 100 جنيه كاش - تنزل في حسابك فوراً يا عالمي! 🎉',
         storageKey: 'PRIZE_100_REMAINING'
     },
     prize200: {
-        count: 300,          // العدد الابتدائي لجوائز الـ 200 جنيه
+        key: 'prize200',
+        count: 150,          // العدد الابتدائي لجوائز الـ 200 جنيه
         label: '200 جنيه 💴',
         image: 'images/prize_200.jpg',
         isWinner: true,
+        isCash: true,
         icon: '💴',
         description: 'مكافأة فورية 200 جنيه كاش - تنزل في حسابك فوراً يا بطل! 🏆',
         storageKey: 'PRIZE_200_REMAINING'
+    },
+    prizeOil: {
+        key: 'prizeOil',
+        count: 150,          // العدد الابتدائي لجوائز جركن الزيت
+        label: 'جركن زيت 🛢️',
+        image: 'images/oil.png',
+        isWinner: true,
+        isCash: false,
+        icon: '🛢️',
+        description: 'هدية عينية قيمة: جركن زيت أصلي عالي الجودة - مبروك يا بطل! 🛢️✨',
+        storageKey: 'PRIZE_OIL_REMAINING'
     }
 };
 
@@ -44,11 +59,11 @@ const GOOGLE_FORM_CONFIG = {
 // لا تُحتسب من مخزن الجوائز الحقيقية
 // =========================================
 const TEST_CONTESTANTS = [
-    { id: '1',  nationalId: '1234', name: 'تجربه 1',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', image: 'images/prize_100.jpg', prizeKey: 'prize100', isTest: true } },
-    { id: '2',  nationalId: '1234', name: 'تجربه 2',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '200 جنيه 💴', description: 'مكافأة فورية 200 جنيه كاش - حساب تجريبي', icon: '💴', image: 'images/prize_200.jpg', prizeKey: 'prize200', isTest: true } },
-    { id: '3',  nationalId: '1234', name: 'تجربه 3',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', image: 'images/prize_100.jpg', prizeKey: 'prize100', isTest: true } },
-    { id: '4',  nationalId: '1234', name: 'تجربه 4',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '200 جنيه 💴', description: 'مكافأة فورية 200 جنيه كاش - حساب تجريبي', icon: '💴', image: 'images/prize_200.jpg', prizeKey: 'prize200', isTest: true } },
-    { id: '5',  nationalId: '1234', name: 'تجربه 5',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', image: 'images/prize_100.jpg', prizeKey: 'prize100', isTest: true } },
+    { id: '1',  nationalId: '1234', name: 'تجربه 1',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true, isCash: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', image: 'images/prize_100.jpg', prizeKey: 'prize100', isTest: true } },
+    { id: '2',  nationalId: '1234', name: 'تجربه 2',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true, isCash: true,  title: '200 جنيه 💴', description: 'مكافأة فورية 200 جنيه كاش - حساب تجريبي', icon: '💴', image: 'images/prize_200.jpg', prizeKey: 'prize200', isTest: true } },
+    { id: '3',  nationalId: '1234', name: 'تجربه 3',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true, isCash: false, title: 'جركن زيت 🛢️', description: 'هدية عينية: جركن زيت أصلي عالي الجودة - حساب تجريبي', icon: '🛢️', image: 'images/oil.png', prizeKey: 'prizeOil', isTest: true } },
+    { id: '4',  nationalId: '1234', name: 'تجربه 4',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true, isCash: true,  title: '200 جنيه 💴', description: 'مكافأة فورية 200 جنيه كاش - حساب تجريبي', icon: '💴', image: 'images/prize_200.jpg', prizeKey: 'prize200', isTest: true } },
+    { id: '5',  nationalId: '1234', name: 'تجربه 5',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: true, isCash: true,  title: '100 جنيه 💵', description: 'مكافأة فورية 100 جنيه كاش - حساب تجريبي', icon: '💵', image: 'images/prize_100.jpg', prizeKey: 'prize100', isTest: true } },
     { id: '6',  nationalId: '1234', name: 'تجربه 6',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },
     { id: '7',  nationalId: '1234', name: 'تجربه 7',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },
     { id: '8',  nationalId: '1234', name: 'تجربه 8',  region: 'تجربه', isTest: true, fixedPrize: { isWinner: false, title: 'حظ أوفر',       description: 'حظك وحش يا نجم استنانا ف مسابقات جاية 💪🔥 - حساب تجريبي', icon: '💪', isTest: true } },
@@ -4883,8 +4898,10 @@ function getInventorySnapshot() {
     return {
         prize100: getPrizeRemaining('prize100'),
         prize200: getPrizeRemaining('prize200'),
+        prizeOil: getPrizeRemaining('prizeOil'),
         prize100_initial: PRIZE_INVENTORY.prize100.count,
         prize200_initial: PRIZE_INVENTORY.prize200.count,
+        prizeOil_initial: PRIZE_INVENTORY.prizeOil.count,
     };
 }
 
@@ -4926,11 +4943,12 @@ function getUserPrize(user) {
     }
 
     // ==============================
-    // توزيع عشوائي من المخزن الحقيقي
+    // توزيع عشوائي من المخزن الحقيقي (100ج + 200ج + جركن زيت)
     // ==============================
     const rem100 = getPrizeRemaining('prize100');
     const rem200 = getPrizeRemaining('prize200');
-    const totalWinners = rem100 + rem200;
+    const remOil = getPrizeRemaining('prizeOil');
+    const totalWinners = rem100 + rem200 + remOil;
 
     if (totalWinners <= 0) {
         // انتهت كل الجوائز
@@ -4943,10 +4961,9 @@ function getUserPrize(user) {
         };
     }
 
-    // 🎯 شرط أساسي: توزيع واستهلاك كل جوائز المخزن بالكامل على المتسابقين حتى نفاذ المخزون تماماً (0 كارت متبقي)
+    // 🎯 شرط أساسي: توزيع واستهلاك كل جوائز المخزن بالكامل على المتسابقين حتى نفاذ المخزون تماماً (0 متبقي)
     // نسبة الفوز ديناميكية بنسبة 50% كحد أدنى طالما يوجد أي رصيد جوائز في المخزن
-    // ده يضمن أن الجوائز كلها تخلص وتتوزع بالكامل على المتسابقين بدون أي متبقي نهائياً
-    const winChance = Math.min(1.0, Math.max(0.50, totalWinners / 1500));
+    const winChance = Math.min(1.0, Math.max(0.50, totalWinners / 1400));
 
     const rand = Math.random();
     if (rand >= winChance) {
@@ -4960,14 +4977,26 @@ function getUserPrize(user) {
         };
     }
 
-    // فاز! نختار نوع الجائزة بنسبة المخزون الحالي
-    const prize200Chance = rem200 / totalWinners;
-    const pickPrize200 = Math.random() < prize200Chance;
+    // فاز! نختار نوع الجائزة بنسبة المخزون الحالي بين الجوائز الثلاث
+    const r = Math.random() * totalWinners;
 
-    if (pickPrize200 && rem200 > 0) {
+    if (r < remOil && remOil > 0) {
+        decrementPrize('prizeOil');
+        return {
+            isWinner: true,
+            isCash: false,
+            title: PRIZE_INVENTORY.prizeOil.label,
+            description: PRIZE_INVENTORY.prizeOil.description,
+            icon: PRIZE_INVENTORY.prizeOil.icon,
+            image: PRIZE_INVENTORY.prizeOil.image,
+            prizeKey: 'prizeOil',
+            isTest: false
+        };
+    } else if (r < remOil + rem200 && rem200 > 0) {
         decrementPrize('prize200');
         return {
             isWinner: true,
+            isCash: true,
             title: PRIZE_INVENTORY.prize200.label,
             description: PRIZE_INVENTORY.prize200.description,
             icon: PRIZE_INVENTORY.prize200.icon,
@@ -4979,6 +5008,7 @@ function getUserPrize(user) {
         decrementPrize('prize100');
         return {
             isWinner: true,
+            isCash: true,
             title: PRIZE_INVENTORY.prize100.label,
             description: PRIZE_INVENTORY.prize100.description,
             icon: PRIZE_INVENTORY.prize100.icon,
@@ -5089,7 +5119,10 @@ function syncToCloud(payload) {
             if (item.claimInfo) item.claimInfo.isPaid = Boolean(payload.isPaid);
             return upstashCommand(['HSET', UPSTASH_CONFIG.keys.participations, uid, JSON.stringify(item)]);
         } else if (payload.action === 'updateInventory') {
-            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', String(payload.prize100), 'prize200', String(payload.prize200)]);
+            const p100 = payload.prize100 !== undefined ? String(payload.prize100) : '400';
+            const p200 = payload.prize200 !== undefined ? String(payload.prize200) : '150';
+            const pOil = payload.prizeOil !== undefined ? String(payload.prizeOil) : '150';
+            return upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', p100, 'prize200', p200, 'prizeOil', pOil]);
         } else if (payload.action === 'resetTest') {
             const baseTestIds = ['1','2','3','4','5','6','7','8','9','10'];
             if (payload.extraIds && Array.isArray(payload.extraIds)) {
@@ -5121,7 +5154,7 @@ function syncToCloud(payload) {
         } else if (payload.action === 'resetAll') {
             return Promise.all([
                 upstashCommand(['DEL', UPSTASH_CONFIG.keys.participations]),
-                upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', '500', 'prize200', '300'])
+                upstashCommand(['HSET', UPSTASH_CONFIG.keys.inventory, 'prize100', '400', 'prize200', '150', 'prizeOil', '150'])
             ]);
         }
     } catch(e) {
@@ -5148,8 +5181,9 @@ function deleteParticipationRecord(userId) {
 function resetAllParticipationsCloud() {
     try {
         localStorage.setItem(PARTICIPATION_STORAGE_KEY, '{}');
-        localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '500');
-        localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '300');
+        localStorage.setItem(PRIZE_INVENTORY.prize100.storageKey, '400');
+        localStorage.setItem(PRIZE_INVENTORY.prize200.storageKey, '150');
+        localStorage.setItem(PRIZE_INVENTORY.prizeOil.storageKey, '150');
     } catch(e) {}
     return syncToCloud({ action: 'resetAll' });
 }
@@ -5177,13 +5211,15 @@ function fetchFromCloud() {
                 invObj[invRes.result[i]] = parseInt(invRes.result[i + 1], 10);
             }
             inventory = {
-                prize100: invObj.prize100 !== undefined ? invObj.prize100 : 500,
-                prize200: invObj.prize200 !== undefined ? invObj.prize200 : 300
+                prize100: invObj.prize100 !== undefined ? invObj.prize100 : 400,
+                prize200: invObj.prize200 !== undefined ? invObj.prize200 : 150,
+                prizeOil: invObj.prizeOil !== undefined ? invObj.prizeOil : 150
             };
         } else if (invRes && typeof invRes.result === 'object' && invRes.result !== null) {
             inventory = {
-                prize100: invRes.result.prize100 !== undefined ? parseInt(invRes.result.prize100, 10) : 500,
-                prize200: invRes.result.prize200 !== undefined ? parseInt(invRes.result.prize200, 10) : 300
+                prize100: invRes.result.prize100 !== undefined ? parseInt(invRes.result.prize100, 10) : 400,
+                prize200: invRes.result.prize200 !== undefined ? parseInt(invRes.result.prize200, 10) : 150,
+                prizeOil: invRes.result.prizeOil !== undefined ? parseInt(invRes.result.prizeOil, 10) : 150
             };
         }
         return {

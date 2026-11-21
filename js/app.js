@@ -335,12 +335,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // طرف الورقة النقدية الـ 100 أو 200 العادية: يظهر جزء بسيط أوي في أحد أطراف الكارت عشوائياً
+        // طرف الجائزة العادية (100 أو 200 أو جركن زيت): يظهر جزء بسيط أوي في أحد أطراف الكارت عشوائياً
         if (scratchCroppedPeek) {
             if (currentPrize.isWinner) {
-                const is200 = (currentPrize.prizeKey === 'prize200' || (currentPrize.title && currentPrize.title.includes('200')));
-                // استخدام الصور العادية للعملات النقدية
-                scratchCroppedPeek.src = is200 ? 'images/prize_200.jpg' : 'images/prize_100.jpg';
+                // استخدام الصور العادية للجوائز
+                if (currentPrize.prizeKey === 'prizeOil' || (currentPrize.title && currentPrize.title.includes('زيت'))) {
+                    scratchCroppedPeek.src = 'images/oil.png';
+                } else if (currentPrize.prizeKey === 'prize200' || (currentPrize.title && currentPrize.title.includes('200'))) {
+                    scratchCroppedPeek.src = 'images/prize_200.jpg';
+                } else {
+                    scratchCroppedPeek.src = 'images/prize_100.jpg';
+                }
 
                 // أطراف وأركان مختلفة في كل مرة - تبرز الورقة جزئياً من خارج إطار الكارت (فقط طرفها يظهر داخل الكارت)
                 const peekPositions = [
@@ -517,6 +522,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 scratchRevealImg.style.display = 'block';
             }
 
+            // إعداد كارت الشير الفخم لفيسبوك
+            const shareWinnerName = document.getElementById('shareCardWinnerName');
+            const sharePrizeImg = document.getElementById('shareCardPrizeImg');
+            const sharePrizeTitle = document.getElementById('shareCardPrizeTitle');
+            if (shareWinnerName) shareWinnerName.textContent = user.name;
+            if (sharePrizeImg) sharePrizeImg.src = currentPrize.image || 'logo.png';
+            if (sharePrizeTitle) sharePrizeTitle.textContent = currentPrize.title;
+
+            // تحديد ما إذا كانت الجائزة كاش (100 / 200) أو هدية عينية (جركن زيت)
+            const isCash = (currentPrize.isCash !== false && currentPrize.prizeKey !== 'prizeOil');
+            const payoutMethodSelector = document.getElementById('payoutMethodSelector');
+            const claimFormTitle = document.getElementById('claimFormTitle');
+            const claimFormDesc = document.getElementById('claimFormDesc');
+            const accountInputLabel = document.getElementById('accountInputLabel');
+            const payoutAccountInput = document.getElementById('payoutAccountInput');
+            const winnerImportantNote = document.getElementById('winnerImportantNote');
+            const submitClaimBtnText = document.getElementById('submitClaimBtnText');
+            const claimBoxBadge = document.getElementById('claimBoxBadge');
+
+            if (isCash) {
+                if (payoutMethodSelector) payoutMethodSelector.style.display = 'flex';
+                if (claimFormTitle) claimFormTitle.textContent = 'سجل وسيلة الاستلام لتحويل المكافأة لحسابك 🚀';
+                if (claimFormDesc) claimFormDesc.textContent = 'اختر وسيلة الدفع واكتب رقم المحفظة أو عنوان InstaPay:';
+                if (accountInputLabel) accountInputLabel.textContent = 'رقم المحفظة الذكية (01xxxxxxxxx):';
+                if (payoutAccountInput) payoutAccountInput.placeholder = '01xxxxxxxxx';
+                if (winnerImportantNote) winnerImportantNote.innerHTML = '⚠️ هتستلم جايزتك ع البيانات اللي تم إدخالها<br>ولابد المحفظة او انستا يكون بنفس الاسم<br><span style="color:#059669; font-weight:800; font-size:0.95rem; display:inline-block; margin-top:4px;">⏱️ توصل الجائزة خلال 48 ساعة</span>';
+                if (submitClaimBtnText) submitClaimBtnText.textContent = 'تأكيد وإرسال بيانات الاستلام 🚀';
+                if (claimBoxBadge) claimBoxBadge.textContent = '⚡ استلام الجائزة فوراً';
+            } else {
+                // جركن زيت: لا يوجد محفظة أو انستاباي، فقط رقم الهاتف للتواصل مع المشرف
+                if (payoutMethodSelector) payoutMethodSelector.style.display = 'none';
+                if (claimFormTitle) claimFormTitle.textContent = 'سجل رقمك لاستلام جركن الزيت 🛢️🚀';
+                if (claimFormDesc) claimFormDesc.textContent = 'اكتب رقم هاتفك للتواصل معك من المشرف لتسليم جركن الزيت:';
+                if (accountInputLabel) accountInputLabel.textContent = '📱 رقم الموبايل للتواصل (01xxxxxxxxx):';
+                if (payoutAccountInput) payoutAccountInput.placeholder = 'مثال: 01012345678';
+                if (winnerImportantNote) winnerImportantNote.innerHTML = '⚠️ انتظر استلام الزيت من المشرف خلال 48 ساعة ⏱️<br><span style="color:#059669; font-weight:800; font-size:0.95rem; display:inline-block; margin-top:4px;">تأكد من كتابة رقم هاتف متاح للاتصال به</span>';
+                if (submitClaimBtnText) submitClaimBtnText.textContent = 'تأكيد وإرسال رقم التواصل 🛢️🚀';
+                if (claimBoxBadge) claimBoxBadge.textContent = '🛢️ استلام جركن الزيت';
+            }
+
             // تحديث حالة نموذج الاستلام المباشر في الصفحة
             const record = getUserParticipation(user.id);
             const claimInputSection = document.getElementById('claimInputSection');
@@ -527,15 +572,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (claimInputSection) claimInputSection.style.display = 'none';
                 if (claimDoneSection) claimDoneSection.style.display = 'block';
                 if (claimSavedSummary) {
+                    const isOilRecord = record.claimInfo.method && record.claimInfo.method.includes('زيت');
                     claimSavedSummary.innerHTML = `
                         <div style="font-size:0.95rem; color:#18181b; margin-bottom:4px;">
                             طريقة الاستلام: <strong style="color:#059669;">${record.claimInfo.method}</strong>
                         </div>
-                        <div style="font-size:0.9rem; color:#4b5563; margin-top:6px;">رقم الحساب / المحفظة:</div>
+                        <div style="font-size:0.9rem; color:#4b5563; margin-top:6px;">${isOilRecord ? 'رقم الهاتف للتواصل:' : 'رقم الحساب / المحفظة:'}</div>
                         <div style="background:#ffffff; color:#18181b; font-size:1.35rem; font-weight:900; padding:8px 20px; border-radius:14px; border:2.5px solid #10b981; display:inline-block; letter-spacing:1.5px; margin:4px 0 8px 0; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
                             ${record.claimInfo.account}
                         </div>
-                        <div style="font-size:0.85rem; color:#059669; font-weight:800; margin-top:4px;">⏱️ توصل الجائزة خلال 48 ساعة</div>
+                        <div style="font-size:0.85rem; color:#059669; font-weight:800; margin-top:4px;">${isOilRecord ? '⏱️ انتظر استلام الزيت من المشرف خلال 48 ساعة' : '⏱️ توصل الجائزة خلال 48 ساعة'}</div>
                         <div style="font-size:0.8rem; color:#6b7280; margin-top:4px;">تاريخ التسجيل: ${record.claimInfo.formattedDate || ''}</div>
                     `;
                 }
@@ -615,8 +661,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const selectedRadio = document.querySelector('input[name="directPayoutMethod"]:checked');
-            const selectedMethod = selectedRadio ? selectedRadio.value : 'فودافون كاش';
+            const isOilPrize = (currentPrize && (currentPrize.prizeKey === 'prizeOil' || currentPrize.isCash === false));
+            let selectedMethod = 'محفظة ذكية';
+            if (isOilPrize) {
+                selectedMethod = 'تسليم يدوي (جركن زيت) 🛢️';
+            } else {
+                const selectedRadio = document.querySelector('input[name="directPayoutMethod"]:checked');
+                selectedMethod = selectedRadio ? selectedRadio.value : 'محفظة ذكية';
+            }
 
             soundManager.playSuccessBeep();
             confettiManager.celebrateWin();
@@ -663,6 +715,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const claimInputSection = document.getElementById('claimInputSection');
             const claimDoneSection = document.getElementById('claimDoneSection');
             const claimSavedSummary = document.getElementById('claimSavedSummary');
+            const claimDoneHeading = document.getElementById('claimDoneHeading');
+            const claimDoneSubDesc = document.getElementById('claimDoneSubDesc');
+
+            if (isOilPrize) {
+                if (claimDoneHeading) claimDoneHeading.textContent = 'تم تسجيل بيانات التواصل بنجاح! 🛢️✅';
+                if (claimDoneSubDesc) claimDoneSubDesc.innerHTML = 'تم إرسال رقم هاتفك للمشرف لتسليم جركن الزيت، وسيتم التواصل معك مباشرة.<br><span style="color:#059669; font-weight:800; font-size:1.05rem; display:inline-block; margin-top:6px;">⏱️ انتظر استلام الزيت من المشرف خلال 48 ساعة</span>';
+            }
 
             if (claimInputSection) claimInputSection.style.display = 'none';
             if (claimDoneSection) claimDoneSection.style.display = 'block';
@@ -671,13 +730,51 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div style="font-size:0.95rem; color:#18181b; margin-bottom:4px;">
                         طريقة الاستلام: <strong style="color:#059669;">${selectedMethod}</strong>
                     </div>
-                    <div style="font-size:0.9rem; color:#4b5563; margin-top:6px;">رقم الحساب / المحفظة:</div>
+                    <div style="font-size:0.9rem; color:#4b5563; margin-top:6px;">${isOilPrize ? 'رقم الهاتف للتواصل:' : 'رقم الحساب / المحفظة:'}</div>
                     <div style="background:#ffffff; color:#18181b; font-size:1.35rem; font-weight:900; padding:8px 20px; border-radius:14px; border:2.5px solid #10b981; display:inline-block; letter-spacing:1.5px; margin:4px 0 8px 0; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
                         ${accountVal}
                     </div>
-                    <div style="font-size:0.85rem; color:#059669; font-weight:800; margin-top:4px;">⏱️ توصل الجائزة خلال 48 ساعة</div>
+                    <div style="font-size:0.85rem; color:#059669; font-weight:800; margin-top:4px;">${isOilPrize ? '⏱️ انتظر استلام الزيت من المشرف خلال 48 ساعة' : '⏱️ توصل الجائزة خلال 48 ساعة'}</div>
                     <div style="font-size:0.8rem; color:#6b7280; margin-top:4px;">تاريخ التسجيل: ${claimInfo.formattedDate}</div>
                 `;
+            }
+        });
+    }
+
+    // ===================================================
+    // 6.2. مشاركة الفوز والهدية على فيسبوك (Facebook Share Action)
+    // ===================================================
+    const shareWinOnFacebookBtn = document.getElementById('shareWinOnFacebookBtn');
+    if (shareWinOnFacebookBtn) {
+        shareWinOnFacebookBtn.addEventListener('click', async () => {
+            soundManager.playClick();
+            const prizeTitle = currentPrize?.title || 'هدية قيمة';
+            const winnerName = currentUser?.name || 'أحد أبطال الشركة';
+            const shareUrl = 'https://alamia-delta.vercel.app';
+            const caption = `🏆🎉 الحمد لله كسبت ${prizeTitle} في مسابقة بطل العالمية إكسبريس الرسمية! 🌟🔥 شكراً جداً لإدارة شركة العالمية إكسبريس على الهدية الجميلة وعقبال كل زمايلي وأبطال الشركة! ادخلوا جربوا حظكم يا أبطال 🪙🎁\n${shareUrl}`;
+
+            // 1. نسخ الكابشن التلقائي للحافظة
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(caption);
+                }
+            } catch (clipErr) {}
+
+            // 2. محاولة الشير الأصلي على الموبايل عبر Web Share API
+            if (navigator.share) {
+                navigator.share({
+                    title: '🏆 مسابقة بطل العالمية إكسبريس',
+                    text: caption,
+                    url: shareUrl
+                }).catch(() => {
+                    // في حال إلغاء الشير أو عدم اكتماله نفتح نافذة فيسبوك
+                    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(caption)}`;
+                    window.open(fbUrl, '_blank');
+                });
+            } else {
+                alert('✅ تم نسخ كابشن الفوز الترويجي بنجاح! جاري فتح فيسبوك الآن لتنشر بوست الهدية 🌟🎉');
+                const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(caption)}`;
+                window.open(fbUrl, '_blank');
             }
         });
     }
